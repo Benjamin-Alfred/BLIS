@@ -62,44 +62,56 @@
                         @foreach($measure->measureRanges as $key=>$value)
                         <div class="col-md-12 measure-input">
                             <div class="col-md-6">
-                                 <?php $selection_interval = array("","","");?>
-                                    <?php 
-                                    if ($value->age_max<=0.08493150684) {
-                                       $selection_interval[2] = "selected='selected'"; 
-                                    }else if($value->age_min>=0 && !$value->age_min>1){
+                                <?php 
+
+                                    // UI Workaround to display range values in day or months
+                                    // NB: DB saves the age range exclusively in years
+                                    $selection_interval = array("","","");
+
+                                    // Display as DAYS is maximum age is 30 days or less
+                                    if ($value->age_max<=round(30/365,7)) {
+                                       $selection_interval[2] = "selected='selected'";
+                                    }else if($value->age_max<=1){ // as MONTHS if max age is under 1 year
                                         $selection_interval[0] = "selected='selected'"; 
-                                    }else if($value->age_min>=1){
+                                    }else{ // as YEARS otherwise
                                         $selection_interval[1] = "selected='selected'"; 
                                     }
-                                    ?>
+                                ?>
                                 <select class="col-md-3" name="measures[{{$measure->id}}][interval][]">
                                     <option value="0" {{ $selection_interval[0] }}>Months</option>
                                     <option value="1" {{ $selection_interval[1] }}>Years</option>
                                     <option value="2" {{ $selection_interval[2] }}>Days</option>
                                 </select>
                                 <span class="col-md-1">:</span>
-                                @if($value->age_max<0.083333 )
-                                <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" type="text" value="{{ round($value->age_min*365) }}"
-                                    title="{{trans('messages.lower-age-limit')}}">
-                                
-                                <span class="col-md-1">:</span>
-                                <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" type="text" value="{{ round($value->age_max*365) }}"
-                                    title="{{trans('messages.upper-age-limit')}}">
-                                @elseif($value->age_min>=0.083333 && $value->age_max!==0 && $value->age_max<=1)
-                                 <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" type="text" value="{{ round($value->age_min*12) }}"
-                                    title="{{trans('messages.lower-age-limit')}}">
-                                
-                                <span class="col-md-1">:</span>
-                                <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" type="text" value="{{ round($value->age_max*12) }}"
-                                    title="{{trans('messages.upper-age-limit')}}">
-                                @else
-                                    <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" type="text" value="{{ $value->age_min }}"
-                                    title="{{trans('messages.lower-age-limit')}}">
-                                
-                                <span class="col-md-1">:</span>
-                                <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" type="text" value="{{ $value->age_max }}"
-                                    title="{{trans('messages.upper-age-limit')}}">
-                                @endif    
+
+                                    @if($value->age_max<=round(30/365,7) )
+                                        <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" 
+                                            type="text" value="{{ round($value->age_min*365) }}"
+                                            title="{{trans('messages.lower-age-limit')}}">
+                                        
+                                        <span class="col-md-1">:</span>
+                                        <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" 
+                                            type="text" value="{{ round($value->age_max*365) }}"
+                                            title="{{trans('messages.upper-age-limit')}}">
+                                    @elseif($value->age_max<=1)
+                                         <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" 
+                                            type="text" value="{{ round($value->age_min*12) }}"
+                                            title="{{trans('messages.lower-age-limit')}}">
+                                        
+                                        <span class="col-md-1">:</span>
+                                        <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" 
+                                            type="text" value="{{ round($value->age_max*12) }}"
+                                            title="{{trans('messages.upper-age-limit')}}">
+                                    @else
+                                        <input class="col-md-2" name="measures[{{$measure->id}}][agemin][]" 
+                                            type="text" value="{{ $value->age_min }}"
+                                            title="{{trans('messages.lower-age-limit')}}">
+                                    
+                                        <span class="col-md-1">:</span>
+                                        <input class="col-md-2" name="measures[{{$measure->id}}][agemax][]" 
+                                            type="text" value="{{ $value->age_max }}"
+                                            title="{{trans('messages.upper-age-limit')}}">
+                                    @endif
                                     <?php $selection = array("","","");?>
                                     <?php $selection[$value->gender] = "selected='selected'"; ?>
                                 <span class="col-md-1"></span>

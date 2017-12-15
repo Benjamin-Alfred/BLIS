@@ -61,9 +61,9 @@
 							</div>
 							{{ ($cnt%4==0)?"</div>":"" }}
 						@endforeach
-						</div>
 					</div>
 				</div>
+			</div>
 			<div class="form-group">
 				{{ Form::label('specimen_types', trans('messages.select-specimen-types')) }}
 				<div class="form-pane panel panel-default">
@@ -110,7 +110,7 @@
 					</div>
 
 					<div class="form-group">
-						{{ Form::label('targetTAT', trans('messages.target-turnaround-time')) }}
+						{{ Form::label('targetTAT', trans('messages.target-turnaround-time')." (".Lang::choice('messages.hour',2).")") }}
 						{{ Form::text('targetTAT', Input::old('targetTAT'), array('class' => 'form-control')) }}
 					</div>
 					<div class="form-group">
@@ -186,5 +186,5 @@
 		</div>
 	{{ Form::close() }}
 </div>
-@include("measure.measureinput")
+@include("measure.create")
 @stop

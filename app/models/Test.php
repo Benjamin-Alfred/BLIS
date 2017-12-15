@@ -305,9 +305,7 @@ class Test extends Eloquent
 		$testCategoryWhereClause = "";
 		if($testCategory!=0) $testCategoryWhereClause = " AND tt.test_category_id = $testCategory";
 
-		$data = DB::select(
-			"SELECT * FROM (
-				SELECT
+		$theQuery1 = "SELECT
 				    tt.name AS test_name,
 				    m.name AS measure_name,
 				    mr.alphanumeric AS result,
@@ -326,17 +324,16 @@ class Test extends Eloquent
 				    INNER JOIN testtype_measures tm ON tt.id = tm.test_type_id
 				    INNER JOIN measures m ON tm.measure_id = m.id
 					CROSS JOIN (SELECT 0 AS id, 'Male' AS gender UNION SELECT 1, 'Female') AS s
-				    INNER JOIN measure_ranges mr ON tm.measure_id = mr.measure_id
+				    INNER JOIN measure_ranges mr ON tm.measure_id = mr.measure_id AND ISNULL(mr.deleted_at)
 					LEFT JOIN tests AS t ON t.test_type_id = tt.id
 				    INNER JOIN visits v ON t.visit_id = v.id
 				    INNER JOIN patients p ON v.patient_id = p.id
 				    INNER JOIN test_results tr ON t.id = tr.test_id AND m.id = tr.measure_id
-				WHERE (t.test_status_id=4 OR t.test_status_id=5) AND m.measure_type_id = 2
+				WHERE (t.test_status_id=".Test::COMPLETED." OR t.test_status_id=".Test::VERIFIED.") AND m.measure_type_id = 2
 					AND t.time_created BETWEEN ? AND ? $testCategoryWhereClause
-				GROUP BY tt.id, m.id, mr.alphanumeric, s.id) AS alpha
-				UNION
-				(
-				SELECT
+				GROUP BY tt.id, m.id, mr.alphanumeric, s.id";
+
+		$theQuery2 = "SELECT
 					tt.name test_name,
 					mmr.name measure_name,
 					mmr.result_alias result,
@@ -402,19 +399,21 @@ class Test extends Eloquent
 					CROSS JOIN (SELECT 0 AS id, 'Male' AS gender UNION SELECT 1, 'Female') AS s
 					INNER JOIN (
 						SELECT m.name, m.measure_type_id, mr.*, i.* 
-						FROM measures m INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
-						CROSS JOIN (SELECT 'High' AS result_alias UNION SELECT 'Normal' UNION SELECT 'Low') AS i 
-						WHERE m.measure_type_id = 1) mmr ON tm.measure_id = mmr.measure_id
+						FROM measures m 
+							INNER JOIN measure_ranges mr ON m.id = mr.measure_id AND ISNULL(mr.deleted_at)
+							CROSS JOIN (SELECT 'High' AS result_alias UNION SELECT 'Normal' UNION SELECT 'Low') AS i 
+						WHERE m.measure_type_id = ".Measure::NUMERIC.") mmr ON tm.measure_id = mmr.measure_id
 					LEFT JOIN tests AS t ON t.test_type_id = tt.id
 					INNER JOIN visits v ON t.visit_id = v.id
 					INNER JOIN patients p ON v.patient_id = p.id
 					INNER JOIN test_results tr ON t.id = tr.test_id AND tm.measure_id = tr.measure_id
-				WHERE (t.test_status_id=4 OR t.test_status_id=5) AND mmr.measure_type_id = 1 
-					AND t.time_created BETWEEN ? AND ? $testCategoryWhereClause
-				GROUP BY tt.id, tm.measure_id, mmr.result_alias, s.id) 
-			ORDER BY test_name, measure_name, result, gender",
-			array($startTime, $endTime, $startTime, $endTime)
-			);
+				WHERE (t.test_status_id=".Test::COMPLETED." OR t.test_status_id=".Test::VERIFIED.") AND 
+					mmr.measure_type_id = ".Measure::NUMERIC." AND t.time_created BETWEEN ? AND ? $testCategoryWhereClause
+				GROUP BY tt.id, tm.measure_id, mmr.result_alias, s.id";
+
+		$theQuery =	"SELECT * FROM ($theQuery1) AS alpha UNION ($theQuery2) ORDER BY test_name, measure_name, result, gender";
+
+		$data = DB::select($theQuery, array($startTime, $endTime, $startTime, $endTime));
 
 		return $data;
 	}
