@@ -1,4 +1,4 @@
-@section("measureinput")
+@section("create")
 <!-- OTHER UI COMPONENTS -->
     <div class="hidden measureGenericLoader">
         <div class="row new-measure-section">
