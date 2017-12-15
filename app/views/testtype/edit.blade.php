@@ -37,6 +37,34 @@
 				{{ Form::select('test_category_id', array(0 => '')+$testcategory->lists('name', 'id'),
 					Input::old('test_category_id'), array('class' => 'form-control')) }}
 			</div>
+			
+			<div class="form-group">
+				{{ Form::label('panel_id', Lang::choice('messages.panel-type',1)) }}
+				<div class="form-pane panel panel-default">
+					<div class="container-fluid">
+						<?php 
+							$cnt = 0;
+							$zebra = "";
+						?>
+						@foreach($paneltype as $key=>$value)
+							{{ ($cnt%4==0)?"<div class='row $zebra'>":"" }}
+							<?php
+								$cnt++;
+								$zebra = (((int)$cnt/4)%2==1?"row-striped":"");
+							?>
+							<div class="col-md-3">
+								<label  class="checkbox">
+									<input type="checkbox" name="paneltypes[]" value="{{ $value->id}}" 
+										{{ in_array($value->id, $testtype->panel->lists('id'))?"checked":"" }} />
+										{{$value->name }}
+								</label>
+							</div>
+							{{ ($cnt%4==0)?"</div>":"" }}
+						@endforeach
+					</div>
+				</div>
+			</div>
+
 			<div class="form-group">
 				{{ Form::label('specimen_types', trans('messages.select-specimen-types')) }}
 				<div class="form-pane panel panel-default">
@@ -83,7 +111,7 @@
 					</div>
 
 					<div class="form-group">
-						{{ Form::label('targetTAT', trans('messages.target-turnaround-time')) }}
+						{{ Form::label('targetTAT', trans('messages.target-turnaround-time')." (".Lang::choice('messages.hour',2).")") }}
 						{{ Form::text('targetTAT', Input::old('targetTAT'), array('class' => 'form-control')) }}
 					</div>
 					<div class="form-group">
@@ -159,5 +187,5 @@
 		</div>
 	{{ Form::close() }}
 </div>
-@include("measure.measureinput")
+@include("measure.create")
 @stop

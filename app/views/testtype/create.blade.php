@@ -71,7 +71,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				{{ Form::label('targetTAT', trans('messages.target-turnaround-time')) }}
+				{{ Form::label('targetTAT', trans('messages.target-turnaround-time')." (".Lang::choice('messages.hour',2).")") }}
 				{{ Form::text('targetTAT', Input::old('targetTAT'), array('class' => 'form-control')) }}
 			</div>
 			<div class="form-group">
@@ -131,5 +131,5 @@
 		</div>
 	{{ Form::close() }}
 </div>
-@include("measure.measureinput")
+@include("measure.create")
 @stop
