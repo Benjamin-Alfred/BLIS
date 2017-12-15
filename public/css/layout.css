@@ -667,3 +667,18 @@ table.table.report-table-border > tbody > tr > td{
         opacity: .8;
     }
     /*** End button colors ***/
+
+    /** Print friendly **/
+
+    @media print {
+        .sidebar {display: none;}
+        .non-print{display: none;}
+        table.table.report-table-border,
+        table.table.report-table-border > thead > tr > th,
+        table.table.report-table-border > tbody > tr > td{
+            border: 1px solid #666666;
+            color: #000000;
+        }
+        .panel {border: 0;}
+
+    }
