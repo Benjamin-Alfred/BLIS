@@ -18,7 +18,6 @@ class TestTypeController extends \BaseController {
 	{
 		// List all the active testtypes
 			$testtypes = TestType::orderBy('name', 'ASC')->get();
-
 		// Load the view and pass the testtypes
 		if(Input::has('raw')){
 			return Response::json($testtypes);
@@ -37,6 +36,7 @@ class TestTypeController extends \BaseController {
 		$measures = Measure::orderBy('name')->get();
 		$specimentypes = SpecimenType::orderBy('name')->get();
 		$testcategory = TestCategory::all();
+		$paneltype = Panel::all();
         $measuretype = MeasureType::all()->sortBy('id');
         $organisms = Organism::orderBy('name')->get();
 
@@ -46,7 +46,8 @@ class TestTypeController extends \BaseController {
 					->with('measures', $measures)
        				->with('measuretype', $measuretype)
 					->with('specimentypes', $specimentypes)
-					->with('organisms', $organisms);
+					->with('organisms', $organisms)
+					->with('paneltype',$paneltype);
 	}
 
 	/**
@@ -100,6 +101,7 @@ class TestTypeController extends \BaseController {
 				$measureIds = $measures->store($inputNewMeasures);
 				$testtype->setMeasures($measureIds);
 				$testtype->setSpecimenTypes(Input::get('specimentypes'));
+				$testtype->setPanelTypes(Input::get('paneltypes'));	
 				$testtype->setOrganisms(Input::get('organisms'));
 
 				return Redirect::route('testtype.index')
@@ -138,6 +140,7 @@ class TestTypeController extends \BaseController {
 		$testtype = TestType::find($id);
 		$measures = Measure::all();
         $measuretype = MeasureType::all()->sortBy('id');
+        $paneltype = Panel::orderBy('name')->get();
 		$specimentypes = SpecimenType::orderBy('name')->get();
 		$testcategory = TestCategory::all();
 		$organisms = Organism::orderBy('name')->get();
@@ -149,7 +152,8 @@ class TestTypeController extends \BaseController {
 					->with('measures', $measures)
        				->with('measuretype', $measuretype)
 					->with('specimentypes', $specimentypes)
-					->with('organisms', $organisms);
+					->with('organisms', $organisms)
+					->with('paneltype',$paneltype);
 	}
 
 
@@ -186,6 +190,7 @@ class TestTypeController extends \BaseController {
 				$testtype->save();
 				$testtype->setOrganisms(Input::get('organisms'));
 				$testtype->setSpecimenTypes(Input::get('specimentypes'));
+				$testtype->setPanelTypes(Input::get('paneltypes'));
 				$measureIds = array();
 					if (Input::get('new-measures')) {
 						$inputNewMeasures = Input::get('new-measures');

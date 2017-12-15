@@ -100,7 +100,7 @@
 						$measureCount = 0;
 						$resultCount = 0;
 
-						$testTotal = 0;
+						$testTotal = array(0);
 						$resultTotal = 0;
 					?>
 					@forelse($infectionData as $inf)
@@ -144,7 +144,7 @@
 							$testRow = str_replace("NEW_RESULT", $resultCount, $testRow);
 
 							$testRow = str_replace("RESULT_TOTAL", $resultTotal, $testRow);
-							$testRow = str_replace("TEST_TOTAL", $testTotal, $testRow);
+							$testRow = str_replace("TEST_TOTAL", max($testTotal), $testRow);
 
 							echo $testRow;
 
@@ -152,7 +152,8 @@
 							$measureCount=0;
 							$resultCount=0;
 
-							$testTotal = 0;
+							array_splice($testTotal, 0, count($testTotal));
+
 							$resultTotal = 0;
 
 							$currentTest = $inf->test_name;
@@ -178,9 +179,9 @@
 						}
 
 						if($measureCount == 0)
-							$testTotal = $inf->RC_U_5 + $inf->RC_5_15 + $inf->RC_A_15;
+							$testTotal[$currentTest . $currentMeasure] = $inf->RC_U_5 + $inf->RC_5_15 + $inf->RC_A_15;
 						else
-							$testTotal += $inf->RC_U_5 + $inf->RC_5_15 + $inf->RC_A_15;
+							$testTotal[$currentTest . $currentMeasure] += $inf->RC_U_5 + $inf->RC_5_15 + $inf->RC_A_15;
 
 						if(strcmp($currentTest, $inf->test_name) == 0 && $testCount == 0){
 							$testRow.="<td rowspan='NEW_TEST'>TEST_TOTAL</td>";
@@ -200,7 +201,7 @@
 						$testRow = str_replace("NEW_MEASURE", ++$measureCount, $testRow);
 						$testRow = str_replace("NEW_RESULT", ++$resultCount, $testRow);
 						$testRow = str_replace("RESULT_TOTAL", $resultTotal, $testRow);
-						$testRow = str_replace("TEST_TOTAL", $testTotal, $testRow);
+						$testRow = str_replace("TEST_TOTAL", max($testTotal), $testRow);
 					?>
 					{{$testRow}}
 				</tbody>
