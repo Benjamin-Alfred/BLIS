@@ -1,13 +1,13 @@
 @extends("layout")
 @section("content")
-<div>
+<div class="non-print">
 	<ol class="breadcrumb">
 	  <li><a href="{{{URL::route('user.home')}}}">{{ trans('messages.home') }}</a></li>
 	  <li class="active">{{ Lang::choice('messages.report',2) }}</li>
 	  <li class="active">{{ trans('messages.infection-report') }}</li>
 	</ol>
 </div>
-{{ Form::open(array('route' => array('reports.aggregate.infection'), 'class' => 'form-inline', 'role' => 'form')) }}
+{{ Form::open(array('route' => array('reports.aggregate.infection'), 'class' => 'form-inline non-print', 'role' => 'form')) }}
 <!-- <div class='container-fluid'> -->
 	<div class="row">
 		<div class="col-md-3">
@@ -50,25 +50,26 @@
 {{ Form::close() }}
 <br />
 <div class="panel panel-primary">
-	<div class="panel-heading ">
+	<div class="panel-heading non-print ">
 		<span class="glyphicon glyphicon-user"></span>
 		{{ trans('messages.infection-report') }}
 	</div>
 	<div class="panel-body">
-	@if (Session::has('message'))
-		<div class="alert alert-info">{{ trans(Session::get('message')) }}</div>
-	@endif	
-	<strong>
-		<p> {{ trans('messages.infection-report') }} - 
-			<?php $from = isset($input['start'])?$input['start']:date('01-m-Y');?>
-			<?php $to = isset($input['end'])?$input['end']:date('d-m-Y');?>
-			@if($from!=$to)
-				{{trans('messages.from').' '.$from.' '.trans('messages.to').' '.$to}}
-			@else
-				{{trans('messages.for').' '.date('d-m-Y')}}
-			@endif
-		</p>
-	</strong>
+		@if (Session::has('message'))
+			<div class="alert alert-info">{{ trans(Session::get('message')) }}</div>
+		@endif	
+		@include("reportHeader")
+		<strong>
+			<p> {{ trans('messages.infection-report') }} - 
+				<?php $from = isset($input['start'])?$input['start']:date('01-m-Y');?>
+				<?php $to = isset($input['end'])?$input['end']:date('d-m-Y');?>
+				@if($from!=$to)
+					{{trans('messages.from').' '.$from.' '.trans('messages.to').' '.$to}}
+				@else
+					{{trans('messages.for').' '.date('d-m-Y')}}
+				@endif
+			</p>
+		</strong>
 		<div class="table-responsive">
 			<table class="table table-condensed report-table-border">
 				<thead>
@@ -191,7 +192,7 @@
 						?>
 					@empty
 						<tr>
-							<td colspan="9">
+							<td colspan="10">
 								{{trans('messages.no-records-found')}}
 							</td>
 						</tr>
