@@ -631,4 +631,125 @@ class Test extends Eloquent
 	public function external(){
 		return ExternalDump::where('lab_no', '=', $this->external_id)->get()->first();
 	}
+
+	/**
+	 *
+	 * Get the count of this TestType, of the given Test status, for the given period 
+	 *
+	 * @return $count
+	 */
+
+	public static function getCount($testTypeNames, $startDate, $endDate, $status = array()){
+		
+
+		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
+					INNER JOIN test_types tt ON t.test_type_id = tt.id 
+					WHERE tt.name IN (".implode(",", $testTypeNames). ") 
+						AND t.time_created between ? AND ? ";
+
+		if(count($status) > 0)$query .= "AND t.test_status_id IN (".implode(",", $status).")";
+
+		$count = DB::select($query, array($startDate, $endDate));
+
+		return $count[0]->hits;
+	}
+
+	/**
+	 *
+	 * Get the count of this TestType, of the given Test status, for the given period, for the given age
+	 *
+	 * @return $count
+	 */
+
+	public static function getCountByAge($testTypeNames, $startDate, $endDate, $testStatus = array(), $age = array()){
+		
+
+		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
+						INNER JOIN test_types tt ON t.test_type_id = tt.id 
+						INNER JOIN visits v ON t.visit_id = v.id ";
+
+		if(count($age) == 2)
+			$query .= "INNER JOIN patients p ON v.patient_id = p.id 
+							AND DATEDIFF(t.time_created, p.dob)/365.25 >= ".$age[0].
+							" AND DATEDIFF(t.time_created, p.dob)/365.25 < ".$age[1];
+
+		$query .= " WHERE tt.name IN (".implode(",", $testTypeNames). ") 
+					AND t.time_created BETWEEN ? AND ? ";
+
+		if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
+
+		$count = DB::select($query, array($startDate, $endDate));
+
+		return $count[0]->hits;
+	}
+
+	/**
+	 *
+	 * Get the count of this TestType, of the given Test status, for the given period, for the measure, for the given measure result
+	 *
+	 * @return $count
+	 */
+
+	public static function getCountByResult($testTypeName, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true){
+		
+		$query = "SELECT m.measure_type_id FROM test_types tt 
+					INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id 
+					INNER JOIN measures m ON ttm.measure_id = m.id WHERE tt.name = ? AND m.name = ?";
+
+		$measureType = DB::select($query, array($testTypeName, $measureName));
+
+		Log::info($measureType);
+
+		if (count($measureType) > 0 && $measureType[0]->measure_type_id == Measure::NUMERIC) {
+
+			$measureWhere['HIGH'] = " AND tr.result > mr.range_upper ";
+			$measureWhere['LOW'] = " AND tr.result < mr.range_lower ";
+			$measureWhere['NORMAL'] = " AND tr.result >= mr.range_lower AND tr.result <= mr.range_upper ";
+
+			$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
+							INNER JOIN test_types tt ON t.test_type_id = tt.id 
+							INNER JOIN visits v ON t.visit_id = v.id 
+							INNER JOIN patients p ON v.patient_id = p.id
+							INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id
+							INNER JOIN measures m ON ttm.measure_id = m.id 
+							INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id
+							INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
+								AND (mr.gender = 2 OR mr.gender = p.gender) AND ISNULL(mr.deleted_at)
+								AND DATEDIFF(t.time_created, p.dob)/365.25 >= mr.age_min
+								AND DATEDIFF(t.time_created, p.dob)/365.25 < mr.age_max
+						WHERE tt.name = ? AND m.name = ? AND t.time_created BETWEEN ? AND ? ";
+
+			if (isset($measureResult)) $query .= $measureWhere[$measureResult];
+
+			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
+
+			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate));
+
+			return $count[0]->hits;
+
+		}else if (count($measureType) > 0 && $measureType[0]->measure_type_id == Measure::ALPHANUMERIC) {
+
+			$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
+							INNER JOIN test_types tt ON t.test_type_id = tt.id 
+							INNER JOIN visits v ON t.visit_id = v.id 
+							INNER JOIN patients p ON v.patient_id = p.id
+							INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id
+							INNER JOIN measures m ON ttm.measure_id = m.id 
+							INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id
+							INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
+								AND tr.result = mr.alphanumeric AND ISNULL(mr.deleted_at)
+						WHERE tt.name = ? AND m.name = ? AND t.time_created BETWEEN ? AND ? ";
+			
+			if($interpretation) $query .= " AND mr.interpretation = ? ";
+			else $query .= " AND tr.result = ?";
+
+			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
+
+			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate, $measureResult));
+
+			return $count[0]->hits;
+
+		}
+	}
+
 }

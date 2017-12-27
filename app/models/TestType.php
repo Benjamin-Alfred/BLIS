@@ -451,4 +451,5 @@ class TestType extends Eloquent
 		$qualifier = $qualifier->lists('test_id');
 		return count(array_intersect(array_unique($qualifier), array_unique($results)));
 	}
+
 }

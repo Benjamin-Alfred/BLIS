@@ -92,7 +92,7 @@
 							<tr><th>&nbsp;</th><th>Total Exam</th><th>Number Positive</th></tr>
 						</thead>
 						<tbody>
-							<tr><td><strong>1.1 Urine Chemistry</strong></td><td>{{ $mohData['1_1_urine_chemistry_total'] }}</td>
+							<tr class="emphasize"><td>1.1 Urine Chemistry</td><td>{{ $mohData['1_1_urine_chemistry_total'] }}</td>
 								<td class="blank-cell">&nbsp;</td></tr>
 							<tr><td>1.2 Glucose</td><td class="blank-cell">&nbsp;</td><td>{{ $mohData['1_2_glucose'] }}</td></tr>
 							<tr><td>1.3 Ketones</td><td class="blank-cell">&nbsp;</td><td>{{ $mohData['1_3_ketones'] }}</td></tr>
@@ -259,8 +259,7 @@
 								<td>{{ $mohData['3_2_malaria_bs_over_5_positive'] }}</td></tr>
 							<tr><td>3.3 Malaria Rapid Diagnostic Tests</td><td>{{ $mohData['3_3_malaria_rapid_total'] }}</td>
 								<td>{{ $mohData['3_3_malaria_rapid_positive'] }}</td></tr>
-							<tr><td><strong>Stool Examination</strong></td><td>&nbsp;</td>
-								<td><strong>Number Positive</strong></td></tr>
+							<tr class="emphasize"><td>Stool Examination</td><td>{{ $mohData['3_4_stool_for_oc'] }}</td><td>Number Positive</td></tr>
 							<tr><td>3.4 Taenia spp.</td><td class="blank-cell">&nbsp;</td><td>{{ $mohData['3_4_taenia_spp'] }}</td></tr>
 							<tr><td>3.5 Hymenolepis nana</td><td class="blank-cell">&nbsp;</td><td>{{ $mohData['3_5_hymenolepis_nana'] }}</td></tr>
 							<tr><td>3.6 Hookworms</td><td class="blank-cell">&nbsp;</td><td>{{ $mohData['3_6_hookworms'] }}</td></tr>
@@ -376,8 +375,8 @@
 								<td>{{ $mohData['5_2_pus_swabs_culture_count'] }}</td><td>{{ $mohData['5_2_pus_swabs_culture_positive'] }}</td>
 							</tr>
 							<tr>
-								<td>5.3 High Vaginal Swabs</td><td>{{ $mohData['5_3_highg_vaginal_swabs_total'] }}</td>
-								<td>{{ $mohData['5_3_highg_vaginal_swabs_culture_count'] }}</td><td>{{ $mohData['5_3_highg_vaginal_swabs_culture_positive'] }}</td>
+								<td>5.3 High Vaginal Swabs</td><td>{{ $mohData['5_3_high_vaginal_swabs_total'] }}</td>
+								<td>{{ $mohData['5_3_high_vaginal_swabs_culture_count'] }}</td><td>{{ $mohData['5_3_high_vaginal_swabs_culture_positive'] }}</td>
 							</tr>
 							<tr>
 								<td>5.4 Throat swab</td><td>{{ $mohData['5_4_throat_swab_total'] }}</td>
