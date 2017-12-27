@@ -3085,6 +3085,9 @@ class ReportController extends \BaseController {
 
 	public function moh706v201410(){
 
+		$startDate = Input::get('start')?Input::get('start'):date('Y-m-01');
+		$endDate = Input::get('end')?Input::get('end'):date('Y-m-d');
+
 		$mohData['1_1_urine_chemistry_total'] = "N/S";
 		$mohData['1_2_glucose'] = "N/S";
 		$mohData['1_3_ketones'] = "N/S";
@@ -3523,7 +3526,7 @@ class ReportController extends \BaseController {
 		$mohData['9_8_augumentin_sensitive'] = "N/S";
 		$mohData['9_8_augumentin_resistant'] = "N/S";
 
-		return View::make('reports.moh.706v201410')->with('mohData', $mohData);
+		return View::make('reports.moh.706v201410')->with('mohData', $mohData)->with('startDate', $startDate)->with('endDate', $endDate);
 	}
 
 	/**
