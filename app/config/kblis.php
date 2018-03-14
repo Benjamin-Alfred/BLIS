@@ -100,4 +100,28 @@ return array(
 	*/
 
 	'favicon' => '/i/favicon.ico',
+	/*
+	|--------------------------------------------------------------------------
+	|	Lab Director's name - displayed in exported reports (might be better of in DB)
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'lab-director-name' => 'Lab Director',
+	/*
+	|--------------------------------------------------------------------------
+	|	Lab Manager's name - displayed in exported reports
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'lab-manager-name' => 'Lab Manager',
+	/*
+	|--------------------------------------------------------------------------
+	|	Lab QA Manager's name - displayed in exported reports
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'lab-quality-manager-name' => 'Lab QA Manager',
 );
