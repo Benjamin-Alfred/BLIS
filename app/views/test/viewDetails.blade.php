@@ -70,7 +70,7 @@
 					<div class="col-md-6">
 						<div class="display-details">
 							<h3 class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
-								{{ $test->testType->name or trans('messages.unknown') }}</h3>
+								{{ $test->testType->name == null ? trans('messages.unknown') : $test->testType->name }}</h3>
 							<p class="view"><strong>{{trans('messages.visit-number')}}</strong>
 								{{$test->visit->visit_number or trans('messages.unknown') }}</p>
 							<p class="view"><strong>{{trans('messages.date-ordered')}}</strong>
@@ -80,7 +80,7 @@
 							<p class="view"><strong>{{trans('messages.test-status')}}</strong>
 								{{trans('messages.'.$test->testStatus->name)}}</p>
 							<p class="view-striped"><strong>{{trans('messages.physician')}}</strong>
-								{{$test->requested_by or trans('messages.unknown') }}</p>
+								{{$test->requested_by == null ? trans('messages.unknown') : $test->requested_by}}</p>
 							<p class="view-striped"><strong>{{trans('messages.request-origin')}}</strong>
 								@if($test->specimen->isReferred() && $test->specimen->referral->status == Referral::REFERRED_IN)
 									{{ trans("messages.in") }}
@@ -88,12 +88,12 @@
 									{{ $test->visit->visit_type }}
 								@endif</p>
 							<p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-								{{$test->createdBy->name or trans('messages.unknown') }}</p>
+								{{$test->createdBy->name == null ? trans('messages.unknown') : $test->createdBy->name }}</p>
 							<p class="view"><strong>{{trans('messages.tested-by')}}</strong>
-								{{$test->testedBy->name or trans('messages.unknown')}}</p>
+								{{$test->testedBy->name == null ? trans('messages.unknown') : $test->testedBy->name}}</p>
 							@if($test->isVerified())
 							<p class="view"><strong>{{trans('messages.verified-by')}}</strong>
-								{{$test->verifiedBy->name or trans('messages.verification-pending')}}</p>
+								{{$test->verifiedBy->name == null ? trans('messages.verification-pending') : $test->verifiedBy->name}}</p>
 							@endif
 							@if((!$test->specimen->isRejected()) && ($test->isCompleted() || $test->isVerified()))
 							<!-- Not Rejected and (Verified or Completed)-->

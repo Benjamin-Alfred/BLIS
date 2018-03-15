@@ -698,7 +698,7 @@ class Test extends Eloquent
 
 		$measureType = DB::select($query, array($testTypeName, $measureName));
 
-		Log::info($measureType);
+		// Log::info($measureType);
 
 		if (count($measureType) > 0 && $measureType[0]->measure_type_id == Measure::NUMERIC) {
 
