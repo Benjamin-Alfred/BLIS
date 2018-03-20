@@ -64,7 +64,7 @@ class Test extends Eloquent
 	{
 		return $this->belongsTo('User', 'created_by', 'id');
 	}
-	
+
 	/**
 	 * User (tested) relationship
 	 */
@@ -96,6 +96,7 @@ class Test extends Eloquent
 	{
 		return $this->hasMany('Culture');
 	}
+
 	/**
 	 * Drug susceptibility relationship
 	 */
