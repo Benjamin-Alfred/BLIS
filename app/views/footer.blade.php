@@ -28,9 +28,9 @@
 		</div>
 	</div>
 
-    <footer class="footer">
+    <footer class="footer non-print">
         <div>
-        		{{ HTML::link('http://www.ilabafrica.ac.ke', 'iLabAfrica')}} &copy; {{date("Y")}}
+        		{{ HTML::link('https://github.com/APHL-Global-Health', 'APHL Global')}} &copy; {{date("Y")}}
         </div>
     </footer>
     <!-- End footer section-->

@@ -360,6 +360,11 @@ Route::group(array("before" => "auth"), function()
             "uses" => "ReportController@moh706"
         ));
 
+        Route::any("/moh706v201410", array(
+            "as"   => "reports.aggregate.moh706v201410",
+            "uses" => "ReportController@moh706v201410"
+        ));
+
         Route::any("/cd4", array(
             "as"   => "reports.aggregate.cd4",
             "uses" => "ReportController@cd4"

@@ -70,17 +70,18 @@
 					<div class="col-md-6">
 						<div class="display-details">
 							<h3 class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
-								{{ $test->testType->name or trans('messages.unknown') }}</h3>
+								{{ !is_null($test->testType->name) ? $test->testType->name : trans('messages.unknown') }}</h3>
 							<p class="view"><strong>{{trans('messages.visit-number')}}</strong>
-								{{$test->visit->visit_number or trans('messages.unknown') }}</p>
+								{{ !is_null($test->visit->visit_number) ? $test->visit->visit_number : trans('messages.unknown') }}</p>
 							<p class="view"><strong>{{trans('messages.date-ordered')}}</strong>
-								{{ $test->isExternal()?$test->external()->request_date:$test->time_created }}</p>
+								{{ $test->isExternal() ? $test->external()->request_date : $test->time_created }}</p>
 							<p class="view"><strong>{{trans('messages.lab-receipt-date')}}</strong>
 								{{$test->time_created}}</p>
 							<p class="view"><strong>{{trans('messages.test-status')}}</strong>
 								{{trans('messages.'.$test->testStatus->name)}}</p>
 							<p class="view-striped"><strong>{{trans('messages.physician')}}</strong>
-								{{$test->requested_by or trans('messages.unknown') }}</p>
+								{{ $test->requested_by or trans('messages.unknown') }}
+							</p>
 							<p class="view-striped"><strong>{{trans('messages.request-origin')}}</strong>
 								@if($test->specimen->isReferred() && $test->specimen->referral->status == Referral::REFERRED_IN)
 									{{ trans("messages.in") }}
@@ -88,17 +89,20 @@
 									{{ $test->visit->visit_type }}
 								@endif</p>
 							<p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-								{{$test->createdBy->name or trans('messages.unknown') }}</p>
+								{{ $test->createdBy or trans('messages.unknown') }}</p>
+
 							<p class="view"><strong>{{trans('messages.tested-by')}}</strong>
-								{{$test->testedBy->name or trans('messages.unknown')}}</p>
+								{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.unknown') }} </p>
+
 							@if($test->isVerified())
-							<p class="view"><strong>{{trans('messages.verified-by')}}</strong>
-								{{$test->verifiedBy->name or trans('messages.verification-pending')}}</p>
+								<p class="view"><strong>{{trans('messages.verified-by')}}</strong>
+									{{ $test->verifiedBy->name or trans('messages.verification-pending') }}</p>
 							@endif
+
 							@if((!$test->specimen->isRejected()) && ($test->isCompleted() || $test->isVerified()))
-							<!-- Not Rejected and (Verified or Completed)-->
-							<p class="view-striped"><strong>{{trans('messages.turnaround-time')}}</strong>
-								{{$test->getFormattedTurnaroundTime()}}</p>
+								<!-- Not Rejected and (Verified or Completed)-->
+								<p class="view-striped"><strong>{{trans('messages.turnaround-time')}}</strong>
+									{{$test->getFormattedTurnaroundTime()}}</p>
 							@endif
 						</div>
 					</div>
@@ -123,7 +127,7 @@
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.age")}}</strong></p></div>
 										<div class="col-md-9">
-											{{$test->visit->patient->getAge()}}</div></div>
+											{{$test->visit->patient->getAge("YMD", datetime::createfromformat('Y-m-d H:i:s', $test->time_started))}}</div></div>
 									<div class="row">
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.gender")}}</strong></p></div>
@@ -254,7 +258,7 @@
 											{{$result->result}}	
 										</div>
 										<div class="col-md-5">
-	        								{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
+	        								{{ Measure::getRange($test->visit->patient, $result->measure_id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started)) }}
 											{{ Measure::find($result->measure_id)->unit }}
 										</div>
 									</div>

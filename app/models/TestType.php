@@ -93,6 +93,32 @@ class TestType extends Eloquent
 		DB::table('testtype_specimentypes')->insert($specimenTypesAdded);
 	}
 
+   public function setPanelTypes($panelTypes){
+   	    $panelTypesAdded = array();
+		$testTypeID = 0;	
+
+		try {
+			
+			if(is_array($panelTypes)){
+				foreach ($panelTypes as $key => $value) {
+					$panelTypesAdded[] = array(
+						'test_type_id' => (int)$this->id,
+						'panel_id' => (int)$value
+						);
+					$testTypeID = (int)$this->id;
+				}
+
+			}
+			// Delete existing test_type_panel_type  mappings
+			DB::table('test_type_panels')->where('test_type_id', '=', $testTypeID)->delete();
+
+			// Add the new mapping
+			DB::table('test_type_panels')->insert($panelTypesAdded);
+		} catch (Exception $e) {
+			
+		}
+   }
+
 	/**
 	 * Set test type measures
 	 *
@@ -425,4 +451,5 @@ class TestType extends Eloquent
 		$qualifier = $qualifier->lists('test_id');
 		return count(array_intersect(array_unique($qualifier), array_unique($results)));
 	}
+
 }

@@ -668,6 +668,13 @@ table.table.report-table-border > tbody > tr > td{
     }
     /*** End button colors ***/
 
+    .blank-cell{
+        background-color: #CCCCCC;
+    }
+    .emphasize {
+        font-weight: bold;
+    }
+
     /** Print friendly **/
 
     @media print {
@@ -680,5 +687,10 @@ table.table.report-table-border > tbody > tr > td{
             color: #000000;
         }
         .panel {border: 0;}
+
+        #the-main-one{
+            margin-left: 0 !important;
+            width: 100%;
+        }
 
     }
