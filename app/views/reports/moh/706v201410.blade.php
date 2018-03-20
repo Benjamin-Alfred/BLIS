@@ -52,10 +52,10 @@
 			<div><center>{{ trans('messages.moh') }}</center></div>
 			<div><center>{{ trans('messages.lab-tests-data-report') }}</center></div>
 			<div>
-				<div class="col-xs-3">MFL Code: </div>
-				<div class="col-xs-3">Facility Name: </div>
-				<div class="col-xs-3">County:</div>
-				<div class="col-xs-3">Sub County:</div>
+				<div class="col-xs-3">MFL Code: {{Config::get('kblis.facility-code')}}</div>
+				<div class="col-xs-3">Facility Name: {{Config::get('kblis.organization')}}</div>
+				<div class="col-xs-3">County: {{Config::get('kblis.facility-county')}}</div>
+				<div class="col-xs-3">Sub County: {{Config::get('kblis.facility-sub-county')}}</div>
 			</div>
 			<div>
 				<div class="col-xs-offset-2 col-xs-6">Report Period: Month</div>

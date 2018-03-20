@@ -640,13 +640,15 @@ class Test extends Eloquent
 	 * @return $count
 	 */
 
-	public static function getCount($testTypeNames, $startDate, $endDate, $status = array()){
-		
+	public static function getCount($testTypeNames, $startDate, $endDate, $status = array(), $byTime = 0){
+		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
 		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
 					INNER JOIN test_types tt ON t.test_type_id = tt.id 
-					WHERE tt.name IN (".implode(",", $testTypeNames). ") 
-						AND t.time_created between ? AND ? ";
+					WHERE tt.name IN (".implode(",", $testTypeNames). ") ";
+
+		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 		if(count($status) > 0)$query .= "AND t.test_status_id IN (".implode(",", $status).")";
 
@@ -662,20 +664,22 @@ class Test extends Eloquent
 	 * @return $count
 	 */
 
-	public static function getCountByAge($testTypeNames, $startDate, $endDate, $testStatus = array(), $age = array()){
-		
+	public static function getCountByAge($testTypeNames, $startDate, $endDate, $testStatus = array(), $age = array(), $byTime = 0){
+		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
 		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
 						INNER JOIN test_types tt ON t.test_type_id = tt.id 
 						INNER JOIN visits v ON t.visit_id = v.id ";
 
-		if(count($age) == 2)
-			$query .= "INNER JOIN patients p ON v.patient_id = p.id 
-							AND DATEDIFF(t.time_created, p.dob)/365.25 >= ".$age[0].
-							" AND DATEDIFF(t.time_created, p.dob)/365.25 < ".$age[1];
+		if(count($age) == 2){
+			$query .= "INNER JOIN patients p ON v.patient_id = p.id ";
+			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= ".$age[0];
+			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
+		}
 
-		$query .= " WHERE tt.name IN (".implode(",", $testTypeNames). ") 
-					AND t.time_created BETWEEN ? AND ? ";
+		$query .= " WHERE tt.name IN (".implode(",", $testTypeNames). ") ";
+		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 		if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
@@ -691,7 +695,10 @@ class Test extends Eloquent
 	 * @return $count
 	 */
 
-	public static function getCountByResult($testTypeName, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true){
+	public static function getCountByResult($testTypeName, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true, $byTime = 0){
+
+		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 		
 		$query = "SELECT m.measure_type_id FROM test_types tt 
 					INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id 
@@ -715,10 +722,12 @@ class Test extends Eloquent
 							INNER JOIN measures m ON ttm.measure_id = m.id 
 							INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id
 							INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
-								AND (mr.gender = 2 OR mr.gender = p.gender) AND ISNULL(mr.deleted_at)
-								AND DATEDIFF(t.time_created, p.dob)/365.25 >= mr.age_min
-								AND DATEDIFF(t.time_created, p.dob)/365.25 < mr.age_max
-						WHERE tt.name = ? AND m.name = ? AND t.time_created BETWEEN ? AND ? ";
+								AND (mr.gender = 2 OR mr.gender = p.gender) AND ISNULL(mr.deleted_at) ";
+
+			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= mr.age_min ";
+			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < mr.age_max ";
+			$query .= "WHERE tt.name = ? AND m.name = ? ";
+			$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 			if (isset($measureResult)) $query .= $measureWhere[$measureResult];
 
@@ -739,7 +748,8 @@ class Test extends Eloquent
 							INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id
 							INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
 								AND tr.result = mr.alphanumeric AND ISNULL(mr.deleted_at)
-						WHERE tt.name = ? AND m.name = ? AND t.time_created BETWEEN ? AND ? ";
+						WHERE tt.name = ? AND m.name = ? ";
+			$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 			
 			if($interpretation) $query .= " AND mr.interpretation = ? ";
 			else $query .= " AND tr.result = ?";
