@@ -3099,11 +3099,11 @@ class ReportController extends \BaseController {
 		$mohData['1_9_yeast_cells'] = "N/S";
 		$mohData['1_10_bacteria'] = "N/S";
 
-		$mohData['2_1_fasting_blood_sugar_total'] = Test::getCount(array("'Blood sugar fasting'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['2_1_fasting_blood_sugar_total'] = Test::getCount(array("'Blood sugar fasting'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), Test::TIME_COMPLETED);
 		$mohData['2_1_fasting_blood_sugar_low'] = Test::getCountByResult("Blood sugar fasting", "fasting", "LOW", $startDate, $endDate);
 		$mohData['2_1_fasting_blood_sugar_high'] = Test::getCountByResult("Blood sugar fasting", "fasting", "HIGH", $startDate, $endDate);
 
-		$mohData['2_1_random_blood_sugar_total'] = Test::getCount(array("'blood sugar random'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['2_1_random_blood_sugar_total'] = Test::getCount(array("'blood sugar random'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), Test::TIME_COMPLETED);
 		$mohData['2_1_random_blood_sugar_low'] = Test::getCountByResult("blood sugar random", "blood sugar random", "LOW", $startDate, $endDate);
 		$mohData['2_1_random_blood_sugar_high'] = Test::getCountByResult("blood sugar random", "blood sugar random", "HIGH", $startDate, $endDate);
 		$mohData['2_2_ogtt_total'] = "N/S";

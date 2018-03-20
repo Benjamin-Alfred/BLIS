@@ -21,6 +21,14 @@ class Test extends Eloquent
 	const VERIFIED = 5;
 
 	/**
+	 * Test status timestamp constants
+	 */
+	const TIME_CREATED = 0;
+	const TIME_STARTED = 1;
+	const TIME_COMPLETED = 2;
+	const TIME_VERIFIED = 3;
+
+	/**
 	 * Other constants
 	 */
 	const POSITIVE = 'Positive';
@@ -641,7 +649,7 @@ class Test extends Eloquent
 	 */
 
 	public static function getCount($testTypeNames, $startDate, $endDate, $status = array(), $byTime = 0){
-		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
 		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
@@ -652,7 +660,7 @@ class Test extends Eloquent
 
 		if(count($status) > 0)$query .= "AND t.test_status_id IN (".implode(",", $status).")";
 
-		$count = DB::select($query, array($startDate, $endDate));
+		$count = DB::select($query, array($startDate, $endDate." 23:59"));
 
 		return $count[0]->hits;
 	}
@@ -665,7 +673,7 @@ class Test extends Eloquent
 	 */
 
 	public static function getCountByAge($testTypeNames, $startDate, $endDate, $testStatus = array(), $age = array(), $byTime = 0){
-		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
 		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
@@ -674,8 +682,8 @@ class Test extends Eloquent
 
 		if(count($age) == 2){
 			$query .= "INNER JOIN patients p ON v.patient_id = p.id ";
-			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= ".$age[0];
-			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
+			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= ".$age[0];
+			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
 		}
 
 		$query .= " WHERE tt.name IN (".implode(",", $testTypeNames). ") ";
@@ -683,7 +691,7 @@ class Test extends Eloquent
 
 		if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
-		$count = DB::select($query, array($startDate, $endDate));
+		$count = DB::select($query, array($startDate, $endDate." 23:59"));
 
 		return $count[0]->hits;
 	}
@@ -697,7 +705,7 @@ class Test extends Eloquent
 
 	public static function getCountByResult($testTypeName, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true, $byTime = 0){
 
-		// $byTime: 0 - time_created, 1 - time_started, 3 - time_completed, 4 - time_verified
+		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 		
 		$query = "SELECT m.measure_type_id FROM test_types tt 
@@ -733,7 +741,7 @@ class Test extends Eloquent
 
 			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
-			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate));
+			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59"));
 
 			return $count[0]->hits;
 
@@ -756,7 +764,7 @@ class Test extends Eloquent
 
 			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
-			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate, $measureResult));
+			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59", $measureResult));
 
 			return $count[0]->hits;
 
