@@ -39,7 +39,7 @@ class Patient extends Eloquent
 	 */
 	public function getAge($format = "YYMM", $at = NULL)
 	{
-		if(!$at)$at = new DateTime('now');
+		if($at == NULL)$at = new DateTime('now');
 
 		$dateOfBirth = new DateTime($this->dob);
 		$interval = $dateOfBirth->diff($at);

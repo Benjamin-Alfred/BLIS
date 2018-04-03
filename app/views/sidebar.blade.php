@@ -344,6 +344,12 @@
 						</div>
 					</li>					
 					<li>
+						<div><a href="{{ URL::route('reports.aggregate.moh706v201410')}}">
+							<span class="glyphicon glyphicon-tag"></span>
+							{{trans('messages.moh-706')}} v. Oct. 2014</a>
+						</div>
+					</li>					
+					<li>
 						<div><a href="{{ URL::route('reports.aggregate.cd4')}}">
 							<span class="glyphicon glyphicon-tag"></span>
 							{{trans('messages.cd4-report')}}</a>

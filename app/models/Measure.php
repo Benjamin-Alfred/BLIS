@@ -206,11 +206,12 @@ class Measure extends Eloquent
 	 *
 	 * @return boolean
 	 */
-	public static function getRange($patient, $measureId)
+	public static function getRange($patient, $measureId, $testDate = NULL)
 	{
-		$months = $patient->getAge('M');
-		$years = $patient->getAge('Y');
-		$days=$patient->getAge('D');
+		$months = $patient->getAge('M', $testDate);
+		$years = $patient->getAge('Y', $testDate);
+		$days=$patient->getAge('D', $testDate);
+
 		if($years==0){
 			$age=$months/12;
 			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
@@ -226,23 +227,22 @@ class Measure extends Eloquent
 			$age=$years;
 			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
 									->where('age_min', '<=',  $age)
-									->where('age_max', '>=', $age);
+									->where('age_max', '>=', $age)
+									->where(function($q) use($patient){
+										$q->where('gender', '=', $patient->gender)
+										  ->orWhere('gender', '=', 2); //signifies both genders
+									});
 		}
+
+		Log::info("Measure ID: $measureId Age: $age");
+		Log::info("Measures ranges found - " . count($measureRange->get()));
 		
 		if(count($measureRange->get()) >= 1){
-			if(count($measureRange->get()) == 1){
-				$lowerUpper = $measureRange->first();
-			}
-			else if(count($measureRange->get()) > 1){
-				$measureRange = $measureRange->where('gender', '=', $patient->gender);
-				if(count($measureRange->get()) == 1){
-					$lowerUpper = $measureRange->first();
-				}
-				else {
-					return null;
-				}
-			}
-			return "(".$lowerUpper->range_lower." - ".$lowerUpper->range_upper.")";
+
+			//Assume the first is the desirable/normal one TODO: confirm best practice
+			$chosenRange = $measureRange->first();
+
+			return "(".$chosenRange->range_lower." - ".$chosenRange->range_upper.")";
 		}
 		return null;
 	}

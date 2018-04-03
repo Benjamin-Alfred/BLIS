@@ -43,16 +43,19 @@ class TestResult extends Eloquent
 	*
 	*/
 	public static function microCounts($result, $specimen, $from, $to){
-		$count = DB::select('SELECT count(tr.id) as total '.
-							'FROM test_results tr, tests t, testtype_measures tpm, testtype_specimentypes tst, specimen_types st '.
-							'WHERE tr.test_id = t.id '.
-							'AND t.test_type_id=tpm.test_type_id '.
-							'AND tr.measure_id=tpm.measure_id '.
-							'AND t.test_type_id = tst.test_type_id '.
-							'AND tst.specimen_type_id=st.id '.
-							'AND st.name like '."'%".$specimen."%'".
-							' AND tr.result like '."'Growth of %".$result."%'".
-							' AND tr.time_entered BETWEEN '."'".$from."'".' AND '."'".$to->format('Y-m-d')."'".';');
+		$queryMicroCounts = "SELECT count(tr.id) as total 
+							FROM test_results tr
+								INNER JOIN tests t ON tr.test_id = t.id
+								INNER JOIN test_types tt ON t.test_type_id = tt.id
+								INNER JOIN test_categories tc ON tt.test_category_id = tc.id
+								INNER JOIN testtype_measures tpm ON t.test_type_id=tpm.test_type_id AND tr.measure_id=tpm.measure_id
+								INNER JOIN testtype_specimentypes tst ON t.test_type_id = tst.test_type_id
+								INNER JOIN specimen_types st ON tst.specimen_type_id=st.id
+							WHERE tc.id = ".TestCategory::getTestCatIdByName('MICROBIOLOGY')."
+								AND st.name like ? AND tr.result like ? AND tr.time_entered BETWEEN ? AND ?";
+
+		$count = DB::select($queryMicroCounts, array("'%".$specimen."%'", "'Growth of %".$result."%'", $from, $to->format('Y-m-d')));
+
 		return $count;
 	}
 	/**

@@ -331,29 +331,4 @@ class SanitasInterfacer implements InterfacerInterface{
         $dumper->system_id = "sanitas";
         $dumper->save();
     }
-
-    public function isPanelTest($labRequest)
-    {
-        //If parent is panel test
-        if($labRequest->parentLabNo != '0'){
-//            dd(ExternalDump::orderBy('id', 'desc')->first());
-            $parent = ExternalDump::where('lab_no', $labRequest->parentLabNo)->first();
-            $panel = $this->getPanelByName($parent->investigation);
-            if (isset($panel)) {
-                //If is one of the child test of panel
-                foreach ($panel->testTypes as $testType) {
-                    if($testType->name == $labRequest->investigation) {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-
-    public function getPanelByName($investigation)
-    {
-        $panelName = trim($investigation);
-        $panel = Panel::where('name', 'like', $panelName)->where('active', 1)->orderBy('name')->first();
-        return $panel;
-    }
 }

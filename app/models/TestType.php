@@ -99,7 +99,7 @@ class TestType extends Eloquent
 		// Add the new mapping
 		DB::table('testtype_specimentypes')->insert($specimenTypesAdded);
 	}
-   public function setPanelTypes($panelTypes){
+        public function setPanelTypes($panelTypes){
    	    $panelTypesAdded = array();
 		$testTypeID = 0;	
 
@@ -123,7 +123,7 @@ class TestType extends Eloquent
 		} catch (Exception $e) {
 			
 		}
-   }
+        }
 	/**
 	 * Set test type measures
 	 *
@@ -456,4 +456,5 @@ class TestType extends Eloquent
 		$qualifier = $qualifier->lists('test_id');
 		return count(array_intersect(array_unique($qualifier), array_unique($results)));
 	}
+
 }

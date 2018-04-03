@@ -408,8 +408,8 @@ class ReportController extends \BaseController {
 	}
 
 	/**
-	* Get months: return months for time_created column when filter dates are set
-	*/	
+	 * Get months: return months for time_created column when filter dates are set
+	 */	
 	public static function getMonths($from, $to){
 		$today = "'".date("Y-m-d")."'";
 		$year = date('Y');
@@ -656,12 +656,12 @@ class ReportController extends \BaseController {
 	}
 
 	/*
-	*	Begin turnaround time functions - functions related to the turnaround time report
-	*	Most have been borrowed from the original BLIS by C4G
-	*/
+	 *	Begin turnaround time functions - functions related to the turnaround time report
+	 *	Most have been borrowed from the original BLIS by C4G
+	 */
 	/*
-	* 	getPercentile() returns the percentile value from the given list
-	*/
+	 * 	getPercentile() returns the percentile value from the given list
+	 */
 	public static function getPercentile($list, $ile_value)
 	{
 		$num_values = count($list);
@@ -669,10 +669,11 @@ class ReportController extends \BaseController {
 		$mark = ceil(round($ile_value/100, 2) * $num_values);
 		return $list[$mark-1];
 	}
+
 	/*
-	* 	week_to_date() returns timestamp for the first day of the week (Monday)
-	*	@var $week_num and $year
-	*/
+	 * 	week_to_date() returns timestamp for the first day of the week (Monday)
+	 *	@var $week_num and $year
+	 */
 	public static function week_to_date($week_num, $year)
 	{
 		# Returns timestamp for the first day of the week (Monday)
@@ -688,10 +689,11 @@ class ReportController extends \BaseController {
 		$CurrentMondayTS = strtotime(($week) . ' weeks', $FirstMonday);
 		return ($CurrentMondayTS);
 	}
+
 	/*
-	* 	rawTaT() returns list of timestamps for tests that were registered and handled between date_from and date_to
-	*	optional @var $from, $to, $labSection, $testType
-	*/
+	 * 	rawTaT() returns list of timestamps for tests that were registered and handled between date_from and date_to
+	 *	optional @var $from, $to, $labSection, $testType
+	 */
 	public static function rawTaT($from, $to, $labSection, $testType){
 		$rawTat = DB::table('tests')->select(DB::raw('UNIX_TIMESTAMP(time_created) as timeCreated, UNIX_TIMESTAMP(time_started) as timeStarted, UNIX_TIMESTAMP(time_entered) as timeCompleted, targetTAT'))->groupBy('tests.id')
 						->join('test_types', 'test_types.id', '=', 'tests.test_type_id')
@@ -712,9 +714,9 @@ class ReportController extends \BaseController {
 		return $rawTat->get();
 	}
 	/*
-	* 	getTatStats() calculates Weekly progression of TAT values for a given test type and time period
-	*	optional @var $from, $to, $labSection, $testType, $interval
-	*/
+	 * 	getTatStats() calculates Weekly progression of TAT values for a given test type and time period
+	 *	optional @var $from, $to, $labSection, $testType, $interval
+	 */
 	public static function getTatStats($from, $to, $labSection, $testType, $interval){
 		# Calculates Weekly progression of TAT values for a given test type and time period
 
@@ -1043,10 +1045,10 @@ class ReportController extends \BaseController {
 	}
 
 	/**
-	* Returns qc index page
-	*
-	* @return view
-	*/
+	 * Returns qc index page
+	 *
+	 * @return view
+	 */
 	public function qualityControl()
 	{
 		$accredited = array();
@@ -1195,8 +1197,7 @@ class ReportController extends \BaseController {
 	/**
 	* Function to check object state before groupedTestCount
 	**/
-	public function getGroupedTestCounts($ttypeob, $gender=null, $ageRange=null, $from=null, $to=null)
-	{
+	public function getGroupedTestCounts($ttypeob, $gender=null, $ageRange=null, $from=null, $to=null){
 		if($ttypeob == null){
 			return 0;
 		}
@@ -1216,18 +1217,26 @@ class ReportController extends \BaseController {
 	 *
 	 */
 	public function moh706(){
+
+		Log::info("Start MoH 706");
 		//	Variables definition
+
 		$date = date('Y-m-d');
 		$from = Input::get('start');
 		if(!$from) $from = date('Y-m-01');
 		$end = Input::get('end');
 		if(!$end) $end = $date;
+
 		$toPlusOne = date_add(new DateTime($end), date_interval_create_from_date_string('1 day'));
 		$to = date_add(new DateTime($end), date_interval_create_from_date_string('1 day'))->format('Y-m-d');
+
 		$ageRanges = array('0-5', '5-14', '14-120');
 		$sex = array(Patient::MALE, Patient::FEMALE);
+
 		$ranges = array('Low', 'Normal', 'High');
+
 		$specimen_types = array('Urine', 'Pus', 'HVS', 'Throat', 'Stool', 'Blood', 'CSF', 'Water', 'Food', 'Other fluids');
+
 		$isolates = array('Naisseria', 'Klebsiella', 'Staphylococci', 'Streptoccoci'. 'Proteus', 'Shigella', 'Salmonella', 'V. cholera', 
 						  'E. coli', 'C. neoformans', 'Cardinella vaginalis', 'Haemophilus', 'Bordotella pertusis', 'Pseudomonas', 
 						  'Coliforms', 'Faecal coliforms', 'Enterococcus faecalis', 'Total viable counts-22C', 'Total viable counts-37C', 
@@ -1235,20 +1244,29 @@ class ReportController extends \BaseController {
 
 		//	Get specimen_types for microbiology
 		$labSecId = TestCategory::getTestCatIdByName('microbiology');
-		$specTypeIds = DB::select(DB::raw("select distinct(specimen_types.id) as spec_id from testtype_specimentypes".
+
+		$queryMicrobiologySpecimenTypeIDs = "select distinct(specimen_types.id) as spec_id from testtype_specimentypes".
 										  " join test_types on test_types.id=testtype_specimentypes.test_type_id".
 										  " join specimen_types on testtype_specimentypes.specimen_type_id=specimen_types.id".
-										  "  where test_types.test_category_id=?"), array($labSecId));
+										  "  where test_types.test_category_id=?";
+
+		$specTypeIds = DB::select(DB::raw($queryMicrobiologySpecimenTypeIDs), array($labSecId));
+		Log::info("MoH 706: End fetch Microbiology specimen type IDs");
 
 		//	Referred out specimen
-		$referredSpecimens = DB::select(DB::raw("SELECT specimen_type_id, specimen_types.name as spec, count(specimens.id) as tot,".
+		$queryReferredOutSpecimen = "SELECT specimen_type_id, specimen_types.name as spec, count(specimens.id) as tot,".
 												" facility_id, facilities.name as facility FROM specimens".
 												" join referrals on specimens.referral_id=referrals.id".
 												" join specimen_types on specimen_type_id=specimen_types.id".
 												" join facilities on referrals.facility_id=facilities.id".
 												" where referral_id is not null and status=1".
 												" and time_accepted between ? and ?".
-												" group by facility_id;"), array($from, $toPlusOne));
+												" group by facility_id";
+
+		Log::info($queryReferredOutSpecimen);
+		$referredSpecimens = DB::select(DB::raw($queryReferredOutSpecimen), array($from, $toPlusOne));
+		Log::info("MoH 706: End fetch referred out specimen");
+
 		$table = '<!-- URINALYSIS -->
 			<div class="col-sm-12">
 				<strong>URINE ANALYSIS</strong>
@@ -1268,6 +1286,7 @@ class ReportController extends \BaseController {
 							<th>&gt;14yrs</th>
 						</tr>
 					</thead>';
+
 				$urinaId = TestType::getTestTypeIdByTestName('Urinalysis');
 				$urinalysis = TestType::find($urinaId);
 				$urineChem = TestType::getTestTypeIdByTestName('Urine Chemistry');
@@ -1299,6 +1318,7 @@ class ReportController extends \BaseController {
 							}
 							$table.='</tr>';
 				}
+				Log::info("MoH 706: End render urine chemistry");
 
 				$table.='<tr>
 							<td>Others</td>
@@ -1357,6 +1377,8 @@ class ReportController extends \BaseController {
 							}
 							$table.='</tr>';
 				}
+				Log::info("MoH 706: End render urine Microscopy");
+
 				$table.='<tr>
 							<td>Others</td>
 							<td></td>
@@ -1410,6 +1432,8 @@ class ReportController extends \BaseController {
 							}
 							$table.='</tr>';
 					}
+				Log::info("MoH 706: End render blood chemistry");
+
 					$table.='<tr>
 							<td>OGTT</td>
 							<td></td>
@@ -1468,6 +1492,8 @@ class ReportController extends \BaseController {
 							}
 							$table.='</tr>';
 				}
+				Log::info("MoH 706: End render renal function tests");
+
 				$table.='</tbody>
 				</table>
 				<table class="table table-condensed report-table-border">
@@ -1523,6 +1549,9 @@ class ReportController extends \BaseController {
 							}
 							$table.='</tr>';
 				}
+
+				Log::info("MoH 706: End render Liver function tests");
+
 				$table.='<tr>
 							<td>Gamma GT</td>
 							<td></td>
@@ -1620,6 +1649,9 @@ class ReportController extends \BaseController {
 							foreach ($ranges as $range) {
 								$table.='<td>'.$this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, [$range], 1).'</td>';
 							}
+
+				Log::info("MoH 706: End render lipid Profile tests");
+
 						$table.='</tr>
 					</tbody>
 				</table>
@@ -1665,6 +1697,9 @@ class ReportController extends \BaseController {
 							<td></td>
 						</tr>';
 				}
+
+				Log::info("MoH 706: End render CSF Chemistry tests");
+
 				$table.='</tbody>
 				</table>
 				<table class="table table-condensed report-table-border">
@@ -1774,6 +1809,9 @@ class ReportController extends \BaseController {
 					}
 					$table.='</tr>';
 				}
+
+				Log::info("MoH 706: End render Thyroid function tests");
+
 				$table.='<tr>
 							<td>Others</td>
 							<td></td>
@@ -1921,6 +1959,9 @@ class ReportController extends \BaseController {
 							<td>N/S</td>
 						</tr>
 						<tr>';
+
+				Log::info("MoH 706: End render Malaria tests");
+
 				$stool = TestType::getTestTypeIdByTestName('Stool for O/C');
 				$stoolForOc = TestType::find($stool);
 				$measures = TestTypeMeasure::where('test_type_id', $stool)->orderBy('measure_id', 'DESC')->get();
@@ -1946,6 +1987,9 @@ class ReportController extends \BaseController {
 								$table.='</tr>';
 							}
 						}
+
+				Log::info("MoH 706: End render Stool for O/C tests");
+
 						$table.='<tr>
 							<td colspan="5"><strong>Lavages</strong></td>
 						</tr>
@@ -1988,6 +2032,9 @@ class ReportController extends \BaseController {
 									<td>'.$totalCount[0]->per_spec_count.'</td>
 								</tr>';
 						}
+
+				Log::info("MoH 706: End render Aspirate, Pleural Tap, Synovial Fluid, Sputum, Ascitic Tap tests");
+
 						$table.='</tr>
 									<td>Rectal swab</td>
 									<td>0</td>
@@ -2110,6 +2157,9 @@ class ReportController extends \BaseController {
 							}
 						$table.='</tr>';
 					}
+
+				Log::info("MoH 706: End render Microbiology isolate counts tests");
+
 					$table.='<tr>
 							<td colspan="11">Specify species of each isolate</td>
 						</tr>
@@ -2665,6 +2715,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render haematology initial tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Brucella Test</td>';
@@ -2698,6 +2751,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render Brucella tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Rheumatoid Factor Tests</td>';
@@ -2731,6 +2787,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render Rheumatoid Factor tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Cryptococcal Antigen</td>
@@ -2775,6 +2834,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render H pylori tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Hepatitis A test</td>
@@ -2819,6 +2881,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render Hepatitis B tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Hepatitis C test</td>';
@@ -2852,6 +2917,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render Hepatitis C tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Viral Load</td>';
@@ -2885,6 +2953,9 @@ class ReportController extends \BaseController {
 									}
 								}
 							}
+
+				Log::info("MoH 706: End render Viral Load tests");
+
 							$table.='</tr>
 						<tr>
 							<td>Formal Gel Test</td>
@@ -2939,6 +3010,9 @@ class ReportController extends \BaseController {
 									<td>'.$count->positive.'</td>';
 								}
 							}
+
+				Log::info("MoH 706: End render EID tests");
+
 							$table.='<td></td>
 						</tr>
 						<tr>
@@ -2990,6 +3064,9 @@ class ReportController extends \BaseController {
 				</table>
 			</div>
 			<!-- HISTOLOGY AND CYTOLOGY -->';
+
+				Log::info("MoH 706: End render referred specimen data");
+
 		if(Input::has('excel')){
 			$date = date("Ymdhi");
 			$fileName = "MOH706_".$date.".xls";
@@ -3001,10 +3078,493 @@ class ReportController extends \BaseController {
 	    	return Response::make($content,200, $headers);
 		}
 		else{
-			//return View::make('reports.moh.706');
+			Log::info("End MoH 706");
 			return View::make('reports.moh.index')->with('table', $table)->with('from', $from)->with('end', $end);
 		}
 	}
+
+	public function moh706v201410(){
+
+		$startDate = Input::get('start')?Input::get('start'):date('Y-m-01');
+		$endDate = Input::get('end')?Input::get('end'):date('Y-m-d');
+
+		$mohData['1_1_urine_chemistry_total'] = Test::getCount(array("'Urinalysis'", "'Urine chemistry'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['1_2_glucose'] = Test::getCountByResult("Urinalysis", "Glucose", "high", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Glucose", "HIGH", $startDate, $endDate);
+		$mohData['1_3_ketones'] = Test::getCountByResult("Urinalysis", "Ketones", "Positive", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Ketones", "Positive", $startDate, $endDate);
+		$mohData['1_4_proteins'] = Test::getCountByResult("Urinalysis", "Proteins", "HIGH", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Proteins", "HIGH", $startDate, $endDate);
+		$mohData['1_5_urine_microscopy_total'] = Test::getCount(array("'Urinalysis'", "'Urine microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['1_6_puss_cells'] = "N/S";
+		$mohData['1_7_s_haematobium'] = "N/S";
+		$mohData['1_8_t_vaginalis'] = "N/S";
+		$mohData['1_9_yeast_cells'] = "N/S";
+		$mohData['1_10_bacteria'] = "N/S";
+
+		$mohData['2_1_fasting_blood_sugar_total'] = Test::getCount(array("'Blood sugar fasting'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), Test::TIME_COMPLETED);
+		$mohData['2_1_fasting_blood_sugar_low'] = Test::getCountByResult("Blood sugar fasting", "fasting", "LOW", $startDate, $endDate);
+		$mohData['2_1_fasting_blood_sugar_high'] = Test::getCountByResult("Blood sugar fasting", "fasting", "HIGH", $startDate, $endDate);
+
+		$mohData['2_1_random_blood_sugar_total'] = Test::getCount(array("'blood sugar random'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), Test::TIME_COMPLETED);
+		$mohData['2_1_random_blood_sugar_low'] = Test::getCountByResult("blood sugar random", "blood sugar random", "LOW", $startDate, $endDate);
+		$mohData['2_1_random_blood_sugar_high'] = Test::getCountByResult("blood sugar random", "blood sugar random", "HIGH", $startDate, $endDate);
+		$mohData['2_2_ogtt_total'] = "N/S";
+		$mohData['2_2_ogtt_low'] = "N/S";
+		$mohData['2_2_ogtt_high'] = "N/S";
+
+		$mohData['2_3_renal_function_total'] = Test::getCount(array("'RFTS'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+
+		$mohData['2_4_creatinine_low'] = Test::getCountByResult("RFTS", "Creatinine", "LOW", $startDate, $endDate);
+		$mohData['2_4_creatinine_high'] = Test::getCountByResult("RFTS", "Creatinine", "HIGH", $startDate, $endDate);
+		$mohData['2_5_urea_low'] = Test::getCountByResult("RFTS", "Urea", "LOW", $startDate, $endDate);
+		$mohData['2_5_urea_high'] = Test::getCountByResult("RFTS", "Urea", "HIGH", $startDate, $endDate);
+		$mohData['2_5_sodium_low'] = Test::getCountByResult("RFTS", "sodium", "LOW", $startDate, $endDate);
+		$mohData['2_5_sodium_high'] = Test::getCountByResult("RFTS", "sodium", "HIGH", $startDate, $endDate);
+		$mohData['2_6_potassium_low'] = Test::getCountByResult("RFTS", "potasium", "LOW", $startDate, $endDate);
+		$mohData['2_6_potassium_high'] = Test::getCountByResult("RFTS", "potasium", "HIGH", $startDate, $endDate);
+		$mohData['2_7_chlorides_low'] = Test::getCountByResult("RFTS", "chloride", "LOW", $startDate, $endDate);
+		$mohData['2_7_chlorides_high'] = Test::getCountByResult("RFTS", "chloride", "HIGH", $startDate, $endDate);
+
+		$mohData['2_8_liver_function_total'] = Test::getCount(array("'LFTS'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['2_9_direct_bilirubin_low'] = Test::getCountByResult("LFTS", "Direct Bilirubin", "LOW", $startDate, $endDate);
+		$mohData['2_9_direct_bilirubin_high'] = Test::getCountByResult("LFTS", "Direct Bilirubin", "HIGH", $startDate, $endDate);
+		$mohData['2_10_total_bilirubin_low'] = Test::getCountByResult("LFTS", "Total Bilirubin", "LOW", $startDate, $endDate);
+		$mohData['2_10_total_bilirubin_high'] = Test::getCountByResult("LFTS", "Total Bilirubin", "HIGH", $startDate, $endDate);
+		$mohData['2_11_asat_low'] = Test::getCountByResult("LFTS", "SGOT", "LOW", $startDate, $endDate);
+		$mohData['2_11_asat_high'] = Test::getCountByResult("LFTS", "SGOT", "HIGH", $startDate, $endDate);
+		$mohData['2_12_alat_low'] = Test::getCountByResult("LFTS", "ALAT", "LOW", $startDate, $endDate);
+		$mohData['2_12_alat_high'] = Test::getCountByResult("LFTS", "ALAT", "HIGH", $startDate, $endDate);
+		$mohData['2_13_serum_protein_low'] = Test::getCountByResult("LFTS", "Total Proteins", "LOW", $startDate, $endDate);
+		$mohData['2_13_serum_protein_high'] = Test::getCountByResult("LFTS", "Total Proteins", "HIGH", $startDate, $endDate);
+		$mohData['2_14_albumin_low'] = Test::getCountByResult("LFTS", "Albumin", "LOW", $startDate, $endDate);
+		$mohData['2_14_albumin_high'] = Test::getCountByResult("LFTS", "Albumin", "HIGH", $startDate, $endDate);
+		$mohData['2_alkaline_phosphatase_low'] = Test::getCountByResult("LFTS", "Alkaline Phosphate", "LOW", $startDate, $endDate);
+		$mohData['2_alkaline_phosphatase_high'] = Test::getCountByResult("LFTS", "Alkaline Phosphate", "HIGH", $startDate, $endDate);
+
+		$mohData['2_16_lipid_profile_total'] = Test::getCount(array("'LIPID PROFILE'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['2_17_cholesterol_low'] = "N/S";
+		$mohData['2_17_cholesterol_high'] = "N/S";
+		$mohData['2_18_triglycerides_low'] = "N/S";
+		$mohData['2_18_triglycerides_high'] = "N/S";
+		$mohData['2_19_ldl_low'] = "N/S";
+		$mohData['2_19_ldl_high'] = "N/S";
+
+		$mohData['2_20_t3_total'] = "N/S";
+		$mohData['2_20_t3_low'] = "N/S";
+		$mohData['2_20_t3_high'] = "N/S";
+
+		$mohData['2_21_t4_total'] = "N/S";
+		$mohData['2_21_t4_low'] = "N/S";
+		$mohData['2_21_t4_high'] = "N/S";
+
+		$mohData['2_22_tsh_total'] = "N/S";
+		$mohData['2_22_tsh_low'] = "N/S";
+		$mohData['2_22_tsh_high'] = "N/S";
+
+		$mohData['2_23_psa_total'] = Test::getCount(array("'PSA'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['2_23_psa_low'] = "N/S";
+		$mohData['2_23_psa_high'] = "N/S";
+
+		$mohData['2_24_cea_total'] = "N/S";
+		$mohData['2_24_cea_low'] = "N/S";
+		$mohData['2_24_cea_high'] = "N/S";
+
+		$mohData['2_25_c15_total'] = "N/S";
+		$mohData['2_25_c15_low'] = "N/S";
+		$mohData['2_25_c15_high'] = "N/S";
+
+		$mohData['2_26_proteins_total'] = "N/S";
+		$mohData['2_26_proteins_low'] = "N/S";
+		$mohData['2_26_proteins_high'] = "N/S";
+
+		$mohData['2_27_glucose_total'] = "N/S";
+		$mohData['2_27_glucose_low'] = "N/S";
+		$mohData['2_27_glucose_high'] = "N/S";
+
+		$mohData['3_1_malaria_bs_under_5_total'] = Test::getCountByAge(array("'BS for mps'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(0, 5));
+		$mohData['3_1_malaria_bs_under_5_positive'] = "N/S";
+		$mohData['3_2_malaria_bs_over_5_total'] = Test::getCountByAge(array("'BS for mps'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(5, 120	));
+		$mohData['3_2_malaria_bs_over_5_positive'] = "N/S";
+		$mohData['3_3_malaria_rapid_total'] = "N/S";
+		$mohData['3_3_malaria_rapid_positive'] = "N/S";
+		$mohData['3_4_taenia_spp'] = "N/S";
+		$mohData['3_4_stool_for_oc'] = Test::getCount(array("'Stool for O/C'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['3_5_hymenolepis_nana'] = "N/S";
+		$mohData['3_6_hookworms'] = "N/S";
+		$mohData['3_7_roundworms'] = "N/S";
+		$mohData['3_8_s_mansoni'] = "N/S";
+		$mohData['3_9_trichuris_trichura'] = "N/S";
+		$mohData['3_10_amoeba'] = "N/S";
+
+		$mohData['4_1_full_blood_count_total'] = Test::getCount(array("'Full Haemogram'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['4_1_full_blood_count_low'] = "N/S";
+		$mohData['4_1_full_blood_count_high'] = "N/S";
+
+		$mohData['4_2_hb_other_estimations_total'] = Test::getCount(array("'HB'", "'HB Electrophoresis'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['4_2_hb_other_estimations_low'] = "N/S";
+		$mohData['4_2_hb_other_estimations_high'] = "N/S";
+
+		$mohData['4_3_cd4_count_total'] = Test::getCount(array("'CD4'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['4_3_cd4_under_500'] = "N/S";
+
+		$mohData['4_4_sickling_test_total'] = Test::getCount(array("'Sickling test'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['4_4_sickling_test_positive'] = "N/S";
+		$mohData['4_5_peripheral_blood_films_total'] = "N/S";
+		$mohData['4_6_bma_total'] = "N/S";
+		$mohData['4_7_coagulaton_profile_total'] = Test::getCount(array("'Coagulation Profile'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['4_8_reticulocyte_count_total'] = "N/S";
+		$mohData['4_9_eruthrocyte_sedimentation_rate_total'] = "N/S";
+		$mohData['4_9_eruthrocyte_sedimentation_rate_high'] = "N/S";
+		$mohData['4_10_total_blood_group_tests_total'] = "N/S";
+		$mohData['4_11_blood_units_grouped_total'] = "N/S";
+		$mohData['4_12_blood_received_total'] = "N/S";
+		$mohData['4_13_blood_collected_total'] = "N/S";
+		$mohData['4_14_blood_transfused_total'] = "N/S";
+		$mohData['4_15_transfusion_reactions_reported_investigated_total'] = "N/S";
+		$mohData['4_16_blood_cross_matched_total'] = "N/S";
+		$mohData['4_17_blood_units_discarded_total'] = "N/S";
+		$mohData['4_18_hiv_positive'] = "N/S";
+		$mohData['4_19_hepatitis_b_positive'] = "N/S";
+		$mohData['4_20_hepatitis_c_positive'] = "N/S";
+		$mohData['4_21_syphilis_positive'] = "N/S";
+
+		$mohData['5_1_urine_total'] = Test::getCount(array("'Urine Culture and Sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_1_urine_culture_count'] = "N/S";
+		$mohData['5_1_urine_culture_postive'] = "N/S";
+
+		$mohData['5_2_pus_swabs_total'] = Test::getCount(array("'Pus swab for culture and sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_2_pus_swabs_culture_count'] = "N/S";
+		$mohData['5_2_pus_swabs_culture_positive'] = "N/S";
+
+		$mohData['5_3_high_vaginal_swabs_total'] = Test::getCount(array("'HVS for culture and sensitivity'", "'HVS for microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_3_high_vaginal_swabs_culture_count'] = "N/S";
+		$mohData['5_3_high_vaginal_swabs_culture_positive'] = "N/S";
+
+		$mohData['5_4_throat_swab_total'] = Test::getCount(array("'HVS for microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_4_throat_swab_culture_count'] = "N/S";
+		$mohData['5_4_throat_swab_culture_positive'] = "N/S";
+
+		$mohData['5_5_rectal_swab_total'] = Test::getCount(array("'rectal swab'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_5_rectal_swab_culture_count'] = "N/S";
+		$mohData['5_5_rectal_swab_culture_positive'] = "N/S";
+
+		$mohData['5_6_blood_total'] = Test::getCount(array("'Blood Culture and sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_6_blood_culture_count'] = "N/S";
+		$mohData['5_6_blood_culture_positive'] = "N/S";
+
+		$mohData['5_7_water_total'] = Test::getCount(array("'Water Analysis'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_7_water_culture_count'] = "N/S";
+		$mohData['5_7_water_culture_positive'] = "N/S";
+
+		$mohData['5_8_food_total'] = "N/S";
+		$mohData['5_8_food_culture_count'] = "N/S";
+		$mohData['5_8_food_culture_positive'] = "N/S";
+
+		$mohData['5_9_urethral_swabs_total'] = Test::getCount(array("'Urethral swab microsopy'", "'Urethral swab microscopy , culture and sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_9_urethral_swabs_culture_count'] = "N/S";
+		$mohData['5_9_urethral_swabs_culture_positive'] = "N/S";
+
+		$mohData['5_10_stool_cultures_total'] = Test::getCount(array("'Stool for C/S'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_10_stool_cultures_positive'] = "N/S";
+
+		$mohData['5_11_salmonella_typhi_positive'] = "N/S";
+		$mohData['5_12_shigella_dysenteriae_type1_positve'] = "N/S";
+		$mohData['5_13_e_coli_o_157_h7_positive'] = "N/S";
+		$mohData['5_14_v_cholerae_o_1_positive'] = "N/S";
+		$mohData['5_15_v_cholerae_o_139_positive'] = "N/S";
+
+		$mohData['5_16_csf_total'] = Test::getCount(array("'CSF'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_16_csf_positive'] = "N/S";
+		$mohData['5_16_csf_contaminated_count'] = "N/S";
+		$mohData['5_17_neisseria_meningitidis_a_positive'] = "N/S";
+		$mohData['5_18_neisseria_meningitidis_b_positive'] = "N/S";
+		$mohData['5_19_neisseria_meningitidis_c_positive'] = "N/S";
+		$mohData['5_20_neisseria_meningitidis_w_135_positive'] = "N/S";
+		$mohData['5_21_neisseria_meningitidis_x_positive'] = "N/S";
+		$mohData['5_22_neisseria_meningitidis_y_positive'] = "N/S";
+		$mohData['5_23_n_meningitidis_indeterminate_positive'] = "N/S";
+		$mohData['5_24_streptococcus_pneumoniae_positive'] = "N/S";
+		$mohData['5_25_haemophilus_influenzae_type_b_positive'] = "N/S";
+		$mohData['5_26_cryptococcal_meningitis_positive'] = "N/S";
+		$mohData['5_27_b_anthracis_positive'] = "N/S";
+		$mohData['5_28_y_pestis_positive'] = "N/S";
+		$mohData['5_29_total_tb_smears_total'] = "N/S";
+		$mohData['5_29_total_tb_smears_positive'] = "N/S";
+		$mohData['5_30_tb_new_suspects_total'] = "N/S";
+		$mohData['5_30_tb_new_suspects_positive'] = "N/S";
+		$mohData['5_31_tb_follow_up_total'] = "N/S";
+		$mohData['5_31_tb_follow_up_positive'] = "N/S";
+		$mohData['5_32_geneXpert_total'] = "N/S";
+		$mohData['5_32_geneXpert_positive'] = "N/S";
+		$mohData['5_33_mdr_tb_total'] = "N/S";
+		$mohData['5_33_mdr_tb_positive'] = "N/S";
+
+		$mohData['6_1_pap_smear_total'] = Test::getCount(array("'Pap Smears'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_1_pap_smear_malignant'] = "N/S";
+		$mohData['6_2_touch_preparations_total'] = "N/S";
+		$mohData['6_2_touch_preparations_malignant'] = "N/S";
+		$mohData['6_3_tissue_impressions_total'] = Test::getCount(array("'Tissue Impressions'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_3_tissue_impressions_malignant'] = "N/S";
+		$mohData['6_4_thyroid_total'] = "N/S";
+		$mohData['6_4_thyroid_malignant'] = "N/S";
+		$mohData['6_5_lymph_nodes_total'] = "N/S";
+		$mohData['6_5_lymph_nodes_malignant'] = "N/S";
+		$mohData['6_6_liver_total'] = "N/S";
+		$mohData['6_6_liver_malignant'] = "N/S";
+		$mohData['6_7_breast_total'] = "N/S";
+		$mohData['6_7_breast_malignant'] = "N/S";
+		$mohData['6_8_soft_tissue_masses_total'] = "N/S";
+		$mohData['6_8_soft_tissue_masses_malignant'] = "N/S";
+		$mohData['6_9_ascitic_fluid_total'] = "N/S";
+		$mohData['6_9_ascitic_fluid_malignant'] = "N/S";
+		$mohData['6_10_csf_total'] = "N/S";
+		$mohData['6_10_csf_malignant'] = "N/S";
+		$mohData['6_11_pleural_fluid_total'] = "N/S";
+		$mohData['6_11_pleural_fluid_malignant'] = "N/S";
+		$mohData['6_12_urine_total'] = "N/S";
+		$mohData['6_12_urine_malignant'] = "N/S";
+
+		$mohData['6_13_cervix_total'] = Test::getCount(array("'Cervix'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_13_cervix_malignant'] = "N/S";
+		$mohData['6_14_prostrate_total'] = Test::getCount(array("'Prostrate'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_14_prostrate_malignant'] = "N/S";
+		$mohData['6_15_breast_tissue_total'] = Test::getCount(array("'Breast'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_15_breast_tissue_malignant'] = "N/S";
+		$mohData['6_16_ovary_total'] = Test::getCount(array("'Ovarian Cyst'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_16_ovary_malignant'] = "N/S";
+		$mohData['6_17_uterus_total'] = "N/S";
+		$mohData['6_17_uterus_malignant'] = "N/S";
+		$mohData['6_18_skin_total'] = "N/S";
+		$mohData['6_18_skin_malignant'] = "N/S";
+		$mohData['6_19_head_and_neck_total'] = "N/S";
+		$mohData['6_19_head_and_neck_malignant'] = "N/S";
+		$mohData['6_20_dental_total'] = "N/S";
+		$mohData['6_20_dental_malignant'] = "N/S";
+		$mohData['6_21_git_total'] = "N/S";
+		$mohData['6_21_git_malignant'] = "N/S";
+		$mohData['6_22_lymph_node_tissue_total'] = Test::getCount(array("'Lymph Nodes'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['6_22_lymph_node_tissue_malignant'] = "N/S";
+		$mohData['6_23_bone_marrow_aspirate_total'] = "N/S";
+		$mohData['6_23_bone_marrow_aspirate_malignant'] = "N/S";
+		$mohData['6_24_trephine_biopsy_total'] = "N/S";
+		$mohData['6_24_trephine_biopsy_malignant'] = "N/S";
+
+		$mohData['7_1_vdrl_total'] = Test::getCount(array("'VDRL'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_1_vdrl_positive'] = "N/S";
+		$mohData['7_2_tpha_total'] = "N/S";
+		$mohData['7_2_tpha_positive'] = "N/S";
+
+		$mohData['7_3_asot_total'] = Test::getCount(array("'Asot'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_3_asot_positive'] = "N/S";
+		$mohData['7_4_hiv_total'] = Test::getCount(array("'HTC- HIV'", "'Rapid HIV test'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_4_hiv_positive'] = "N/S";
+
+		$mohData['7_5_brucella_total'] = Test::getCount(array("'Brucella'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_5_brucella_positive'] = "N/S";
+
+		$mohData['7_6_rheumatoid_factor_total'] = Test::getCount(array("'RF'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_6_rheumatoid_factor_positive'] = "N/S";
+		$mohData['7_7_helicobacter_pylori_total'] = Test::getCount(array("'H pylori'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_7_helicobacter_pylori_positive'] = "N/S";
+
+		$mohData['7_8_hepatitis_a_total'] = "N/S";
+		$mohData['7_8_hepatitis_a_positive'] = "N/S";
+
+		$mohData['7_9_hepatitis_b_total'] = Test::getCount(array("'HEPATITIS B'", "'hepatitis B Rapid'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_9_hepatitis_b_positive'] = "N/S";
+
+		$mohData['7_10_hepatitis_c_total'] = Test::getCount(array("'HEPATITIS C'", "'hepatitis C Rapid'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_10_hepatitis_c_positive'] = "N/S";
+
+		$mohData['7_11_hcg_total'] = Test::getCount(array("'HCG'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['7_11_hcg_positive'] = "N/S";
+		$mohData['7_12_crag_total'] = "N/S";
+
+		$mohData['8_1_cd4_specimen_referred_count'] = "N/S";
+		$mohData['8_1_cd4_referred_results_received_count'] = "N/S";
+		$mohData['8_2_viral_load_specimen_referred_count'] = "N/S";
+		$mohData['8_2_viral_load_referred_results_received_count'] = "N/S";
+		$mohData['8_3_eid_specimen_referred_count'] = "N/S";
+		$mohData['8_3_eid_referred_results_received_count'] = "N/S";
+		$mohData['8_4_discordant_specimen_referred_count'] = "N/S";
+		$mohData['8_4_discordant_referred_results_received_count'] = "N/S";
+		$mohData['8_5_tb_culture_specimen_referred_count'] = "N/S";
+		$mohData['8_5_tb_culture_referred_results_received_count'] = "N/S";
+		$mohData['8_6_virological_specimen_referred_count'] = "N/S";
+		$mohData['8_6_virological_referred_results_received_count'] = "N/S";
+		$mohData['8_7_clinical_chemistry_specimen_referred_count'] = "N/S";
+		$mohData['8_7_clinical_chemistry_referred_results_received_count'] = "N/S";
+		$mohData['8_8_histology_cytology_specimen_referred_count'] = "N/S";
+		$mohData['8_8_histology_cytology_referred_results_received_count'] = "N/S";
+		$mohData['8_9_haematological_specimen_referred_count'] = "N/S";
+		$mohData['8_9_haematological_referred_results_received_count'] = "N/S";
+		$mohData['8_10_parasitological_specimen_referred_count'] = "N/S";
+		$mohData['8_10_parasitological_referred_results_received_count'] = "N/S";
+		$mohData['8_11_blood_for_transfusion_screening_specimen_referred_count'] = "N/S";
+		$mohData['8_11_blood_for_transfusion_screening_referred_results_received_count'] = "N/S";
+
+		$mohData['9_1_ampicilin_sensitive'] = "N/S";
+		$mohData['9_1_amplicilin_resistant'] = "N/S";
+		$mohData['9_1_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_1_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_1_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_1_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_1_penicilin_sensitive'] = "N/S";
+		$mohData['9_1_penicilin_resistant'] = "N/S";
+		$mohData['9_1_oxacillin_sensitive'] = "N/S";
+		$mohData['9_1_oxacillin_resistant'] = "N/S";
+		$mohData['9_1_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_1_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_1_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_1_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_1_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_1_trimethoprim_resistant'] = "N/S";
+		$mohData['9_1_tetracycline_sensitive'] = "N/S";
+		$mohData['9_1_tetracycline_resistant'] = "N/S";
+		$mohData['9_1_augumentin_sensitive'] = "N/S";
+		$mohData['9_1_augumentin_resistant'] = "N/S";
+		$mohData['9_2_ampicilin_sensitive'] = "N/S";
+		$mohData['9_2_amplicilin_resistant'] = "N/S";
+		$mohData['9_2_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_2_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_2_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_2_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_2_penicilin_sensitive'] = "N/S";
+		$mohData['9_2_penicilin_resistant'] = "N/S";
+		$mohData['9_2_oxacillin_sensitive'] = "N/S";
+		$mohData['9_2_oxacillin_resistant'] = "N/S";
+		$mohData['9_2_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_2_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_2_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_2_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_2_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_2_trimethoprim_resistant'] = "N/S";
+		$mohData['9_2_tetracycline_sensitive'] = "N/S";
+		$mohData['9_2_tetracycline_resistant'] = "N/S";
+		$mohData['9_2_augumentin_sensitive'] = "N/S";
+		$mohData['9_2_augumentin_resistant'] = "N/S";
+		$mohData['9_3_ampicilin_sensitive'] = "N/S";
+		$mohData['9_3_amplicilin_resistant'] = "N/S";
+		$mohData['9_3_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_3_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_3_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_3_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_3_penicilin_sensitive'] = "N/S";
+		$mohData['9_3_penicilin_resistant'] = "N/S";
+		$mohData['9_3_oxacillin_sensitive'] = "N/S";
+		$mohData['9_3_oxacillin_resistant'] = "N/S";
+		$mohData['9_3_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_3_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_3_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_3_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_3_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_3_trimethoprim_resistant'] = "N/S";
+		$mohData['9_3_tetracycline_sensitive'] = "N/S";
+		$mohData['9_3_tetracycline_resistant'] = "N/S";
+		$mohData['9_3_augumentin_sensitive'] = "N/S";
+		$mohData['9_3_augumentin_resistant'] = "N/S";
+		$mohData['9_4_ampicilin_sensitive'] = "N/S";
+		$mohData['9_4_amplicilin_resistant'] = "N/S";
+		$mohData['9_4_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_4_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_4_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_4_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_4_penicilin_sensitive'] = "N/S";
+		$mohData['9_4_penicilin_resistant'] = "N/S";
+		$mohData['9_4_oxacillin_sensitive'] = "N/S";
+		$mohData['9_4_oxacillin_resistant'] = "N/S";
+		$mohData['9_4_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_4_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_4_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_4_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_4_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_4_trimethoprim_resistant'] = "N/S";
+		$mohData['9_4_tetracycline_sensitive'] = "N/S";
+		$mohData['9_4_tetracycline_resistant'] = "N/S";
+		$mohData['9_4_augumentin_sensitive'] = "N/S";
+		$mohData['9_4_augumentin_resistant'] = "N/S";
+		$mohData['9_5_ampicilin_sensitive'] = "N/S";
+		$mohData['9_5_amplicilin_resistant'] = "N/S";
+		$mohData['9_5_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_5_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_5_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_5_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_5_penicilin_sensitive'] = "N/S";
+		$mohData['9_5_penicilin_resistant'] = "N/S";
+		$mohData['9_5_oxacillin_sensitive'] = "N/S";
+		$mohData['9_5_oxacillin_resistant'] = "N/S";
+		$mohData['9_5_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_5_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_5_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_5_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_5_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_5_trimethoprim_resistant'] = "N/S";
+		$mohData['9_5_tetracycline_sensitive'] = "N/S";
+		$mohData['9_5_tetracycline_resistant'] = "N/S";
+		$mohData['9_5_augumentin_sensitive'] = "N/S";
+		$mohData['9_5_augumentin_resistant'] = "N/S";
+		$mohData['9_6_ampicilin_sensitive'] = "N/S";
+		$mohData['9_6_amplicilin_resistant'] = "N/S";
+		$mohData['9_6_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_6_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_6_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_6_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_6_penicilin_sensitive'] = "N/S";
+		$mohData['9_6_penicilin_resistant'] = "N/S";
+		$mohData['9_6_oxacillin_sensitive'] = "N/S";
+		$mohData['9_6_oxacillin_resistant'] = "N/S";
+		$mohData['9_6_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_6_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_6_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_6_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_6_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_6_trimethoprim_resistant'] = "N/S";
+		$mohData['9_6_tetracycline_sensitive'] = "N/S";
+		$mohData['9_6_tetracycline_resistant'] = "N/S";
+		$mohData['9_6_augumentin_sensitive'] = "N/S";
+		$mohData['9_6_augumentin_resistant'] = "N/S";
+		$mohData['9_7_ampicilin_sensitive'] = "N/S";
+		$mohData['9_7_amplicilin_resistant'] = "N/S";
+		$mohData['9_7_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_7_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_7_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_7_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_7_penicilin_sensitive'] = "N/S";
+		$mohData['9_7_penicilin_resistant'] = "N/S";
+		$mohData['9_7_oxacillin_sensitive'] = "N/S";
+		$mohData['9_7_oxacillin_resistant'] = "N/S";
+		$mohData['9_7_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_7_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_7_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_7_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_7_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_7_trimethoprim_resistant'] = "N/S";
+		$mohData['9_7_tetracycline_sensitive'] = "N/S";
+		$mohData['9_7_tetracycline_resistant'] = "N/S";
+		$mohData['9_7_augumentin_sensitive'] = "N/S";
+		$mohData['9_7_augumentin_resistant'] = "N/S";
+		$mohData['9_8_ampicilin_sensitive'] = "N/S";
+		$mohData['9_8_amplicilin_resistant'] = "N/S";
+		$mohData['9_8_chloramphenicol_sensitive'] = "N/S";
+		$mohData['9_8_chloramphenicol_resistant'] = "N/S";
+		$mohData['9_8_ceftriaxone_sensitive'] = "N/S";
+		$mohData['9_8_ceftriaxone_resistant'] = "N/S";
+		$mohData['9_8_penicilin_sensitive'] = "N/S";
+		$mohData['9_8_penicilin_resistant'] = "N/S";
+		$mohData['9_8_oxacillin_sensitive'] = "N/S";
+		$mohData['9_8_oxacillin_resistant'] = "N/S";
+		$mohData['9_8_ciprofloxacin_sensitive'] = "N/S";
+		$mohData['9_8_ciprofloxacin_resistant'] = "N/S";
+		$mohData['9_8_naladixic_acid_sensitive'] = "N/S";
+		$mohData['9_8_naladixic_acid_resistant'] = "N/S";
+		$mohData['9_8_trimethoprim_sensitive'] = "N/S";
+		$mohData['9_8_trimethoprim_resistant'] = "N/S";
+		$mohData['9_8_tetracycline_sensitive'] = "N/S";
+		$mohData['9_8_tetracycline_resistant'] = "N/S";
+		$mohData['9_8_augumentin_sensitive'] = "N/S";
+		$mohData['9_8_augumentin_resistant'] = "N/S";
+
+		return View::make('reports.moh.706v201410')->with('mohData', $mohData)->with('startDate', $startDate)->with('endDate', $endDate);
+	}
+
 	/**
 	 * Manage Diseases reported on
 	 * @param
@@ -3193,8 +3753,8 @@ class ReportController extends \BaseController {
 	}
 
 	/*
-		Function to autoload items from the database
-	*/
+	 *	Function to autoload items from the database
+	 */
 
 	public function autoComplete() {
         $term = Input::get('term');
@@ -3218,13 +3778,13 @@ class ReportController extends \BaseController {
     }
 		
 	/**
-	* Function to calculate the mean, SD, and UCL, LCL
-	* for a given control measure.
-	*
-	* @param control_measure_id
-	* @return json string
-	* 
-	*/
+	 * Function to calculate the mean, SD, and UCL, LCL
+	 * for a given control measure.
+	 *
+	 * @param control_measure_id
+	 * @return json string
+	 * 
+	 */
 	public function leveyJennings($control, $dates)
 	{
 		foreach ($control->controlMeasures as $key => $controlMeasure) {
@@ -3374,10 +3934,11 @@ class ReportController extends \BaseController {
 				->withInput(Input::all());
 		}
 	}
+
     /**
-    *	Function to check for accredited test types
-    *
-    */
+     *	Function to check for accredited test types
+     *
+     */
     public function accredited($tests)
     {
     	$accredited = array();
@@ -3387,6 +3948,7 @@ class ReportController extends \BaseController {
 		}
 		return $accredited;
     }
+
     /**
 	 * Display specimen rejection chart
 	 *
@@ -3475,10 +4037,11 @@ class ReportController extends \BaseController {
 		        }
 		    }
 		}';
-	return View::make('reports.rejection.index')
+		return View::make('reports.rejection.index')
 						->with('options', $options)
 						->withInput(Input::all());
 	}
+
 	public function critical()
 	{
 		$date = date('Y-m-d');
@@ -3522,6 +4085,7 @@ class ReportController extends \BaseController {
 						->with('toPlusOne', $toPlusOne);
 		}
 	}
+
 	public function item()
 	{
 		$accredited = array();
