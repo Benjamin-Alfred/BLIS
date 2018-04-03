@@ -210,21 +210,22 @@ class Measure extends Eloquent
 	{
 		$months = $patient->getAge('M', $testDate);
 		$years = $patient->getAge('Y', $testDate);
-		$days=$patient->getAge('D', $testDate);
+		$days = $patient->getAge('D', $testDate);
 
-		if($years==0){
-			$age=$months/12;
-			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
-									->where('age_min', '<=',  $age)
-									->where('age_max', '>=', $age);
-		}else if($months==0){
-			$age=$months/365;
-			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
-									->where('age_min', '<=',  $age)
-									->where('age_max', '>=', $age);
-		}
-		else{
-			$age=$years;
+		if($years == 0){
+			if($months == 0){
+				$age = $months/365;
+				$measureRange = MeasureRange::where('measure_id', '=', $measureId)
+										->where('age_min', '<=',  $age)
+										->where('age_max', '>=', $age);
+			}else{
+				$age = $months/12;
+				$measureRange = MeasureRange::where('measure_id', '=', $measureId)
+										->where('age_min', '<=',  $age)
+										->where('age_max', '>=', $age);
+			}
+		}else{
+			$age = $years;
 			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
 									->where('age_min', '<=',  $age)
 									->where('age_max', '>=', $age)
@@ -234,9 +235,6 @@ class Measure extends Eloquent
 									});
 		}
 
-		Log::info("Measure ID: $measureId Age: $age");
-		Log::info("Measures ranges found - " . count($measureRange->get()));
-		
 		if(count($measureRange->get()) >= 1){
 
 			//Assume the first is the desirable/normal one TODO: confirm best practice
