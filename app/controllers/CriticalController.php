@@ -29,11 +29,20 @@ class CriticalController extends \BaseController {
 	public function create()
 	{
 		// Get measures list
-		$measures = Measure::lists('name', 'id');
+		$measures = Measure::all();
+		$testTypeMeasures = [];
+
+		foreach ($measures as $key => $value) {
+			$testType = $value->testTypes->first();
+			
+			if(count($testType) > 0)$testTypeMeasures[$value->id] = $testType['name'] . " - " . $value->name;
+		}
+
+		asort($testTypeMeasures, SORT_NATURAL);
 		//	Get units
 		$units = [Critical::DAYS => "Days", Critical::MONTHS => "Months", Critical::YEARS => "Years"];
 		// Create critical
-		return View::make('critical.create')->with('measures', $measures)->with('units', $units);
+		return View::make('critical.create')->with('measures', $testTypeMeasures)->with('units', $units);
 	}
 
 
