@@ -430,8 +430,6 @@ return array(
     'grouped-specimen-counts' =>  'Specimen Counts (Grouped)',
     'select-date'   =>  'Select Date',
     'checked-by'    =>  'Checked by',
-    'patient-report-no' =>  'Form No. BDHL-QUA-017F3',
-    'patient-report-version'    =>  'Version 1',
     'signature-holder'  =>  '............................................',
     'surveillance'    =>  'Surveillance',
     'request-origin'    =>  'Request origin',

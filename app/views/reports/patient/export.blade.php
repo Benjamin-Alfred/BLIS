@@ -152,9 +152,9 @@
 					<td><u><strong>{{ trans('messages.lab-director') }}</strong></u></td>
 				</tr>
 				<tr>
-					<td><strong>{{ trans('messages.patient-report-no') }}</strong></td>
+					<td><strong>{{ Config::get('kblis.patient-report-no') }}</strong></td>
 					<td></td>
-					<td><strong>{{ trans('messages.patient-report-version') }}</strong></td>
+					<td><strong>{{ Config::get('kblis.patient-report-version') }}</strong></td>
 				</tr>
 			</tbody>
 		</table>

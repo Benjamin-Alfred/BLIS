@@ -151,4 +151,20 @@ return array(
 	*/
 
 	'lab-quality-manager-name' => 'Lab QA Manager',
+	/*
+	|--------------------------------------------------------------------------
+	|	Patient report number - displayed in exported reports
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+    'patient-report-no' =>  'Form No. XXXX-XXX-XXXX',
+	/*
+	|--------------------------------------------------------------------------
+	|	Patient report version - displayed in exported reports
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+    'patient-report-version'    =>  'Version 1.1',
 );
