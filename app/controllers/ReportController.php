@@ -3180,33 +3180,33 @@ class ReportController extends \BaseController {
 		$mohData['2_27_glucose_high'] = "N/S";
 
 		$mohData['3_1_malaria_bs_under_5_total'] = Test::getCountByAge(array("'BS for mps'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(0, 5));
-		$mohData['3_1_malaria_bs_under_5_positive'] = "N/S";
+		$mohData['3_1_malaria_bs_under_5_positive'] = Test::getCountByResultValue("BS for mps", "BS for mps", " AND tr.result != 'No mps seen'", $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(0, 5));
 		$mohData['3_2_malaria_bs_over_5_total'] = Test::getCountByAge(array("'BS for mps'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(5, 120	));
-		$mohData['3_2_malaria_bs_over_5_positive'] = "N/S";
+		$mohData['3_2_malaria_bs_over_5_positive'] = Test::getCountByResultValue("BS for mps", "BS for mps", " AND tr.result != 'No mps seen'", $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED), array(5, 200));
 		$mohData['3_3_malaria_rapid_total'] = "N/S";
 		$mohData['3_3_malaria_rapid_positive'] = "N/S";
 		$mohData['3_4_taenia_spp'] = "N/S";
 		$mohData['3_4_stool_for_oc'] = Test::getCount(array("'Stool for O/C'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['3_5_hymenolepis_nana'] = "N/S";
-		$mohData['3_6_hookworms'] = "N/S";
-		$mohData['3_7_roundworms'] = "N/S";
-		$mohData['3_8_s_mansoni'] = "N/S";
-		$mohData['3_9_trichuris_trichura'] = "N/S";
-		$mohData['3_10_amoeba'] = "N/S";
+		$mohData['3_5_hymenolepis_nana'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%hymenolepis%'", $startDate, $endDate);
+		$mohData['3_6_hookworms'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%hookworm%'", $startDate, $endDate);
+		$mohData['3_7_roundworms'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%roundworm%'", $startDate, $endDate);
+		$mohData['3_8_s_mansoni'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%mansoni%'", $startDate, $endDate);
+		$mohData['3_9_trichuris_trichura'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%trichura%'", $startDate, $endDate);
+		$mohData['3_10_amoeba'] = Test::getCountByResultValue("Stool for O/C", "Stool for O/C", " AND tr.result LIKE '%amoeba%'", $startDate, $endDate);
 
 		$mohData['4_1_full_blood_count_total'] = Test::getCount(array("'Full Haemogram'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['4_1_full_blood_count_low'] = "N/S";
-		$mohData['4_1_full_blood_count_high'] = "N/S";
+		$mohData['4_1_full_blood_count_low'] = Test::getCountByResultValue("Full Haemogram", "HB", " AND tr.result < 5", $startDate, $endDate);
+		$mohData['4_1_full_blood_count_high'] = Test::getCountByResultValue("Full Haemogram", "HB", " AND tr.result >= 5 AND tr.result < 10", $startDate, $endDate);
 
 		$mohData['4_2_hb_other_estimations_total'] = Test::getCount(array("'HB'", "'HB Electrophoresis'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['4_2_hb_other_estimations_low'] = "N/S";
-		$mohData['4_2_hb_other_estimations_high'] = "N/S";
+		$mohData['4_2_hb_other_estimations_low'] = Test::getCountByResultValue("HB", "HB", " AND tr.result < 5 ", $startDate, $endDate) + Test::getCountByResultValue("HB Electrophoresis", "HB Electrophoresis", " AND tr.result < 5 ", $startDate, $endDate);
+		$mohData['4_2_hb_other_estimations_high'] = Test::getCountByResultValue("HB", "HB", " AND tr.result >= 5 AND tr.result < 10", $startDate, $endDate) + Test::getCountByResultValue("HB Electrophoresis", "HB Electrophoresis", " AND tr.result >= 5 AND tr.result < 10", $startDate, $endDate);
 
 		$mohData['4_3_cd4_count_total'] = Test::getCount(array("'CD4'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['4_3_cd4_under_500'] = "N/S";
+		$mohData['4_3_cd4_under_500'] = Test::getCountByResultValue("CD4", "CD4", " AND tr.result < 500", $startDate, $endDate);
 
 		$mohData['4_4_sickling_test_total'] = Test::getCount(array("'Sickling test'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['4_4_sickling_test_positive'] = "N/S";
+		$mohData['4_4_sickling_test_positive'] = Test::getCountByResultValue("Sickling test", "Sickling test", " AND tr.result = 'Positive'", $startDate, $endDate);
 		$mohData['4_5_peripheral_blood_films_total'] = "N/S";
 		$mohData['4_6_bma_total'] = "N/S";
 		$mohData['4_7_coagulaton_profile_total'] = Test::getCount(array("'Coagulation Profile'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
