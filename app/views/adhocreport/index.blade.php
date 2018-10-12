@@ -155,7 +155,7 @@
 		
 		
          </div>
-		 <div ng-if="selected.reportTypes==2 && selected.upperage || selected.reportTypes==3 && selected.upperage" class="col-sm-2">
+		 <div ng-if="selected.reportTypes==2 && selected.upperage  || selected.reportTypes==3 && selected.upperage" class="col-sm-2">
 		<strong><p>Select Columns to Display</p> </strong>
                 <div class="form-group">
 						<label ng-repeat="testsColumn in testsColumns" class="form-group" >
