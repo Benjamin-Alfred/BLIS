@@ -28,7 +28,11 @@
 				<p class="view-striped"><strong>{{trans('messages.compatible-specimen')}}</strong>
 					{{ implode(", ", $testtype->specimenTypes->lists('name')) }}</p>
 				<p class="view"><strong>{{ Lang::choice('messages.measure',1) }}</strong>
-					{{ implode(", ", $testtype->measures->lists('name')) }}</p>
+					<?php
+						$measures = $testtype->measures->lists('name');
+						asort($measures);
+					?>
+					{{ implode(", ",  $measures)}}</p>
 				<p class="view-striped"><strong>{{trans('messages.turnaround-time')}}</strong>
 					{{ $testtype->targetTAT }}</p>
 				<p class="view"><strong>{{trans('messages.prevalence-threshold')}}</strong>

@@ -667,6 +667,43 @@ class Test extends Eloquent
 
 	/**
 	 *
+	 * Get the count of this TestType, of the given Test status, for the given period 
+	 *
+	 * @return $count
+	 */
+
+	public static function getCountByResultValue($testTypeName, $measureName, $measureResult, $startDate, $endDate, $status = array(Test::COMPLETED, Test::VERIFIED), $age = [], $byTime = 0){
+		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
+		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
+
+		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
+						INNER JOIN test_types tt ON t.test_type_id = tt.id 
+						INNER JOIN visits v ON t.visit_id = v.id 
+						INNER JOIN patients p ON v.patient_id = p.id
+						INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id
+						INNER JOIN measures m ON ttm.measure_id = m.id 
+						INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id ";
+
+		$query .= "WHERE tt.name = ? AND m.name = ? ";
+		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
+
+		if (isset($measureResult)) $query .= $measureResult;
+
+		if(count($status) > 0)$query .= " AND t.test_status_id IN (".implode(",", $status).")";
+
+		if(count($age) == 2){
+			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= ".$age[0];
+			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
+		}
+
+		$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59"));
+
+		return $count[0]->hits;
+
+	}
+
+	/**
+	 *
 	 * Get the count of this TestType, of the given Test status, for the given period, for the given age
 	 *
 	 * @return $count
