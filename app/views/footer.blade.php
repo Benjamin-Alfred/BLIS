@@ -28,8 +28,8 @@
 		</div>
 	</div>
 
-    <footer class="footer non-print">
-        <div>
+    <footer class="footer">
+        <div class="non-print">
         		{{ HTML::link('https://github.com/APHL-Global-Health', 'APHL Global')}} &copy; {{date("Y")}}
         </div>
     </footer>

@@ -101,12 +101,14 @@ class ReportController extends \BaseController {
 		//	Check if tests are accredited
 		$accredited = $this->accredited($tests);
 		$verified = array();
+
 		foreach ($tests as $test) {
 			if($test->isVerified())
 				array_push($verified, $test->id);
 			else
 				continue;
 		}
+
 		if(Input::get('adhoc')=='1'){
 
 			return Response::json(array(
@@ -176,15 +178,18 @@ class ReportController extends \BaseController {
 		if (Input::get('tests') === '1') {
 		    $pending='true';
 		}
+
 		$date = date('Y-m-d');
 		if(!$to){
 			$to=$date;
 		}
+
 		$toPlusOne = date_add(new DateTime($to), date_interval_create_from_date_string('1 day'));
 		$records = Input::get('records');
 		$testCategory = Input::get('section_id');
 		$testType = Input::get('test_type');
 		$labSections = TestCategory::lists('name', 'id');
+		
 		if($testCategory)
 			$testTypes = TestCategory::find($testCategory)->testTypes->lists('name', 'id');
 		else
@@ -209,15 +214,12 @@ class ReportController extends \BaseController {
 			if(Input::has('word')){
 				$date = date("Ymdhi");
 				$fileName = "daily_visits_log_".$date.".doc";
-				$headers = array(
-				    "Content-type"=>"text/html",
-				    "Content-Disposition"=>"attachment;Filename=".$fileName
-				);
-				$content = View::make('reports.daily.exportPatientLog')
-								->with('visits', $visits)
-								->with('accredited', $accredited)
-								->withInput(Input::all());
-		    	return Response::make($content,200, $headers);
+
+				$pdf = PDF::loadView('reports.daily.exportPatientLog', 
+						['visits' => $visits, 'accredited' => $accredited, 'input' => Input::all()]);
+				$pdf->getDomPDF()->set_option("enable_php", true);
+
+				return $pdf->download($fileName.'.pdf');
 			}
 			else{
 				return View::make('reports.daily.patient')
@@ -260,19 +262,16 @@ class ReportController extends \BaseController {
 										->get(array('specimens.*'));
 			}
 			if(Input::has('word')){
-				$date = date("Ymdhi");
-				$fileName = "daily_rejected_specimen_".$date.".doc";
-				$headers = array(
-				    "Content-type"=>"text/html",
-				    "Content-Disposition"=>"attachment;Filename=".$fileName
-				);
-				$content = View::make('reports.daily.exportSpecimenLog')
-								->with('specimens', $specimens)
-								->with('testCategory', $testCategory)
-								->with('testType', $testType)
-								->with('accredited', $accredited)
-								->withInput(Input::all());
-		    	return Response::make($content,200, $headers);
+				$fileName = "daily_rejected_specimen_".date("Ymdhi").".pdf";
+
+				$pdf = PDF::loadView('reports.daily.exportSpecimenLog', 
+						['specimens' => $specimens, 'testCategory' => $testCategory, 'testType' => $testType, 
+							'accredited' => $accredited, 'input' => Input::all()]);
+
+				$pdf->getDomPDF()->set_option("enable_php", true);
+				$pdf->setPaper('A4', 'landscape');
+
+				return $pdf->download($fileName);
 			}
 			else
 			{

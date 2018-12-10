@@ -1,13 +1,13 @@
 @extends("layout")
 @section("content")
-<div>
+<div class="non-print">
 	<ol class="breadcrumb">
 	  <li><a href="{{{URL::route('user.home')}}}">{{ trans('messages.home') }}</a></li>
 	  <li class="active"><a href="{{ URL::route('reports.patient.index') }}">{{ Lang::choice('messages.report', 2) }}</a></li>
 	  <li class="active">{{ trans('messages.daily-log') }}</li>
 	</ol>
 </div>
-<div class='container-fluid'>
+<div class='container-fluid non-print'>
     {{ Form::open(array('route' => array('reports.daily.log'), 'class' => 'form-inline')) }}
     <div class='row'>
     	<div class="col-sm-4">
@@ -39,8 +39,8 @@
 		                array('class' => 'btn btn-info', 'id' => 'filter', 'type' => 'submit')) }}
 		        </div>
 		        <div class="col-sm-1">
-					{{Form::submit(trans('messages.export-to-word'), 
-			    		array('class' => 'btn btn-success', 'id'=>'word', 'name'=>'word'))}}
+					{{Form::button("<span class='glyphicon glyphicon-export'></span> ".trans('messages.export'), 
+			    		array('class' => 'btn btn-success', 'id'=>'word', 'name'=>'word', 'type' => 'submit'))}}
 				</div>
 			</div>
 		</div>
@@ -127,7 +127,7 @@
 	</div>
 
 	<div class="panel-body">
-	<!-- if there are search errors, they will show here -->
+		<!-- if there are search errors, they will show here -->
 		@if ($error!='')
 			<div class="alert alert-info">{{ $error }}</div>
 		@else
@@ -163,7 +163,7 @@
 				</p>
 			</strong>
 			<table class="table table-bordered table-responsive">
-				<tbody>
+				<thead>
 					<tr>
 						<th>{{ trans('messages.patient-id') }}</th>
 						<th>{{ trans('messages.visit-number') }}</th>
@@ -179,6 +179,8 @@
 						<th>{{ trans('messages.verified-by') }}</th>
 						<th>{{ trans('messages.turnaround-time') }}</th>
 					</tr>
+				</thead>
+				<tbody>
 					@forelse($tests as $key => $test)
 					<tr>
 						<td>{{ $test->visit->patient->id }}</td>

@@ -675,6 +675,8 @@ table.table.report-table-border > tbody > tr > td{
         font-weight: bold;
     }
 
+}
+
     /** Print friendly **/
 
     @media print {
@@ -688,9 +690,10 @@ table.table.report-table-border > tbody > tr > td{
         }
         .panel {border: 0;}
 
-        #the-main-one{
-            margin-left: 0 !important;
+        #the-one-main{
+            margin: 15px;
             width: 100%;
         }
 
     }
+
