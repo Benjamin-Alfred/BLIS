@@ -51,7 +51,7 @@ class TestType extends Eloquent
     {
         return $this->hasMany('Test');
     }
-
+    
 	/**
 	 * Instrument relationship
 	 */
@@ -65,6 +65,13 @@ class TestType extends Eloquent
 	public function organisms()
 	{
 	  return $this->belongsToMany('Organism', 'testtype_organisms');
+	}
+	/**
+	* Panal relationship
+	*/
+	public function panel()
+	{
+	    return $this->belongsToMany('Panel', 'test_type_panels');
 	}
 	/**
 	 * Set compatible specimen types
@@ -92,8 +99,7 @@ class TestType extends Eloquent
 		// Add the new mapping
 		DB::table('testtype_specimentypes')->insert($specimenTypesAdded);
 	}
-
-   public function setPanelTypes($panelTypes){
+        public function setPanelTypes($panelTypes){
    	    $panelTypesAdded = array();
 		$testTypeID = 0;	
 
@@ -117,8 +123,7 @@ class TestType extends Eloquent
 		} catch (Exception $e) {
 			
 		}
-   }
-
+        }
 	/**
 	 * Set test type measures
 	 *

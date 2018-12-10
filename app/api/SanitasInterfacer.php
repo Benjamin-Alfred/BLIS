@@ -136,7 +136,7 @@ class SanitasInterfacer implements InterfacerInterface{
             $mKey = array_search($externlabRequest->investigation, $testMeasures->lists('name'));
             
             if($mKey === false){
-                Log::error("MEASURE NOT FOUND: Measure $externlabRequest->investigation not found in our system");
+                Log::error("MEASURE NOT FOUND: TestType ($testType->name) -  Measure $externlabRequest->investigation not found in our system");
             }
             else {
                 $measureId = $testMeasures->get($mKey)->id;
@@ -154,6 +154,7 @@ class SanitasInterfacer implements InterfacerInterface{
                 $this->sendRequest($httpCurl, urlencode($jsonResponseString), $externlabRequest->lab_no);
             }
         }
+        Log::info($httpCurl);
         curl_close($httpCurl);
     }
 
@@ -219,7 +220,8 @@ class SanitasInterfacer implements InterfacerInterface{
             $patient = $patient->first();
         }
 
-        //We check if the test exists in our system if not we just save the request in stagingTable
+//        //We check if the test exists in our system if not we just save the request in stagingTable
+//        if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
         if($labRequest->parentLabNo == '0')
         {
             $testTypeId = TestType::getTestTypeIdByTestName($labRequest->investigation);
@@ -229,6 +231,7 @@ class SanitasInterfacer implements InterfacerInterface{
         }
         if(is_null($testTypeId) && $labRequest->parentLabNo == '0')
         {
+	    Log::error("Lab Test NOT FOUND: $labRequest->investigation");
             $this->saveToExternalDump($labRequest, ExternalDump::TEST_NOT_FOUND);
             return;
         }
@@ -257,6 +260,7 @@ class SanitasInterfacer implements InterfacerInterface{
 
         $test = null;
         //Check if parentLabNO is 0 thus its the main test and not a measure
+//        if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
         if($labRequest->parentLabNo == '0')
         {
             //Check via the labno, if this is a duplicate request and we already saved the test
