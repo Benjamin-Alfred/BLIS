@@ -59,13 +59,13 @@
 				<td>{{ $test->specimen->specimentype->name }}</td>
 				<td>{{ $test->specimen->time_accepted }}</td>
 				<td>{{ $test->testType->name }}</td>
-				<td>{{ $test->testedBy->name or trans('messages.pending') }}</td>
+				<td>{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}</td>
 				<td>@foreach($test->testResults as $result)
 					<p>{{Measure::find($result->measure_id)->name}}: {{$result->result}}</p>
 				@endforeach</td>
 				<td>{{ $test->interpretation }}</td>
 				<td>{{ $test->time_completed or trans('messages.pending') }}</td>
-				<td>{{ $test->verifiedBy->name or trans('messages.verification-pending') }}</td>
+				<td>{{ $test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending') }}</td>
 			</tr>
 			@empty
 			<tr><td colspan="9">{{trans('messages.no-records-found')}}</td></tr>

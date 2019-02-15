@@ -72,7 +72,7 @@
 							<h3 class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
 								{{ !is_null($test->testType->name) ? $test->testType->name : trans('messages.unknown') }}</h3>
 							<p class="view"><strong>{{trans('messages.visit-number')}}</strong>
-								{{ !is_null($test->visit->visit_number) ? $test->visit->visit_number : trans('messages.unknown') }}</p>
+								{{ $test->visit_id > 0 ? $test->visit->visit_number : trans('messages.unknown') }}</p>
 							<p class="view"><strong>{{trans('messages.date-ordered')}}</strong>
 								{{ $test->isExternal() ? $test->external()->request_date : $test->time_created }}</p>
 							<p class="view"><strong>{{trans('messages.lab-receipt-date')}}</strong>
@@ -89,14 +89,14 @@
 									{{ $test->visit->visit_type }}
 								@endif</p>
 							<p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-								{{ $test->createdBy or trans('messages.unknown') }}</p>
+								{{ $test->created_by > 0 ? $test->createdBy->name : trans('messages.unknown') }}</p>
 
 							<p class="view"><strong>{{trans('messages.tested-by')}}</strong>
 								{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.unknown') }} </p>
 
 							@if($test->isVerified())
 								<p class="view"><strong>{{trans('messages.verified-by')}}</strong>
-									{{ $test->verifiedBy->name or trans('messages.verification-pending') }}</p>
+									{{ $test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending') }} </p>
 							@endif
 
 							@if((!$test->specimen->isRejected()) && ($test->isCompleted() || $test->isVerified()))
@@ -117,7 +117,7 @@
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.patient-number")}}</strong></p></div>
 										<div class="col-md-9">
-											{{$test->visit->patient->external_patient_number}}</div></div>
+											{{$test->visit->patient_id > 0? $test->visit->patient->patient_number : trans('messages.unknown')}}</div></div>
 									<div class="row">
 										<div class="col-md-3">
 											<p><strong>{{ Lang::choice('messages.name',1) }}</strong></p></div>
@@ -148,7 +148,7 @@
 											<p><strong>{{ Lang::choice('messages.specimen-type',1) }}</strong></p>
 										</div>
 										<div class="col-md-8">
-											{{$test->specimen->specimenType->name or trans('messages.pending') }}
+											{{strlen($test->specimen->specimenType->name) > 0 ? $test->specimen->specimenType->name : trans('messages.pending') }}
 										</div>
 									</div>
 									<div class="row">

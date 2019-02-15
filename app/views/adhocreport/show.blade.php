@@ -171,7 +171,7 @@
 							<td>{{ $test->interpretation == '' ? 'N/A' : $test->interpretation }}</td>
                              @endif
                              @if($result['name']==trans('messages.tested-by'))
-							<td>{{ $test->testedBy->name or trans('messages.pending')}}</td>
+							<td>{{ {{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}}}</td>
                              @endif
                              @if($result['name']==trans('messages.results-entry-date'))
 							<td>{{ $test->testResults->last()->time_entered }}</td>
@@ -180,7 +180,7 @@
 							<td>{{ $test->time_completed }}</td>
                              @endif
                             @if($result['name']==trans('messages.verified-by'))
-							<td>{{ $test->verifiedBy->name or trans('messages.verification-pending')}}</td>
+							<td>{{ $test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending') }}</td>
                              @endif
                              @if($result['name']==trans('messages.date-verified'))
 							<td>{{ $test->time_verified }}</td>

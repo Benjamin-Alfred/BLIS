@@ -285,7 +285,7 @@
 	                            <div class="container-fluid">
 	                                <div class="display-details">
 	                                    <p class="view"><strong>{{ Lang::choice('messages.specimen-type',1) }}</strong>
-	                                    	{{$test->specimen->specimenType->name or trans('messages.pending') }}</p>
+	                                    	{{strlen($test->specimen->specimenType->name) > 0 ? $test->specimen->specimenType->name : trans('messages.pending') }}</p>
 	                                    <p class="view"><strong>{{trans('messages.specimen-number')}}</strong>
 	                                    	{{$test->specimen->id or trans('messages.pending') }}</p>
 	                                    <p class="view"><strong>{{trans('messages.specimen-status')}}</strong>
@@ -344,14 +344,14 @@
 	                                            {{ $test->visit->visit_type }}
 	                                        @endif</p>
 	                                    <p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-	                                        {{$test->createdBy->name or trans('messages.unknown') }}</p>
+	                                        {{$test->created_by > 0 ? $test->createdBy->name : trans('messages.unknown') }}</p>
 	                                    @if($test->isCompleted())
 	                                    <p class="view"><strong>{{trans('messages.tested-by')}}</strong>
-	                                        {{$test->testedBy->name or trans('messages.unknown')}}</p>
+	                                        {{$test->tested_by > 0 ? $test->testedBy->name : trans('messages.unknown')}}</p>
 	                                    @endif
 	                                    @if($test->isVerified())
 	                                    <p class="view"><strong>{{trans('messages.verified-by')}}</strong>
-	                                        {{$test->verifiedBy->name or trans('messages.verification-pending')}}</p>
+	                                        {{$test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending')}}</p>
 	                                    @endif
 	                                    @if((!$test->specimen->isRejected()) && ($test->isCompleted() || $test->isVerified()))
 	                                    <!-- Not Rejected and (Verified or Completed)-->
