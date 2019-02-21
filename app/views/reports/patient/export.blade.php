@@ -24,7 +24,7 @@
 
 				</p>
 			</strong>
-		<table class="table table-bordered"  width="100%">
+		<table class="table" style="border: 1px solid #000;"  width="100%">
 			<tbody>
 				<tr align="left">
 					<td><strong>{{ trans('messages.patient-name')}}</strong></td>
@@ -47,7 +47,7 @@
 			</tbody>
 		</table>
 		<br>
-		<table class="table table-bordered" width="100%">
+		<table class="table" style="border: 1px solid #000;" width="100%">
 			<tbody align="left">
 				<tr>
 					<td colspan="7"><strong>{{ trans('messages.specimen') }}</strong></td>
@@ -90,7 +90,7 @@
 			</tbody>
 		</table>
 		<br>
-		<table class="table table-bordered"  width="100%">
+		<table class="table" style="border: 1px solid #000;"  width="100%">
 			<tbody align="left">
 				<tr>
 					<td colspan="8"><strong>{{trans('messages.test-results')}}</strong></td>
@@ -134,7 +134,7 @@
 		</div>
 		</div>
 		<hr style="border: 1px solid black;">
-		<table class="table table-bordered"  width="100%" style="font-size:12px;">
+		<table class="table" style="border: 1px solid #000;font-size:12px;"  width="100%">
 			<tbody>
 				<tr>
 					<td><strong>{{ trans('messages.authorized-by') }}</strong></td>
