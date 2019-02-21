@@ -124,19 +124,13 @@ class ReportController extends \BaseController {
 
 		if(Input::has('word')){
 			$date = date("Ymdhi");
-			$fileName = "blispatient_".$id."_".$date.".doc";
-			$headers = array(
-			    "Content-type"=>"text/html",
-			    "Content-Disposition"=>"attachment;Filename=".$fileName
-			);
-			$content = View::make('reports.patient.export')
-							->with('patient', $patient)
-							->with('tests', $tests)
-							->with('from', $from)
-							->with('to', $to)
-							->with('visit', $visit)
-							->with('accredited', $accredited);
-	    	return Response::make($content,200, $headers);
+			$fileName = "blispatient_".$id."_".$date.".pdf";
+
+			$pdf = @PDF::loadView('reports.patient.export', 
+					['patient' => $patient, 'tests' => $tests, 'from' => $from, 'to' => $to, 'visit' => $visit, 'accredited' => $accredited]);
+			@$pdf->getDomPDF()->set_option("enable_php", true);
+
+			return @$pdf->download($fileName);
 		}
 		else{
 			return View::make('reports.patient.report')
