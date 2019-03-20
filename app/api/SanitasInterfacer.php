@@ -18,15 +18,11 @@ class SanitasInterfacer implements InterfacerInterface{
     public function send($testId)
     {
         //Sending current test
-
-        $this->createJsonString($testId);
-        //Sending all pending requests also
-        $pendingRequests = ExternalDump::where('result_returned', 2)->get();
-        // if(!$pendingRequests->isEmpty()){
-        //     foreach ($pendingRequests as $pendingRequest) {
-        //         $this->createJsonString($pendingRequest->test_id);
-        //     }
-        // }
+        if(Config::get('kblis.send-to-HMIS') === true){
+            $this->createJsonString($testId);
+            //Sending all pending requests also
+            $pendingRequests = ExternalDump::where('result_returned', 2)->get();
+        }
     }
 
 
@@ -41,7 +37,7 @@ class SanitasInterfacer implements InterfacerInterface{
         //if($comments==null or $comments==''){$comments = 'No Comments';
 
         //We use curl to send the requests
-        $httpCurl = curl_init(Config::get('kblis.sanitas-url'));
+        $httpCurl = curl_init(Config::get('kblis.hmis-url'));
         curl_setopt($httpCurl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($httpCurl, CURLOPT_POST, true);
 
