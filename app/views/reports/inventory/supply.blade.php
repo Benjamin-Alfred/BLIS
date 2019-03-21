@@ -81,6 +81,7 @@
 							<th>{{Lang::choice('messages.manufacturer',1)}}</th>
 							<th>{{Lang::choice('messages.ordered',1)}}</th>
 							<th>{{Lang::choice('messages.supplied',1)}}</th>
+							<th>Date Supplied</th>
 							<th>{{Lang::choice('messages.cost-per-unit',1)}}</th>
 							<th>{{Lang::choice('messages.expiry',1)}}</th>							
 						</tr>
@@ -98,6 +99,7 @@
 							<td>{{$row->manufacturer}}</td>
 							<td>{{$row->quantity_ordered}}</td>
 							<td>{{$row->quantity_supplied}}</td>
+							<td>{{$row->date_of_reception}}</td>
 							<td>{{$row->cost_per_unit}}</td>
 							<td>{{$row->expiry_date}}</td>
 						@endforeach
