@@ -76,25 +76,25 @@
 		<table class="table table-bordered">
 			<tbody>
 				<tr>
-					<th>{{ trans('messages.patient-name')}}</th>
+					<td><strong>{{ trans('messages.patient-name')}}</strong></td>
 					@if(Entrust::can('view_names'))
 						<td>{{ $patient->name }}</td>
 					@else
 						<td>N/A</td>
 					@endif
-					<th>{{ trans('messages.gender')}}</th>
+					<td><strong>{{ trans('messages.gender')}}</strong></td>
 					<td>{{ $patient->getGender(false) }}</td>
 				</tr>
 				<tr>
-					<th>{{ trans('messages.patient-id')}}</th>
+					<td><strong>{{ trans('messages.patient-id')}}</strong></td>
 					<td>{{ $patient->patient_number}}</td>
-					<th>{{ trans('messages.age')}}</th>
+					<td><strong>{{ trans('messages.age')}}</strong></td>
 					<td>{{ $patient->getAge()}}</td>
 				</tr>
 				<tr>
-					<th>{{ trans('messages.patient-lab-number')}}</th>
+					<td><strong>{{ trans('messages.patient-lab-number')}}</strong></td>
 					<td>{{ $patient->external_patient_number }}</td>
-					<th>{{ trans('messages.requesting-facility-department')}}</th>
+					<td><strong>{{ trans('messages.requesting-facility-department')}}</strong></td>
 					<td>{{ Config::get('kblis.organization') }}</td>
 				</tr>
 			</tbody>
@@ -102,16 +102,16 @@
 		<table class="table table-bordered">
 			<tbody>
 				<tr>
-					<th colspan="7">{{trans('messages.specimen')}}</th>
+					<td colspan="7"><strong>{{trans('messages.specimen')}}</strong></td>
 				</tr>
 				<tr>
-					<th>{{ Lang::choice('messages.specimen-type', 1)}}</th>
-					<th>{{ Lang::choice('messages.test', 2)}}</th>
-					<th>{{ trans('messages.date-ordered') }}</th>
-					<th>{{ Lang::choice('messages.test-category', 2)}}</th>
-					<th>{{ trans('messages.specimen-status')}}</th>
-					<th>{{ trans('messages.collected-by')."/".trans('messages.rejected-by')}}</th>
-					<th>{{ trans('messages.date-checked')}}</th>
+					<td><strong>{{ Lang::choice('messages.specimen-type', 1)}}</strong></td>
+					<td><strong>{{ Lang::choice('messages.test', 2)}}</strong></td>
+					<td><strong>{{ trans('messages.date-ordered') }}</strong></td>
+					<td><strong>{{ Lang::choice('messages.test-category', 2)}}</strong></td>
+					<td><strong>{{ trans('messages.specimen-status')}}</strong></td>
+					<td><strong>{{ trans('messages.collected-by')."/".trans('messages.rejected-by')}}</strong></td>
+					<td><strong>{{ trans('messages.date-checked')}}</strong></td>
 				</tr>
 				@forelse($tests as $test)
 						<tr>
@@ -121,8 +121,8 @@
 							<td>{{ $test->testType->testCategory->name }}</td>
 							@if($test->specimen->specimen_status_id == Specimen::NOT_COLLECTED)
 								<td>{{trans('messages.specimen-not-collected')}}</td>
-								<td></td>
-								<td></td>
+								<td> &nbsp;</td>
+								<td>&nbsp;</td>
 							@elseif($test->specimen->specimen_status_id == Specimen::ACCEPTED)
 								<td>{{trans('messages.specimen-accepted')}}</td>
 								<td>{{$test->specimen->acceptedBy->name}}</td>
@@ -144,17 +144,17 @@
 		<table class="table table-bordered">
 			<tbody>
 				<tr>
-					<th colspan="8">{{trans('messages.test-results')}}</th>
+					<td colspan="8"><strong>{{trans('messages.test-results')}}</strong></td>
 				</tr>
 				<tr>
-					<th>{{Lang::choice('messages.test-type', 1)}}</th>
-					<th>{{trans('messages.test-results-values')}}</th>
-					<th>{{trans('messages.test-remarks')}}</th>
-					<th>{{trans('messages.tested-by')}}</th>
-					<th>{{trans('messages.results-entry-date')}}</th>
-					<th>{{trans('messages.date-tested')}}</th>
-					<th>{{trans('messages.verified-by')}}</th>
-					<th>{{trans('messages.date-verified')}}</th>
+					<td><strong>{{Lang::choice('messages.test-type', 1)}}</strong></td>
+					<td><strong>{{trans('messages.test-results-values')}}</strong></td>
+					<td><strong>{{trans('messages.test-remarks')}}</strong></td>
+					<td><strong>{{trans('messages.tested-by')}}</strong></td>
+					<td><strong>{{trans('messages.results-entry-date')}}</strong></td>
+					<td><strong>{{trans('messages.date-tested')}}</strong></td>
+					<td><strong>{{trans('messages.verified-by')}}</strong></td>
+					<td><strong>{{trans('messages.date-verified')}}</strong></td>
 				</tr>
 				@forelse($tests as $test)
 						<tr>
