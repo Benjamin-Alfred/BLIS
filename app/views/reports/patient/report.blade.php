@@ -42,12 +42,6 @@
 			            {{ Form::button("<span class='glyphicon glyphicon-filter'></span> ".trans('messages.view'), 
 			                    array('class' => 'btn btn-primary', 'id' => 'filter', 'type' => 'submit')) }}
 		            </div>
-		            @if(count($verified) == count($tests))
-		            <div class="col-sm-1">
-				        {{ Form::submit(trans('messages.export'), array('class' => 'btn btn-success', 
-				        	'id' => 'word', 'name' => 'word')) }}
-				    </div>
-				    @endif
 			    </div>
 		    </div>
 	    </div>
@@ -59,6 +53,16 @@
 	<div class="panel-heading ">
 		<span class="glyphicon glyphicon-user"></span>
 		{{ trans('messages.patient-report') }}
+        <div class="panel-btn">
+        @if(count($verified) == count($tests))
+		    {{ Form::open(array('url' => "patientreport/{$patient->id}/$visit/$testID", 'class' => 'form-inline', 'id' => 'form-patientreport-export', 'method'=>'POST')) }}
+				{{ Form::hidden('patient', $patient->id, array('id' => 'patient')) }}
+			    {{ Form::hidden('visit_id', $visit, array('id'=>'visit_id')) }}
+			        {{ Form::submit(trans('messages.export'), array('class' => 'btn btn-success', 
+			        	'id' => 'word', 'name' => 'word')) }}
+			{{ Form::close() }}
+	    @endif
+	    </div>
 	</div>
 	<div class="panel-body">
 		@if($error!='')

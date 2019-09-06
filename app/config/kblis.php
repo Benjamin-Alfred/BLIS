@@ -37,7 +37,7 @@ return array(
 	|
 	*/
 
-	'organization' => 'Basic Laboratory Information System',
+	'organization' => 'X Hospital Laboratory',
 	
 
 
@@ -47,11 +47,10 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'address-info' => 'COUNTY REFERRAL HOSPITAL, BLIS<br>
-                    REFERRAL HOSPITAL LOCATION<br>
-                    P.O. BOX PRIVATE BAG,<br>
-                    KENYA.<br>
-                    Phone: +0000000 Ext 203/208</p>',
+	'address-info' => 'X TOWN, HOSPITAL ROAD<br>
+                    P.O. BOX 00,<br>
+                    X TOWN.<br>
+                    Phone: +254 000-0000 Ext 000/001</p>',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -60,7 +59,7 @@ return array(
 	|
 	*/
 
-	'facility-county' => 'County',
+	'facility-county' => 'X',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -69,7 +68,7 @@ return array(
 	|
 	*/
 
-	'facility-sub-county' => 'Sub-county',
+	'facility-sub-county' => 'X',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +77,7 @@ return array(
 	|
 	*/
 
-	'facility-code' => '0000',
+	'facility-code' => '00000',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -102,14 +101,16 @@ return array(
 	|--------------------------------------------------------------------------
 	|	Send to HMIS
 	*/
+
 	'send-to-HMIS' => false,
 	
 	/*
 	|--------------------------------------------------------------------------
 	|	HMIS inbound results URL
 	*/
+
 	'hmis-url' => 'localhost',
-	
+
 	/*
 	|--------------------------------------------------------------------------
 	|	Limit: Maximum number of items to return (Use in patient search)
@@ -140,7 +141,7 @@ return array(
 	|
 	*/
 
-	'lab-director-name' => 'Lab Director',
+	'lab-director-name' => 'Dr. X',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab Manager's name - displayed in exported reports
@@ -148,7 +149,7 @@ return array(
 	|
 	*/
 
-	'lab-manager-name' => 'Lab Manager',
+	'lab-manager-name' => 'Mrs. X',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab QA Manager's name - displayed in exported reports
@@ -156,7 +157,7 @@ return array(
 	|
 	*/
 
-	'lab-quality-manager-name' => 'Lab QA Manager',
+	'lab-quality-manager-name' => 'Mr. X',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report number - displayed in exported reports
@@ -164,7 +165,7 @@ return array(
 	|
 	*/
 
-    'patient-report-no' =>  'Form No. XXXX-XXX-XXXX',
+        'patient-report-no' =>  'Form No. XXXX-XX-00000',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report version - displayed in exported reports
@@ -172,5 +173,5 @@ return array(
 	|
 	*/
 
-    'patient-report-version'    =>  'Version 1.1',
+    	'patient-report-version'    =>  'Version 1',
 );

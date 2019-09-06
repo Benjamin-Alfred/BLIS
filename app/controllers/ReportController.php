@@ -52,27 +52,30 @@ class ReportController extends \BaseController {
 	 * @return Response
 	 */
 	public function viewPatientReport($id, $visit = null, $testId = null){
+
 		$from = Input::get('start');
 		$to = Input::get('end');
 		$pending = Input::get('pending');
 		$date = date('Y-m-d');
 		$error = '';
-		$visitId = Input::get('visit_id');
+		$visitId = Input::has('visit_id')?Input::get('visit_id'):$visit;
+
 		//	Check checkbox if checked and assign the 'checked' value
 		if (Input::get('tests') === '1') {
 		    $pending='checked';
 		}
 		//	Query to get tests of a particular patient
-		if (($visit || $visitId) && $id && $testId){
+		if ($visitId && $id && $testId){
 			$tests = Test::where('id', '=', $testId);
 		}
-		else if(($visit || $visitId) && $id){
-			$tests = Test::where('visit_id', '=', $visit?$visit:$visitId);
+		else if($visitId && $id){
+			$tests = Test::where('visit_id', '=', $visitId);
 		}
 		else{
 			$tests = Test::join('visits', 'visits.id', '=', 'tests.visit_id')
 							->where('patient_id', '=', $id);
 		}
+
 		//	Begin filters - include/exclude pending tests
 		if($pending){
 			$tests=$tests->where('tests.test_status_id', '!=', Test::NOT_RECEIVED);
@@ -80,12 +83,14 @@ class ReportController extends \BaseController {
 		else{
 			$tests = $tests->whereIn('tests.test_status_id', [Test::COMPLETED, Test::VERIFIED]);
 		}
+
 		//	Date filters
 		if($from||$to){
 
 			if(!$to) $to = $date;
 
-			if(strtotime($from)>strtotime($to)||strtotime($from)>strtotime($date)||strtotime($to)>strtotime($date)){
+			if(strtotime($from) > strtotime($to) || 
+				strtotime($from) > strtotime($date) || strtotime($to) > strtotime($date)){
 					$error = trans('messages.check-date-range');
 			}
 			else
@@ -94,6 +99,7 @@ class ReportController extends \BaseController {
 				$tests=$tests->whereBetween('time_created', array($from, $toPlusOne->format('Y-m-d H:i:s')));
 			}
 		}
+
 		//	Get tests collection
 		$tests = $tests->get(array('tests.*'));
 		//	Get patient details
@@ -139,6 +145,7 @@ class ReportController extends \BaseController {
 						->with('pending', $pending)
 						->with('error', $error)
 						->with('visit', $visit)
+						->with('testID', $testId)
 						->with('accredited', $accredited)
 						->with('verified', $verified)
 						->withInput(Input::all());
