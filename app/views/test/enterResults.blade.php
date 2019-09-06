@@ -16,13 +16,17 @@
                         @if($test->testType->instruments->count() > 0)
                         <div class="panel-btn">
                             <a class="btn btn-sm btn-info fetch-test-data" href="javascript:void(0)"
-                                title="{{trans('messages.fetch-test-data-title')}}"
-                                data-test-type-id="{{$test->testType->id}}"
-                                data-url="{{URL::route('instrument.getResult')}}"
-                                data-instrument-count="{{$test->testType->instruments->count()}}">
+                                title="{{trans('messages.fetch-test-data-title')}}">
                                 <span class="glyphicon glyphicon-plus-sign"></span>
                                 {{trans('messages.fetch-test-data')}}
                             </a>
+                            <form id="fetch-form" enctype="multipart/form-data" action="{{URL::route('instrument.getResult')}}" method="POST" style="display: none;">
+                                <input type="file" id="file-to-fetch" name="file-to-fetch">
+                                <input type="hidden" name="test_type_id" value="{{$test->testType->id}}">
+                                <input type="hidden" name="instrument_count" value="{{$test->testType->instruments->count()}}">
+                            </form>
+                            <script>
+                            </script>
                         </div>
                         @endif
                     </div>

@@ -170,13 +170,28 @@ class InstrumentController extends \BaseController {
 	 */
 	public function getTestResult()
 	{
-		//Get Instrument Interface Class file
-		$testTypeID = Input::get("test_type_id");
-		$testType = TestType::find($testTypeID);
-		$instrument = $testType->instruments->first();
+		$result = [];
 
- 		// Fetch the results
-		return $instrument->fetchResult($testType);
+		try {
+			
+			//Get Instrument Interface Class file
+			$testTypeID = Input::get("test_type_id");
+			$testType = TestType::find($testTypeID);
+			$resultFile = "uploads/".basename($_FILES["file-to-fetch"]["name"]);
+
+			move_uploaded_file($_FILES['file-to-fetch']['tmp_name'], $resultFile);
+
+			$instrument = $testType->instruments->filter(function($inst){
+					return $inst->active == 1;
+				})->first();
+
+	 		// Fetch the results
+			$result = $instrument->fetchResult($testType, $resultFile);
+		} catch (Exception $e) {
+			\Log::error($e);
+		}
+
+		return $result;
 	}
 
 	/**

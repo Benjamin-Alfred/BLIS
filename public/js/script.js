@@ -201,15 +201,33 @@ $(function(){
 	 */
 
 	$('.fetch-test-data').click(function(){
-		var testTypeID = $(this).data('test-type-id');
-		var url = $(this).data('url');
-		$.post(url, { test_type_id: testTypeID}).done(function(data){
-			$.each($.parseJSON(data), function (index, obj) {
-				console.log(index + " " + obj);
-				$('#'+index).val(obj);
-			});
-		});
+		$("#file-to-fetch").trigger("click");
 	});
+    $("#file-to-fetch").change(function(){
+        $("#fetch-form").submit();
+    });
+    $("#fetch-form").on('submit',(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $("#fetch-form").attr('action'),
+            type: "POST",
+            data:  new FormData(this),
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(data)
+            {
+				$.each($.parseJSON(data), function (index, obj) {
+					console.log(index + " " + obj);
+					$('#'+index).val(obj);
+				});
+            },
+            error: function(e) 
+            {
+            
+            }          
+        });
+    }));
 
 
 	/** 
