@@ -6,7 +6,6 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //validate input
         //Check if json
-        \Log::info("FSI: ".json_encode($labRequest));
         $this->process($labRequest);
     }
 
@@ -235,6 +234,7 @@ class FansoftInterfacer implements InterfacerInterface{
         {
 	    Log::error("Lab Test NOT FOUND: $labRequest->investigation");
             $this->saveToExternalDump($labRequest, ExternalDump::TEST_NOT_FOUND);
+            echo '{"status": "error", "message": "Investigation not found!"}';
             return;
         }
         //Check if visit exists, if true dont save again
@@ -291,7 +291,10 @@ class FansoftInterfacer implements InterfacerInterface{
                 });
 
                 $this->saveToExternalDump($labRequest, $test->id);
+                echo '{"status": "success", "message": '.$test->id.'}';
                 return;
+            }else{
+                echo '{"status": "error", "message": "Duplicate investigation request!"}';
             }
         }
         $this->saveToExternalDump($labRequest, null);

@@ -27,7 +27,9 @@ class InterfacerController extends \BaseController{
             $labRequest =  Input::get('lab_request');
             \Log::info($labRequest);
         }else{
+            echo '{"status": "error", "message": "Authentication failure!"}';
             \Log::info("API validation failure.");
+            return;
         }
         //Validate::ifValid()
 
