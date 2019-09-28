@@ -2,20 +2,6 @@
 
 class InterfacerController extends \BaseController{
 
-    public function receiveLabRequest()
-    {
-        //authenticate() connection
-
-        $labRequest = Request::getContent();
-        $labRequest = str_replace(['labRequest', '='], ['', ''], $labRequest);
-
-        //Validate::ifValid()
-
-        //Fire event with the received data
-        Event::fire('api.receivedLabRequest', json_decode($labRequest));
-    }
-
-
     /**
     * Authenticate API calls using Secret keys set on the UI
     * @param authkey Key to check if valid
@@ -28,6 +14,25 @@ class InterfacerController extends \BaseController{
             return true;
         }
         return false;
+    }
+
+    public function receiveLabRequest()
+    {
+        //authenticate() connection
+
+        $labRequest = Request::getContent();
+        // $labRequest = str_replace(['labRequest', '='], ['', ''], $labRequest);
+
+        if($this->authenticate(Input::get('api_key'))){
+            $labRequest =  Input::get('lab_request');
+            \Log::info($labRequest);
+        }else{
+            \Log::info("API validation failure.");
+        }
+        //Validate::ifValid()
+
+        //Fire event with the received data
+        Event::fire('api.receivedLabRequest', json_decode($labRequest));
     }
 
     public function connect(){}
