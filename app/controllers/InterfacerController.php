@@ -24,8 +24,14 @@ class InterfacerController extends \BaseController{
         // $labRequest = str_replace(['labRequest', '='], ['', ''], $labRequest);
 
         if($this->authenticate(Input::get('api_key'))){
-            $labRequest =  Input::get('lab_request');
-            \Log::info($labRequest);
+            $labRequestString =  Input::get('lab_request');
+            $labRequest = json_decode($labRequestString);
+            \Log::info($labRequestString);
+
+            if (is_null($labRequest)) {
+                echo '{"status": "error", "message": "Malformed JSON string!"}';
+                return;
+            }
         }else{
             echo '{"status": "error", "message": "Authentication failure!"}';
             \Log::info("API validation failure.");
@@ -34,7 +40,7 @@ class InterfacerController extends \BaseController{
         //Validate::ifValid()
 
         //Fire event with the received data
-        Event::fire('api.receivedLabRequest', json_decode($labRequest));
+        Event::fire('api.receivedLabRequest', $labRequest);
     }
 
     public function connect(){}
