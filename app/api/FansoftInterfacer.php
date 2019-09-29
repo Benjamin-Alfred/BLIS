@@ -17,7 +17,8 @@ class FansoftInterfacer implements InterfacerInterface{
     public function send($testId)
     {
         //Sending current test
-        if(Config::get('kblis.send-to-HMIS') === true){
+        Log::info("SEND TO HMIS: ".Config::get('kblis.send-to-HMIS'));
+        if(Config::get('kblis.send-to-HMIS') == true){
             $this->createJsonString($testId);
             //Sending all pending requests also
             $pendingRequests = ExternalDump::where('result_returned', 2)->get();
@@ -116,39 +117,21 @@ class FansoftInterfacer implements InterfacerInterface{
             }
         }
 
-        //TODO - relate measure to test-result
-        $range = Measure::getRange($test->visit->patient, $testResults->first()->measure_id);
-        $unit = Measure::find($testResults->first()->measure_id)->unit;
+        $resultString = "{";
+        foreach($testResults as $result){
+            $resultString .= '"'. Measure::find($result->measure_id)->name .'": {';
+            $resultString .= '"result": "'. $result->result . '",';
+            $limits = Measure::getRangeLimits($test->visit->patient, $result->measure_id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started));
+            $resultString .= '"lower": "'. $limits->lower . '",';
+            $resultString .= '"upper": "'. $limits->upper . '",';
+            $resultString .= '"unit": "'. Measure::find($result->measure_id)->unit . '"},';
+        }
+        $resultString = trim($resultString, ",")."}";
 
-        $result = $testResults->first()->result ." ". $range ." ".$unit;
-
-        $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": "%s", "verified_by": "%s", "technician_comment": "%s"}', 
-            $labNumber, $tested_by, $result, $verified_by, trim($interpretation));
+        $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": %s, "verified_by": "%s", "technician_comment": "%s"}', 
+            $labNumber, $tested_by, $resultString, $verified_by, trim($interpretation));
         $this->sendRequest($httpCurl, urlencode($jsonResponseString), $labNumber);
         
-        //loop through labRequests and foreach of them get the result and put in an array
-        foreach ($externlabRequestTree as $key => $externlabRequest){ 
-            $mKey = array_search($externlabRequest->investigation, $testMeasures->lists('name'));
-            
-            if($mKey === false){
-                Log::error("MEASURE NOT FOUND: TestType ($testType->name) -  Measure $externlabRequest->investigation not found in our system");
-            }
-            else {
-                $measureId = $testMeasures->get($mKey)->id;
-
-                $rKey = array_search($measureId, $testResults->lists('measure_id'));
-                $matchingResult = $testResults->get($rKey);
-
-                $range = Measure::getRange($test->visit->patient, $measureId);
-                $unit = Measure::find($measureId)->unit;
-
-                $result = $matchingResult->result." ". $range ." ".$unit;
-
-                $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": "%s", "verified_by": "%s", "technician_comment": "%s"}', 
-                            $externlabRequest->lab_number, $tested_by, $result, $verified_by, "");
-                $this->sendRequest($httpCurl, urlencode($jsonResponseString), $externlabRequest->lab_number);
-            }
-        }
         Log::info($httpCurl);
         curl_close($httpCurl);
     }
@@ -162,6 +145,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $jsonResponse = "lab_result=".$jsonResponse;
         //Foreach result in the array of results send to sanitas-url in config
         curl_setopt($httpCurl, CURLOPT_POSTFIELDS, $jsonResponse);
+        Log::info("RETURN RESULT: $httpCurl");
 
         $response = curl_exec($httpCurl);
 
