@@ -244,6 +244,51 @@ class Measure extends Eloquent
 		}
 		return null;
 	}
+
+	/**
+	 *  Get measure range limits, given patient patient details
+	 *
+	 * @return boolean
+	 */
+	public static function getRangeLimits($patient, $measureId, $testDate = NULL)
+	{
+		$months = $patient->getAge('M', $testDate);
+		$years = $patient->getAge('Y', $testDate);
+		$days = $patient->getAge('D', $testDate);
+
+		if($years == 0){
+			if($months == 0){
+				$age = $months/365;
+				$measureRange = MeasureRange::where('measure_id', '=', $measureId)
+										->where('age_min', '<=',  $age)
+										->where('age_max', '>=', $age);
+			}else{
+				$age = $months/12;
+				$measureRange = MeasureRange::where('measure_id', '=', $measureId)
+										->where('age_min', '<=',  $age)
+										->where('age_max', '>=', $age);
+			}
+		}else{
+			$age = $years;
+			$measureRange = MeasureRange::where('measure_id', '=', $measureId)
+									->where('age_min', '<=',  $age)
+									->where('age_max', '>=', $age)
+									->where(function($q) use($patient){
+										$q->where('gender', '=', $patient->gender)
+										  ->orWhere('gender', '=', 2); //signifies both genders
+									});
+		}
+
+		if(count($measureRange->get()) >= 1){
+
+			//Assume the first is the desirable/normal one TODO: confirm best practice
+			$chosenRange = $measureRange->first();
+
+			return ['lower' => $chosenRange->range_lower, "upper" => $chosenRange->range_upper];
+		}
+		return null;
+	}
+
 	/**
 	 *  Get test result count for the given measure and parameters
 	 *
