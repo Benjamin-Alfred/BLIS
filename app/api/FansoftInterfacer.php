@@ -36,11 +36,6 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //if($comments==null or $comments==''){$comments = 'No Comments';
 
-        //We use curl to send the requests
-        $httpCurl = curl_init(Config::get('kblis.hmis-url'));
-        curl_setopt($httpCurl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($httpCurl, CURLOPT_POST, true);
-
         //If testID is null we cannot handle this test as we cannot know the results
         if($testId == null){
             return null;
@@ -53,84 +48,64 @@ class FansoftInterfacer implements InterfacerInterface{
         //Measures
         $testTypeId = $test->testType()->get()->lists('id')[0];
         $testType = TestType::find($testTypeId);
-        $testMeasures = $testType->measures;
 
-        //Get external requests and all its children
-        $externalDump = new ExternalDump();
+        //Get external request details
         $externRequest = ExternalDump::where('test_id', '=', $testId)->get();
 
         if(!($externRequest->first())){
             //Not a request we can send back
             return null;
+        }else{
+            $externalRequest = $externRequest->first();
         }
 
-        $labNumber = $externRequest->lists('lab_number')[0];
-        $externlabRequestTree = $externalDump->getLabRequestAndMeasures($labNumber);
+        $labNumber = $externalRequest['lab_no'];
 
         $interpretation = "";
-        //IF the test has no children prepend the status to the result
-        if ($externlabRequestTree->isEmpty()) {
-            if($test->test_status_id == Test::COMPLETED){
-                $interpretation = "Done: ".$test->interpretation;
-            }
-            elseif ($test->test_status_id == Test::VERIFIED) {
-                $interpretation = "Tested and verified: ".$test->interpretation;
-            }
+
+        $interpretation = $test->interpretation;
+
+        $specimenName = $test->specimen->specimenType->name;
+        $specimenID = $test->specimen->id;
+
+        if($test->test_status_id == Test::COMPLETED){
+            $testedBy = $test->tested_by > 0 ? $test->testedBy->name : "";
+            $testedAt = $test->time_completed;
+            $verifiedBy = "";
+            $verifiedAt = "";
         }
-        //IF the test has children, prepend the status to the interpretation
-        else {
-            if($test->test_status_id == Test::COMPLETED){
-                $interpretation = "Done ".$test->interpretation;
-            }
-            elseif ($test->test_status_id == Test::VERIFIED) {
-                $interpretation = "Tested and verified ".$test->interpretation;
-            }
+        elseif ($test->test_status_id == Test::VERIFIED) {
+            $testedBy = $test->tested_by > 0 ? $test->testedBy->name : "";
+            $testedAt = $test->time_completed;
+            $verifiedBy = $test->verified_by > 0 ? $test->verifiedBy->name : "";
+            $verifiedAt = $test->time_verified;
         }
 
         //TestedBy
-        $tested_by = ExternalUser::where('internal_user_id', '=', $test->tested_by)->get()->first();
 
-        if($tested_by == null){
-            $tested_by = "59";
-        }
-        else if ($tested_by->external_user_id == null){
-            $tested_by = "59";
-        }
-        else{
-             $tested_by = $tested_by->external_user_id;
+        if($testedBy == null){
+            $testedBy = "59";
         }
 
-        if($test->verified_by == 0 || $test->verified_by == null){
-            $verified_by = "59";
-        }
-        else {
-            $verified_by = ExternalUser::where('internal_user_id', '=', $test->verified_by)->get()->first();
-
-            if($verified_by == null){
-                $verified_by = "59";
-            }
-            else if ($verified_by->external_user_id == null){
-                $verified_by = "59";
-            }
-            else {
-                $verified_by = $verified_by->external_user_id;
-            }
+        if($verifiedBy == null){
+            $verifiedBy = "59";
         }
 
-        $resultString = "{";
+        $resultString = "[";
         foreach($testResults as $result){
-            $resultString .= '"'. Measure::find($result->measure_id)->name .'": {';
-            $resultString .= '"result": "'. $result->result . '",';
+            $resultString .= '{"parameter": "'. Measure::find($result->measure_id)->name .'",';
+            $resultString .= '"value": "'. $result->result . '",';
             $limits = Measure::getRangeLimits($test->visit->patient, $result->measure_id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started));
-            $resultString .= '"lower": "'. $limits->lower . '",';
-            $resultString .= '"upper": "'. $limits->upper . '",';
+            $resultString .= '"lowerLimit": "'. $limits['lower'] . '",';
+            $resultString .= '"upperLimit": "'. $limits['upper'] . '",';
             $resultString .= '"unit": "'. Measure::find($result->measure_id)->unit . '"},';
         }
-        $resultString = trim($resultString, ",")."}";
+        $resultString = trim($resultString, ",")."]";
 
-        $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": %s, "verified_by": "%s", "technician_comment": "%s"}', 
-            $labNumber, $tested_by, $resultString, $verified_by, trim($interpretation));
-        $this->sendRequest($httpCurl, urlencode($jsonResponseString), $labNumber);
+        $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
+            $labNumber, $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt trim($interpretation), $specimenName, $specimenID);
+
+        $this->sendRequest($jsonResponseString, $labNumber);
         
         Log::info($httpCurl);
         curl_close($httpCurl);
@@ -140,14 +115,25 @@ class FansoftInterfacer implements InterfacerInterface{
     *   Function to send Json request using Curl
     **/
 
-    private function sendRequest($httpCurl, $jsonResponse, $labNumber)
+    private function sendRequest($jsonResponse, $labNumber)
     {
-        $jsonResponse = "lab_result=".$jsonResponse;
-        //Foreach result in the array of results send to sanitas-url in config
-        curl_setopt($httpCurl, CURLOPT_POSTFIELDS, $jsonResponse);
-        Log::info("RETURN RESULT: $httpCurl");
+        //We use curl to send the requests
+        $httpCurl = curl_init();
+        $params = json_encode(["lab_result" => $jsonResponse]);
+
+        $defaults = [
+                    CURLOPT_URL => Config::get('kblis.hmis-url'),
+                    CURLOPT_POST => true,
+                    CURLINFO_HEADER_OUT => true,
+                    CURLOPT_POSTFIELDS => $params,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Content-Length: ' . strlen($payload)],
+                ];
+        curl_setopt_array($httpCurl, $defaults);
 
         $response = curl_exec($httpCurl);
+
+        Log::info("RESPONSE: ".$response);
 
         //"Test updated" is the actual response 
         //TODO: Replace true with actual expected response this is just for testing
@@ -166,6 +152,8 @@ class FansoftInterfacer implements InterfacerInterface{
             $updatedExternalRequest->save();
             Log::error("HTTP Error: FansoftInterfacer failed to send $jsonResponse : Error message "+ curl_error($httpCurl));
         }
+
+        curl_close($httpCurl);
     }
 
      /**
@@ -174,6 +162,7 @@ class FansoftInterfacer implements InterfacerInterface{
      *
      * @var array lab_requests
      */
+
     public function process($labRequest)
     {
         //First: Check if patient exists, if true dont save again
@@ -205,8 +194,8 @@ class FansoftInterfacer implements InterfacerInterface{
             $patient = $patient->first();
         }
 
-//        //We check if the test exists in our system if not we just save the request in stagingTable
-//        if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
+        //We check if the test exists in our system if not we just save the request in stagingTable
+        // if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
         if($labRequest->parent_lab_number == '0')
         {
             $testTypeId = TestType::getTestTypeIdByTestName($labRequest->investigation);
@@ -246,7 +235,7 @@ class FansoftInterfacer implements InterfacerInterface{
 
         $test = null;
         //Check if parentLabNO is 0 thus its the main test and not a measure
-//        if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
+        //if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
         if($labRequest->parent_lab_number == '0')
         {
             //Check via the labno, if this is a duplicate request and we already saved the test
