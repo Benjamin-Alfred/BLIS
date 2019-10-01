@@ -102,13 +102,13 @@ class FansoftInterfacer implements InterfacerInterface{
         }
         $resultString = trim($resultString, ",")."]";
 
-        $jsonResponseString = sprintf('{"lab_number": "%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
-            $labNumber, $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt trim($interpretation), $specimenName, $specimenID);
+        $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
+            $labNumber, $externalRequest['investigation'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt trim($interpretation), $specimenName, $specimenID);
+
+        Log::info("JSON String: $jsonResponseString");
 
         $this->sendRequest($jsonResponseString, $labNumber);
         
-        Log::info($httpCurl);
-        curl_close($httpCurl);
     }
 
     /**
@@ -119,6 +119,7 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //We use curl to send the requests
         $httpCurl = curl_init();
+
         $params = json_encode(["lab_result" => $jsonResponse]);
 
         $defaults = [
@@ -127,7 +128,7 @@ class FansoftInterfacer implements InterfacerInterface{
                     CURLINFO_HEADER_OUT => true,
                     CURLOPT_POSTFIELDS => $params,
                     CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Content-Length: ' . strlen($payload)],
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Content-Length: ' . strlen($params)],
                 ];
         curl_setopt_array($httpCurl, $defaults);
 
@@ -140,14 +141,15 @@ class FansoftInterfacer implements InterfacerInterface{
         if($response == "Test updated")
         {
             //Set status in external lab-request to `sent`
-            $updatedExternalRequest = ExternalDump::where('lab_number', '=', $labNumber)->first();
+            $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->first();
             $updatedExternalRequest->result_returned = 1;
             $updatedExternalRequest->save();
+            Log::info("Success response received from HMIS.");
         }
         else
         {
             //Set status in external lab-request to `sent`
-            $updatedExternalRequest = ExternalDump::where('lab_number', '=', $labNumber)->first();
+            $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->first();
             $updatedExternalRequest->result_returned = 2;
             $updatedExternalRequest->save();
             Log::error("HTTP Error: FansoftInterfacer failed to send $jsonResponse : Error message "+ curl_error($httpCurl));
@@ -171,6 +173,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $lastName = $labRequest->patient->last_name;
         if(isset($middleName) && strcmp($middleName, "") > 0) $fullName = "$fullName " . $middleName;
         if(isset($lastName) && strcmp($lastName, "") > 0) $fullName = "$fullName " . $lastName;
+        $fullName = str_replace("  ", " ", $fullName).trim();
 
         $patient = Patient::where('external_patient_number', '=', $labRequest->patient->id)->where('name', '=', $fullName)->get();
 
@@ -205,7 +208,7 @@ class FansoftInterfacer implements InterfacerInterface{
         }
         if(is_null($testTypeId) && $labRequest->parent_lab_number == '0')
         {
-	    Log::error("Lab Test NOT FOUND: $labRequest->investigation");
+    	    Log::error("Lab Test NOT FOUND: $labRequest->investigation");
             $this->saveToExternalDump($labRequest, ExternalDump::TEST_NOT_FOUND);
             echo '{"status": "error", "message": "Investigation not found!"}';
             return;
