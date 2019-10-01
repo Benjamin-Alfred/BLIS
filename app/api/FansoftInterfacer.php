@@ -103,7 +103,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $resultString = trim($resultString, ",")."]";
 
         $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
-            $labNumber, $externalRequest['investigation'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt trim($interpretation), $specimenName, $specimenID);
+            $labNumber, $externalRequest['investigation'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID);
 
         Log::info("JSON String: $jsonResponseString");
 
@@ -173,7 +173,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $lastName = $labRequest->patient->last_name;
         if(isset($middleName) && strcmp($middleName, "") > 0) $fullName = "$fullName " . $middleName;
         if(isset($lastName) && strcmp($lastName, "") > 0) $fullName = "$fullName " . $lastName;
-        $fullName = str_replace("  ", " ", $fullName).trim();
+        $fullName = trim(str_replace("  ", " ", $fullName));
 
         $patient = Patient::where('external_patient_number', '=', $labRequest->patient->id)->where('name', '=', $fullName)->get();
 
@@ -214,8 +214,11 @@ class FansoftInterfacer implements InterfacerInterface{
             return;
         }
         //Check if visit exists, if true dont save again
+        $labRequest->patient_visit_type = strtolower($labRequest->patient_visit_type);
         $visitType = array('ip' => 'In-patient', 'op' => 'Out-patient');//Should be a constant
-        $visit = Visit::where('visit_number', '=', $labRequest->patient_visit_number)->where('visit_type', '=', $visitType[$labRequest->patient_visit_type])->where('patient_id', '=', $patient->id)->get();
+        $visit = Visit::where('visit_number', '=', $labRequest->patient_visit_number)
+                    ->where('visit_type', '=', $visitType[$labRequest->patient_visit_type])
+                    ->where('patient_id', '=', $patient->id)->get();
         if (!$visit->first())
         {
             $visit = new Visit();
