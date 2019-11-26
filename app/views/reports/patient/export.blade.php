@@ -1,5 +1,4 @@
-<html>
-	<head>
+<html><head>
 		{{ HTML::style('css/bootstrap.min.css') }}
 		{{ HTML::style('css/bootstrap-theme.min.css') }}
 		<style type="text/css">
@@ -10,9 +9,29 @@
 			#content p{
 				font-size:12px;
 			 }
+            thead:before, thead:after { display: none; }
+            tbody:before, tbody:after { display: none; }
+            .table-row{
+            	border-bottom: 1px solid black;
+            	width: 100%;
+            	padding: 0;
+            	page-break-inside: avoid;
+            }
+            .table-col-4{
+            	display: inline-block;
+            	width: 30%;
+            	float: left;
+            	padding: 5px;
+            }
+            .table-col-8{
+            	border-left: 1px solid black;
+            	display: inline-block;
+            	width: 60%;
+            	float: left;
+            	padding: 5px;
+            }
 		</style>
-	</head>
-	<body>
+	</head><body>
 		<div id="wrap">
 		    <div class="container-fluid">
 		        <div class="row">
@@ -89,74 +108,100 @@
 							</tbody>
 						</table>
 						<br>
-						<table class="table" style="border: 1px solid #000;"  width="100%">
-							<tbody align="left">
-								<tr>
-									<td colspan="8"><strong>{{trans('messages.test-results')}}</strong></td>
-								</tr>
-								<tr>
-									<td><strong>{{Lang::choice('messages.test-type', 1)}}</strong></td>
-									<td><strong>{{trans('messages.test-results-values')}}</strong></td>
-									<td><strong>{{trans('messages.test-remarks')}}</strong></td>
-									<td><strong>{{trans('messages.tested-by')}}</strong></td>
-									<td><strong>{{trans('messages.results-entry-date')}}</strong></td>
-									<td><strong>{{trans('messages.date-tested')}}</strong></td>
-									<td><strong>{{trans('messages.verified-by')}}</strong></td>
-									<td><strong>{{trans('messages.date-verified')}}</strong></td>
-								</tr>
-								@forelse($tests as $test)
-									<tr>
-										<td>{{ $test->testType->name }}</td>
-										<td>
-											@foreach($test->testResults as $result)
-											<p>
-												{{ Measure::find($result->measure_id)->name }}: {{ $result->result }}
-												{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
-												{{ Measure::find($result->measure_id)->unit }}
-											</p>
-											@endforeach
-										</td>
-										<td>{{ $test->interpretation }}</td>
-										<td>{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}</td>
-										<td>{{ $test->testResults->last()->time_entered }}</td>
-										<td>{{ $test->time_completed }}</td>
-										<td>{{ $test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending') }}</td>
-										<td>{{ $test->time_verified }}</td>
-									</tr>
-								@empty
-									<tr>
-										<td colspan="8">{{trans("messages.no-records-found")}}</td>
-									</tr>
-								@endforelse
-							</tbody>
-						</table>
+						<p style="font-size:1.2em;"><strong>{{trans('messages.test-results')}}</strong></p>
+						@forelse($tests as $test)
+							<div style="border: 1px solid black;">
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{Lang::choice('messages.test-type', 1)}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->testType->name }}</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.tested-by')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.results-entry-date')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->testResults->last()->time_entered }}</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.date-tested')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->time_completed }}</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.verified-by')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->verified_by > 0 ? $test->verifiedBy->name : trans('messages.verification-pending') }}</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.date-verified')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->time_verified }}</div>
+							</div>
+							<div class="table-row" style="border-top: 1px solid black;">
+								<div class="table-col-4">
+									<strong>{{trans('messages.test-results-values')}}</strong></div>
+								<div class="table-col-8">
+									@foreach($test->testResults as $result)
+									<p>
+										{{ Measure::find($result->measure_id)->name }}: {{ $result->result }}
+										{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
+										{{ Measure::find($result->measure_id)->unit }}
+									</p>
+									@endforeach
+								</div>
+							</div>
+							<div class="table-row">
+								<div class="table-col-4">
+									<strong>{{trans('messages.test-remarks')}}</strong></div>
+								<div class="table-col-8">
+									{{ $test->interpretation }} &nbsp;</div>
+							</div>
+							</div>
+						@empty
+							<p>{{trans("messages.no-records-found")}}</p>
+						@endforelse
 					</div>
 				</div>
-				<hr style="border: 1px solid black;">
-				<table class="table" style="border: 1px solid #000;font-size:12px;"  width="100%">
-					<tbody>
-						<tr>
-							<td><strong>{{ trans('messages.authorized-by') }}</strong></td>
-							<td>{{ trans('messages.signature-holder') }}</td>
-							<td><strong>{{ Lang::choice('messages.name', 1).":" }}</strong>{{ trans('messages.signature-holder') }}</td>
-						</tr>
-						<tr>
-							<td>{{ Config::get('kblis.lab-quality-manager-name') }}</td>
-							<td>{{ Config::get('kblis.lab-manager-name') }}</td>
-							<td>{{ Config::get('kblis.lab-director-name') }}</td>
-						</tr>
-						<tr>
-							<td><u><strong>{{ trans('messages.quality-manager') }}</strong></u></td>
-							<td><u><strong>{{ trans('messages.lab-manager') }}</strong></u></td>
-							<td><u><strong>{{ trans('messages.lab-director') }}</strong></u></td>
-						</tr>
-						<tr>
-							<td><strong>{{ Config::get('kblis.patient-report-no') }}</strong></td>
-							<td>&nbsp;</td>
-							<td><strong>{{ Config::get('kblis.patient-report-version') }}</strong></td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="row">
+					<br>
+					<hr style="border: 1px solid black;">
+					<div style="border: 1px solid black; page-break-inside: avoid;padding: 5px;">
+						<div style="clear:both">&nbsp;</div>
+						<div style="display: inline-block;width: 47%;float: left;">
+							<p><strong>{{ trans('messages.authorized-by') }}</strong> {{ trans('messages.signature-holder') }}</p>
+						</div>
+						<div style="display: inline-block;width: 47%;float: left;">
+							<p><strong>{{ Lang::choice('messages.name', 1).":" }}</strong> {{ trans('messages.signature-holder') }}</p>
+						</div>
+
+						<div style="clear:both">&nbsp;</div>
+						<div style="display: inline-block;width: 30%;float: left;">
+							<p>{{ Config::get('kblis.lab-quality-manager-name') }}</p>
+							<p><u><strong>{{ trans('messages.quality-manager') }}</p>
+							<p><strong>{{ Config::get('kblis.patient-report-no') }}</p>
+						</div>
+						<div style="display: inline-block;width: 30%;float: left;">
+							<p>{{ Config::get('kblis.lab-manager-name') }}</p>
+							<p><u><strong>{{ trans('messages.lab-manager') }}</p>
+							<p>&nbsp;</p>
+						</div>
+						<div style="display: inline-block;width: 30%;float: left;">
+							<p>{{ Config::get('kblis.lab-director-name') }}</p>
+							<p><u><strong>{{ trans('messages.lab-director') }}</strong></u></p>
+							<p><strong>{{ Config::get('kblis.patient-report-version') }}</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script type="text/php">
@@ -173,5 +218,4 @@
 		        $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
 		    }
 		</script>
-	</body>
-</html>
+	</body></html>

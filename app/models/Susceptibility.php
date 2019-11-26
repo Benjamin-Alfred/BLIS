@@ -31,6 +31,21 @@ class Susceptibility extends Eloquent
     {
         return $this->hasOne('Test', 'test_id');
     }
+	/**
+	 * Organism relationship
+	 */
+	public function organism()
+    {
+        // return $this->hasOne('Organism', 'organism_id');
+        return $this->hasOne('Organism', 'id', 'organism_id');
+    }
+	/**
+	 * Drug relationship
+	 */
+	public function drug()
+    {
+        return $this->hasOne('Drug', 'id', 'drug_id');
+    }
     /*
     *	Function to return drug susceptibility given testId, organismId and drugId
     *

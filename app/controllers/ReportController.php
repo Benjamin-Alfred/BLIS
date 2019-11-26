@@ -135,6 +135,7 @@ class ReportController extends \BaseController {
 			$pdf = @PDF::loadView('reports.patient.export', 
 					['patient' => $patient, 'tests' => $tests, 'from' => $from, 'to' => $to, 'visit' => $visit, 'accredited' => $accredited]);
 			@$pdf->getDomPDF()->set_option("enable_php", true);
+			@$pdf->getDomPDF()->set_option("enable_html5_parser", true);
 
 			return @$pdf->download($fileName);
 		}
@@ -186,7 +187,8 @@ class ReportController extends \BaseController {
 		}
 
 		$toPlusOne = date_add(new DateTime($to), date_interval_create_from_date_string('1 day'));
-		$records = Input::get('records');
+		$records = "tests";
+		if(Input::get('records')) $records = Input::get('records');
 		$testCategory = Input::get('section_id');
 		$testType = Input::get('test_type');
 		$labSections = TestCategory::lists('name', 'id');
@@ -214,7 +216,7 @@ class ReportController extends \BaseController {
 			}
 			if(Input::has('word')){
 				$date = date("Ymdhi");
-				$fileName = "daily_visits_log_".$date.".doc";
+				$fileName = "daily_visits_log_".$date;
 
 				$pdf = PDF::loadView('reports.daily.exportPatientLog', 
 						['visits' => $visits, 'accredited' => $accredited, 'input' => Input::all()]);
@@ -231,7 +233,7 @@ class ReportController extends \BaseController {
 			}
 		}
 		//Begin specimen rejections
-		else if($records=='rejections')
+		if($records=='rejections')
 		{
 			$specimens = Specimen::where('specimen_status_id', '=', Specimen::REJECTED);
 			/*Filter by test category*/
@@ -288,7 +290,7 @@ class ReportController extends \BaseController {
 			}
 		}
 		//Begin test records
-		else
+		if($records=='tests')
 		{
 			$tests = Test::whereNotIn('test_status_id', [Test::NOT_RECEIVED]);
 			
@@ -355,6 +357,98 @@ class ReportController extends \BaseController {
 							->with('testCategory', $testCategory)
 							->with('testType', $testType)
 							->with('pendingOrAll', $pendingOrAll)
+							->with('accredited', $accredited)
+							->with('error', $error)
+							->withInput(Input::all());
+			}
+		}
+		//Begin amr-test records
+		if($records=='amr-tests')
+		{
+			//We want verified culture tests from the given date range
+			/*Filter by date, test_status and test_type_id*/
+			//TODO: Find better way to get these culture IDs
+			if($from||$to){
+				if(strtotime($from)>strtotime($to)||strtotime($from)>strtotime($date)||strtotime($to)>strtotime($date)){
+						$error = trans('messages.check-date-range');
+				}
+				else
+				{
+					$tests = Test::whereBetween('time_created', array($from, $toPlusOne))
+								->where('test_status_id', [Test::VERIFIED])
+								->whereIn('test_type_id', [276,317,320,263,311,313,319,316,282,315,309,363,361,318])
+								->get();
+				}
+			}
+			else
+			{
+				$tests = Test::where('time_created', 'LIKE', $date.'%')
+								->where('test_status_id', [Test::VERIFIED])
+								->whereIn('test_type_id', [276,317,320,263,311,313,319,316,282,315,309,363,361,318])
+								->get();
+			}
+			
+			/*Get collection of tests*/
+			if(Input::has('word')){
+				$date = date("Ymdhi");
+				$fileName = "daily_test_records_".$date.".json";
+				$headers = array(
+				    "Content-type"=>"text/json",
+				    "Content-Disposition"=>"attachment;Filename=".$fileName
+				);
+				$content = [];
+				if(count($tests) > 0){
+					foreach ($tests as $test) {
+						$testContent = [];
+						$testContent['patient_name'] = $test->visit->patient->name;
+						$testContent['patient_number'] = $test->visit->visit_number;
+						$testContent['gender'] = $test->visit->patient->getGender();
+						$testContent['age'] = $test->visit->patient->getAge("Y");
+						$testContent['age_unit'] = "years";
+						$testContent['county'] = "";
+						$testContent['sub_county'] = "";
+						$testContent['village'] = "";
+						$testContent['prediagnosis'] = "";
+						$testContent['specimen_collection_date'] = $test->specimen->time_accepted;
+						$testContent['patient_type'] = $test->visit->visit_type;
+						$testContent['ward'] = "";
+						$testContent['admission_date'] = "";
+						$testContent['currently_on_therapy'] = "";
+						$testContent['specimen_type'] = $test->specimen->specimenType->name;
+						$testContent['specimen_source'] = $test->specimen->specimenType->name;
+						$testContent['lab_id'] = "";
+
+
+						$isolate["obtained"] = [];
+						if (count($test->susceptibility) > 0) {
+							foreach ($test->susceptibility as $suscept) {
+								$sus = [];
+								if (isset($suscept->id)) {
+									$sus['isolate_name'] = $suscept->organism->name;
+									$sus ['drug'] = $suscept->drug->name;
+									$sus['zone'] = $suscept->zone;
+									$sus['interpretation'] = $suscept->interpretation;
+
+									$isolate["obtained"][] = $sus;
+								}
+							}
+						}
+
+						$testContent['isolate'] = $isolate;
+
+						$testContent['test_type'] = $test->testType->name;
+
+						$content[] = $testContent;
+					}
+				}else{
+					$content["message"] = ""; 
+				}
+		    	return Response::make(json_encode($content),200, $headers);
+			}
+			else
+			{
+				return View::make('reports.daily.amr')
+							->with('tests', $tests)
 							->with('accredited', $accredited)
 							->with('error', $error)
 							->withInput(Input::all());
