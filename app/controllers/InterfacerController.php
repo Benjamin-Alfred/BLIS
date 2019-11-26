@@ -9,7 +9,7 @@ class InterfacerController extends \BaseController{
     */
     public function authenticate($authKey)
     {
-        if($authKey == '123456')//default key for the time being 123456
+        if($authKey == Config::get('kblis.hmis-key'))//default key for the time being 123456
         {
             return true;
         }
@@ -30,6 +30,7 @@ class InterfacerController extends \BaseController{
 
             if (is_null($labRequest)) {
                 echo '{"status": "error", "message": "Malformed JSON string!"}';
+                Log::info("Malformed Json string.");
                 return;
             }
         }else{
