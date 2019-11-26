@@ -86,6 +86,7 @@ class TestTypeController extends \BaseController {
 			// store 
 			$testtype = new TestType;
 			$testtype->name = trim(Input::get('name'));
+			$testtype->alias = trim(Input::get('alias'));
 			$testtype->description = Input::get('description');
 			$testtype->test_category_id = Input::get('test_category_id');
 			$testtype->targetTAT = Input::get('targetTAT');
@@ -179,6 +180,7 @@ class TestTypeController extends \BaseController {
 			// Update
 			$testtype = TestType::find($id);
 			$testtype->name = trim(Input::get('name'));
+			$testtype->alias = trim(Input::get('alias'));
 			$testtype->description = Input::get('description');
 			$testtype->test_category_id = Input::get('test_category_id');
 			$testtype->targetTAT = Input::get('targetTAT');
