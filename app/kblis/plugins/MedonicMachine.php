@@ -77,20 +77,17 @@ class MedonicMachine extends \KBLIS\Instrumentation\AbstractInstrumentor
 			case 'RDWR':
 				$newCode = 'RDW';
 				break;
-			case 'HB':
-				$newCode = 'HGB';
+			case 'HGB':
+				$newCode = 'HB';
 				break;
-			case 'HB':
-				$newCode = 'HGB';
+			case 'MA':
+				$newCode = 'Mon#';
 				break;
 			case 'LA':
 				$newCode = 'Lym#';
 				break;
-			case 'HB':
-				$newCode = 'HGB';
-				break;
-			case 'HB':
-				$newCode = 'HGB';
+			case 'GA':
+				$newCode = 'Neu#';
 				break;
 		}
 
