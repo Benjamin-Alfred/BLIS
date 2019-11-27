@@ -171,7 +171,7 @@
 							<td>{{ $test->interpretation == '' ? 'N/A' : $test->interpretation }}</td>
                              @endif
                              @if($result['name']==trans('messages.tested-by'))
-							<td>{{ {{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}}}</td>
+							<td>{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.pending')}}</td>
                              @endif
                              @if($result['name']==trans('messages.results-entry-date'))
 							<td>{{ $test->testResults->last()->time_entered }}</td>
