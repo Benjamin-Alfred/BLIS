@@ -444,6 +444,7 @@ class Test extends Eloquent
 
 			$q->whereHas('visit', function($q) use ($searchString)
 			{
+/*
 				$q->whereHas('patient', function($q)  use ($searchString)
 				{
 					if(is_numeric($searchString))
@@ -458,11 +459,17 @@ class Test extends Eloquent
 						$q->where('name', 'like', '%' . $searchString . '%');
 					}
 				});
+ */
+				$q->where(function($q) use ($searchString){
+					$q->where('external_patient_number', '=', $searchString )
+						->orWhere('patient_number', '=', $searchString )
+						->orWhere('name', 'like', '%' . $searchString . '%');
+				});
 			})
 			->orWhereHas('testType', function($q) use ($searchString)
 			{
 			    $q->where('name', 'like', '%' . $searchString . '%');//Search by test type
-			})
+			/*})
 			->orWhereHas('specimen', function($q) use ($searchString)
 			{
 			    $q->where('id', '=', $searchString );//Search by specimen number
@@ -472,7 +479,7 @@ class Test extends Eloquent
 				$q->where(function($q) use ($searchString){
 					$q->where('visit_number', '=', $searchString )//Search by visit number
 					->orWhere('id', '=', $searchString);
-				});
+				});*/
 			});
 		});
 
