@@ -444,26 +444,13 @@ class Test extends Eloquent
 
 			$q->whereHas('visit', function($q) use ($searchString)
 			{
-/*
 				$q->whereHas('patient', function($q)  use ($searchString)
 				{
-					if(is_numeric($searchString))
-					{
-						$q->where(function($q) use ($searchString){
-							$q->where('external_patient_number', '=', $searchString )
-							  ->orWhere('patient_number', '=', $searchString );
-						});
-					}
-					else
-					{
-						$q->where('name', 'like', '%' . $searchString . '%');
-					}
-				});
- */
-				$q->where(function($q) use ($searchString){
-					$q->where('external_patient_number', '=', $searchString )
-						->orWhere('patient_number', '=', $searchString )
-						->orWhere('name', 'like', '%' . $searchString . '%');
+					$q->where(function($q) use ($searchString){
+						$q->where('external_patient_number', '=', $searchString )
+						  ->orWhere('patient_number', '=', $searchString )
+  						  ->orWhere('name', 'like', '%' . $searchString . '%');
+					});
 				});
 			})
 			->orWhereHas('testType', function($q) use ($searchString)
