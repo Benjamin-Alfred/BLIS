@@ -637,18 +637,19 @@ class Test extends Eloquent
 
 	/**
 	 *
-	 * Get the count of this TestType, of the given Test status, for the given period 
+	 * Get the count of this TestType, of the given Test status, for the given period.
+	 * Search using the test alias (more stable) rather than the test name.
 	 *
 	 * @return $count
 	 */
 
-	public static function getCount($testTypeNames, $startDate, $endDate, $status = array(), $byTime = 0){
+	public static function getCount($testTypeAliases, $startDate, $endDate, $status = array(), $byTime = 0){
 		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
 		$query = "SELECT COUNT(DISTINCT t.id) hits FROM tests t 
 					INNER JOIN test_types tt ON t.test_type_id = tt.id 
-					WHERE tt.name IN (".implode(",", $testTypeNames). ") ";
+					WHERE tt.alias IN (".implode(",", $testTypeAliases). ") ";
 
 		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
@@ -661,12 +662,13 @@ class Test extends Eloquent
 
 	/**
 	 *
-	 * Get the count of this TestType, of the given Test status, for the given period 
+	 * Get the count of this TestType, of the given Test status, for the given period.
+	 * Search using the test alias (more stable) rather than the test name.
 	 *
 	 * @return $count
 	 */
 
-	public static function getCountByResultValue($testTypeName, $measureName, $measureResult, $startDate, $endDate, $status = array(Test::COMPLETED, Test::VERIFIED), $age = [], $byTime = 0){
+	public static function getCountByResultValue($testTypeAlias, $measureName, $measureResult, $startDate, $endDate, $status = array(Test::COMPLETED, Test::VERIFIED), $age = [], $byTime = 0){
 		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
@@ -678,7 +680,7 @@ class Test extends Eloquent
 						INNER JOIN measures m ON ttm.measure_id = m.id 
 						INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id ";
 
-		$query .= "WHERE tt.name = ? AND m.name = ? ";
+		$query .= "WHERE tt.alias = ? AND m.name = ? ";
 		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 		if (isset($measureResult)) $query .= $measureResult;
@@ -690,7 +692,7 @@ class Test extends Eloquent
 			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
 		}
 
-		$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59"));
+		$count = DB::select($query, array($testTypeAlias, $measureName, $startDate, $endDate." 23:59"));
 
 		return $count[0]->hits;
 
@@ -698,12 +700,13 @@ class Test extends Eloquent
 
 	/**
 	 *
-	 * Get the count of this TestType, of the given Test status, for the given period, for the given age
+	 * Get the count of this TestType, of the given Test status, for the given period, for the given 
+	 * age. Search using the test alias (more stable) rather than the name.
 	 *
 	 * @return $count
 	 */
 
-	public static function getCountByAge($testTypeNames, $startDate, $endDate, $testStatus = array(), $age = array(), $byTime = 0){
+	public static function getCountByAge($testTypeAliases, $startDate, $endDate, $testStatus = array(), $age = array(), $byTime = 0){
 		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 
@@ -717,7 +720,7 @@ class Test extends Eloquent
 			$query .= " AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < ".$age[1];
 		}
 
-		$query .= " WHERE tt.name IN (".implode(",", $testTypeNames). ") ";
+		$query .= " WHERE tt.alias IN (".implode(",", $testTypeAliases). ") ";
 		$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 		if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
@@ -729,21 +732,22 @@ class Test extends Eloquent
 
 	/**
 	 *
-	 * Get the count of this TestType, of the given Test status, for the given period, for the measure, for the given measure result
+	 * Get the count of this TestType, of the given Test status, for the given period, for the measure, 
+	 * for the given measure result. Search using the test alias (more stable) rather than the test name.
 	 *
 	 * @return $count
 	 */
 
-	public static function getCountByResult($testTypeName, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true, $byTime = 0){
+	public static function getCountByResult($testTypeAlias, $measureName, $measureResult, $startDate, $endDate, $testStatus = array(Test::COMPLETED, Test::VERIFIED), $interpretation = true, $byTime = 0){
 
 		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
 		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
 		
 		$query = "SELECT m.measure_type_id FROM test_types tt 
 					INNER JOIN testtype_measures ttm ON tt.id = ttm.test_type_id 
-					INNER JOIN measures m ON ttm.measure_id = m.id WHERE tt.name = ? AND m.name = ?";
+					INNER JOIN measures m ON ttm.measure_id = m.id WHERE tt.alias = ? AND m.name = ?";
 
-		$measureType = DB::select($query, array($testTypeName, $measureName));
+		$measureType = DB::select($query, array($testTypeAlias, $measureName));
 
 		// Log::info($measureType);
 
@@ -765,14 +769,14 @@ class Test extends Eloquent
 
 			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 >= mr.age_min ";
 			$query .= "AND DATEDIFF(t.". $timeField[$byTime] .", p.dob)/365.25 < mr.age_max ";
-			$query .= "WHERE tt.name = ? AND m.name = ? ";
+			$query .= "WHERE tt.alias = ? AND m.name = ? ";
 			$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 
 			if (isset($measureResult)) $query .= $measureWhere[$measureResult];
 
 			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
-			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59"));
+			$count = DB::select($query, array($testTypeAlias, $measureName, $startDate, $endDate." 23:59"));
 
 			return $count[0]->hits;
 
@@ -787,7 +791,7 @@ class Test extends Eloquent
 							INNER JOIN test_results tr ON t.id = tr.test_id AND ttm.measure_id = tr.measure_id
 							INNER JOIN measure_ranges mr ON m.id = mr.measure_id 
 								AND tr.result = mr.alphanumeric AND ISNULL(mr.deleted_at)
-						WHERE tt.name = ? AND m.name = ? ";
+						WHERE tt.alias = ? AND m.name = ? ";
 			$query .= "AND t.". $timeField[$byTime] ." between ? AND ? ";
 			
 			if($interpretation) $query .= " AND mr.interpretation = ? ";
@@ -795,7 +799,7 @@ class Test extends Eloquent
 
 			if(count($testStatus) > 0)$query .= "AND t.test_status_id IN (".implode(",", $testStatus).")";
 
-			$count = DB::select($query, array($testTypeName, $measureName, $startDate, $endDate." 23:59", $measureResult));
+			$count = DB::select($query, array($testTypeAlias, $measureName, $startDate, $endDate." 23:59", $measureResult));
 
 			return $count[0]->hits;
 
