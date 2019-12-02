@@ -83,13 +83,13 @@
 								{{ $test->requested_by or trans('messages.unknown') }}
 							</p>
 							<p class="view-striped"><strong>{{trans('messages.request-origin')}}</strong>
-								@if($test->specimen->isReferred() && $test->specimen->referral->status == Referral::REFERRED_IN)
+								@if($test->specimen && $test->specimen->isReferred() && $test->specimen->referral->status == Referral::REFERRED_IN)
 									{{ trans("messages.in") }}
 								@else
 									{{ $test->visit->visit_type }}
 								@endif</p>
 							<p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-								{{ $test->created_by > 0 ? $test->createdBy->name : trans('messages.unknown') }}</p>
+								{{ $test->created_by > 0 && $test->created_by != 2 ? $test->createdBy->name : trans('messages.unknown') }}</p>
 
 							<p class="view"><strong>{{trans('messages.tested-by')}}</strong>
 								{{ $test->tested_by > 0 ? $test->testedBy->name : trans('messages.unknown') }} </p>
