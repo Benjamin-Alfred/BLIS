@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAliasColumnToTestTypeTable extends Migration {
+class AddAliasColumnToTestTypesTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,8 +12,10 @@ class AddAliasColumnToTestTypeTable extends Migration {
 	 */
 	public function up()
 	{
-	
-		 DB::statement('ALTER TABLE test_types ADD COLUMN alias VARCHAR(100) AFTER name);');
+		Schema::table('test_types', function($table)
+		{
+		    $table->string('alias',150)->nullable()->after('name');
+		});
 	}
 
 	/**
@@ -23,7 +25,10 @@ class AddAliasColumnToTestTypeTable extends Migration {
 	 */
 	public function down()
 	{
-		 DB::statement('ALTER TABLE test_types DROP COLUMN alias;');
+		Schema::table('test_types', function(Blueprint $table)
+		{
+			$table->dropColumn('alias');
+		});
 	}
 
 }
