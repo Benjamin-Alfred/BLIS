@@ -375,6 +375,14 @@
                                 <div class="panel-body">
                                     <div class="container-fluid">
                                         <div class="display-details">
+                                            <?php
+                                                $creator = trans('messages.unknown');
+                                                try{
+                                                    $creator = $test->createdby->name;
+                                                }catch(\Exception $e){
+                                                    Log::error($e);
+                                                }
+                                            ?>
                                             <p class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
                                                 {{ $test->testType->name or trans('messages.unknown') }}</p>
                                             <p class="view"><strong>{{trans('messages.visit-number')}}</strong>
@@ -394,7 +402,7 @@
                                                     {{ $test->visit->visit_type }}
                                                 @endif</p>
                                             <p class="view-striped"><strong>{{trans('messages.registered-by')}}</strong>
-                                                {{$test->created_by > 0 ? $test->createdBy->name : trans('messages.unknown') }}</p>
+                                                {{$creator}}</p>
                                             @if($test->isCompleted())
                                             <p class="view"><strong>{{trans('messages.tested-by')}}</strong>
                                                 {{$test->tested_by > 0 ? $test->testedBy->name : trans('messages.unknown')}}</p>
