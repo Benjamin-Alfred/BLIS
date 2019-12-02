@@ -20,7 +20,9 @@
 		</div>
 		<div class="panel-body">
 			<div class="display-details">
-				<h3 class="view"><strong>{{ Lang::choice('messages.name',1) }}</strong>{{ $testtype->name }} </h3>
+				<h3 class="view-striped"><strong>{{ Lang::choice('messages.name',1) }}</strong>{{ $testtype->name }} </h3>
+				<p class="view"><strong>{{trans('messages.alias')}}</strong>
+					{{ $testtype->alias }}</p>
 				<p class="view-striped"><strong>{{trans('messages.description')}}</strong>
 					{{ $testtype->description }}</p>
 				<p class="view"><strong>{{ Lang::choice('messages.test-category',1) }}</strong>

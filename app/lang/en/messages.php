@@ -11,6 +11,7 @@ return array(
 
     'actions' => 'Actions',
     'add-another' => 'Add Another',
+    'alias' => 'Alias',
     'back' => 'Previous Page',
     'both' => 'Both',
     'cancel' => 'Cancel',

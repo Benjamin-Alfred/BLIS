@@ -27,6 +27,10 @@
 				{{ Form::text('name', Input::old('name'), array('class' => 'form-control')) }}
 			</div>
 			<div class="form-group">
+				{{ Form::label('alias', Lang::choice('messages.alias',1)) }}
+				{{ Form::text('alias', Input::old('alias'), array('class' => 'form-control')) }}
+			</div>
+			<div class="form-group">
 				{{ Form::label('description', trans('messages.description')) }}
 				{{ Form::textarea('description', Input::old('description'), 
 					array('class' => 'form-control', 'rows' => '2')) }}
