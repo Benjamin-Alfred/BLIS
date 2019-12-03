@@ -806,4 +806,29 @@ class Test extends Eloquent
 		}
 	}
 
+	/**
+	 *
+	 * Get tests of these TestTypes, of the given Test status, for the given period.
+	 * Search using the test alias (more stable) rather than the test name.
+	 *
+	 * @return $tests
+	 */
+
+	public static function getTests($testTypeAliases, $startDate, $endDate, $status = array(), $byTime = 0){
+		// $byTime: 0 - time_created, 1 - time_started, 2 - time_completed, 3 - time_verified
+		$timeField = ['time_created', 'time_started', 'time_completed', 'time_verified'];
+
+		if(!isset($endDate)){
+			date_default_timezone_set('Africa/Nairobi');
+			$endDate = date()->format("Y-m-d H:i:s");
+		}
+
+		$tests = Test::whereBetween($timeField[$byTime], array($startDate, $endDate))
+						->whereIn('test_status_id', $status)
+						->whereHas('testType', function($testType) use ($testTypeAliases){
+							$testType->whereIn('alias', $testTypeAliases);
+						})->get();
+
+		return $tests;
+	}
 }

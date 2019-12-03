@@ -51,25 +51,37 @@
 	    	<div class="row">
 				<div class="col-sm-3">
 				  	<label class="radio-inline">
-						{{ Form::radio('records', 'tests', true, array('data-toggle' => 'radio', 
+				    	<?php
+				    		$records = strcmp("tests", Input::old('records')) == 0?"true":"false";
+				    	?>
+						{{ Form::radio('records', 'tests', $records, array('data-toggle' => 'radio', 
 						  'id' => 'tests')) }} {{trans('messages.test-records')}}
 					</label>
 				</div>
 				<div class="col-sm-3">
 				    <label class="radio-inline">
-						{{ Form::radio('records', 'patients', false, array('data-toggle' => 'radio',
+				    	<?php
+				    		$records = strcmp("patients", Input::old('records')) == 0?"true":"false";
+				    	?>
+						{{ Form::radio('records', 'patients', $records, array('data-toggle' => 'radio',
 						  'id' => 'patients', Entrust::can('can_access_ccc_reports')?'disabled':'' )) }} {{trans('messages.patient-records')}}
 					</label>
 				</div>
 				<div class="col-sm-3">
 				    <label class="radio-inline">
-						{{ Form::radio('records', 'rejections', false, array('data-toggle' => 'radio',
+				    	<?php
+				    		$records = strcmp("rejections", Input::old('records')) == 0?"true":"false";
+				    	?>
+						{{ Form::radio('records', 'rejections', $records, array('data-toggle' => 'radio',
 						  'id' => 'specimens', Entrust::can('can_access_ccc_reports')?'disabled':'' )) }} {{trans('messages.rejected-specimen')}}
 					</label>
 				</div>
 				<div class="col-sm-3">
 				    <label class="radio-inline">
-						{{ Form::radio('records', 'amr-tests', false, array('data-toggle' => 'radio',
+				    	<?php
+				    		$records = strcmp("amr-tests", Input::old('records')) == 0?"true":"false";
+				    	?>
+						{{ Form::radio('records', 'amr-tests', $records, array('data-toggle' => 'radio',
 						  'id' => 'amr-tests', Entrust::can('can_access_ccc_reports')?'disabled':'' )) }} AMR Tests
 					</label>
 				</div>
@@ -77,7 +89,10 @@
 	    	<div class="row" id="tests-div">
 				<div class="col-sm-4">
 					<label class="radio-inline">
-			    		{{ Form::radio('pending_or_all', 'pending', false, array('data-toggle' => 'radio',
+				    	<?php
+				    		$pend = strcmp("pending", Input::old('pending_or_all')) == 0?"true":"false";
+				    	?>
+			    		{{ Form::radio('pending_or_all', 'pending', $pend, array('data-toggle' => 'radio',
 						'id' => 'pending')) }} {{trans('messages.pending-tests')}}
 					</label>
 				</div>
@@ -99,17 +114,17 @@
 {{ Form::close() }}
 </div>
 <br />
-<div class='container-fluid'>
+<div class='panel panel-primary'>
 @if ($error!='')
 		<!-- if there are search errors, they will show here -->
 	<div class="alert alert-info">{{ $error }}</div>
 @else
-	<div>
-		<h4><span class="glyphicon glyphicon-user"></span>
-		{{ trans('messages.daily-log') }} - {{trans('messages.patient-records')}}</h4>
+	<div class="panel-heading">
+		<span class="glyphicon glyphicon-user"></span>
+		{{ trans('messages.daily-log') }} - {{trans('messages.patient-records')}}
 	</div>
-	<div class="row">
-	<div class="table-responsive">
+	<div  class="panel-body">
+	<div class="table-responsive" style="overflow: scroll;">
 	  	<table class="table table-bordered">
 			<tbody>
 				<tr>

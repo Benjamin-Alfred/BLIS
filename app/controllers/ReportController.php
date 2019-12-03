@@ -368,24 +368,33 @@ class ReportController extends \BaseController {
 			//We want verified culture tests from the given date range
 			/*Filter by date, test_status and test_type_id*/
 			//TODO: Find better way to get these culture IDs
+			$AMRTests = [
+				"Ascitic tap for culture and sensitivity",
+				"Aspirate for culture and sensitivity",
+				"Blood Culture and sensitivity",
+				"culture and sensitivity",
+				"HVS for culture and sensitivity",
+				"Pleural tap for culture and sensitivity",
+				"Pus swab for culture and sensitivity",
+				"Stool for C/S",
+				"Sub culture",
+				"Synovial fluid for culture and sensitivity",
+				"Throat swab for culture",
+				"Urethral swab culture and sensitivity",
+				"Urine Culture and Sensitivity"];
+
 			if($from||$to){
 				if(strtotime($from)>strtotime($to)||strtotime($from)>strtotime($date)||strtotime($to)>strtotime($date)){
 						$error = trans('messages.check-date-range');
 				}
 				else
 				{
-					$tests = Test::whereBetween('time_created', array($from, $toPlusOne))
-								->where('test_status_id', [Test::VERIFIED])
-								->whereIn('test_type_id', [276,317,320,263,311,313,319,316,282,315,309,363,361,318])
-								->get();
+					$tests = Test::getTests($AMRTests, $from, $toPlusOne->format("Y-m-d H:i:s"), [Test::VERIFIED]);
 				}
 			}
 			else
 			{
-				$tests = Test::where('time_created', 'LIKE', $date.'%')
-								->where('test_status_id', [Test::VERIFIED])
-								->whereIn('test_type_id', [276,317,320,263,311,313,319,316,282,315,309,363,361,318])
-								->get();
+				$tests = Test::getTests($AMRTests, $from, $from, [Test::VERIFIED]);
 			}
 			
 			/*Get collection of tests*/
