@@ -102,7 +102,7 @@ return array(
 	|	Send to HMIS
 	*/
 
-	'send-to-HMIS' => false,
+	'send-to-HMIS' => true,
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -172,7 +172,7 @@ return array(
 	|
 	*/
 
-        'patient-report-no' =>  'Form No. XXXX-XX-00000',
+    'patient-report-no' =>  'Form No. XXXX-XX-00000',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report version - displayed in exported reports
@@ -180,5 +180,28 @@ return array(
 	|
 	*/
 
-    	'patient-report-version'    =>  'Version 1',
+	'patient-report-version'    =>  'Version 1',
+	/*
+	|--------------------------------------------------------------------------
+	|	AMR Test Name aliases
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'amr-test-name-aliases'    =>  array(
+
+		'Ascitic tap for culture and sensitivity',
+		'Aspirate for culture and sensitivity',
+		'Blood Culture and sensitivity',
+		'culture and sensitivity',
+		'HVS for culture and sensitivity',
+		'Pleural tap for culture and sensitivity',
+		'Pus swab for culture and sensitivity',
+		'Stool for C/S',
+		'Sub culture',
+		'Synovial fluid for culture and sensitivity',
+		'Throat swab for culture',
+		'Urethral swab culture and sensitivity',
+		'Urine Culture and Sensitivity',
+	),
 );
