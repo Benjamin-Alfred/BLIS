@@ -493,6 +493,8 @@ class Test extends Eloquent
 
 		$tests = $tests->orderBy('time_created', 'DESC');
 
+		Log::info($tests->toSql());
+
 		return $tests;
 	}
 
@@ -830,5 +832,51 @@ class Test extends Eloquent
 						})->get();
 
 		return $tests;
+	}
+
+	/**
+	 * @return array of isolated organisms, drugs administered, zone and interpretation
+	 */
+	public function getCultureIsolates()
+	{
+		$isolate["obtained"] = [];
+
+		if (count($this->susceptibility) > 0) {
+			foreach ($this->susceptibility as $suscept) {
+				$sus = [];
+				if (isset($suscept->id)) {
+					$sus['isolate_name'] = $suscept->organism->name;
+					$sus ['drug'] = $suscept->drug->name;
+					$sus['zone'] = $suscept->zone;
+					$sus['interpretation'] = $suscept->interpretation;
+
+					$isolate["obtained"][] = $sus;
+				}
+			}
+		}
+
+		return $isolate;
+	}
+
+	/**
+	 * @param  Organism name
+	 * @return boolean - whether or not the organism was isolated
+	 */
+	public function hasIsolated($organism)
+	{
+		$isolated = false;
+
+		if (count($this->susceptibility) > 0) {
+			foreach ($this->susceptibility as $suscept) {
+				if (isset($suscept->id)) {
+					if(strcmp($organism, $suscept->organism->name) == 0){
+						$isolated = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return $isolated;
 	}
 }

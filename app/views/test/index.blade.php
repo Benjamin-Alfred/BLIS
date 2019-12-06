@@ -36,7 +36,7 @@
                         {{ Form::label('date_from', trans('messages.from')) }}
                     </div>
                     <div class='col-md-9'>
-                        {{ Form::text('date_from', Input::get('date_from'), 
+                        {{ Form::text('date_from', $dateFrom, 
                             array('class' => 'form-control standard-datepicker')) }}
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                         {{ Form::label('date_to', trans('messages.to')) }}
                     </div>
                     <div class='col-md-9'>
-                        {{ Form::text('date_to', Input::get('date_to'), 
+                        {{ Form::text('date_to', $dateTo, 
                             array('class' => 'form-control standard-datepicker')) }}
                     </div>
                 </div>

@@ -367,21 +367,7 @@ class ReportController extends \BaseController {
 		{
 			//We want verified culture tests from the given date range
 			/*Filter by date, test_status and test_type_id*/
-			//TODO: Find better way to get these culture IDs
-			$AMRTests = [
-				"Ascitic tap for culture and sensitivity",
-				"Aspirate for culture and sensitivity",
-				"Blood Culture and sensitivity",
-				"culture and sensitivity",
-				"HVS for culture and sensitivity",
-				"Pleural tap for culture and sensitivity",
-				"Pus swab for culture and sensitivity",
-				"Stool for C/S",
-				"Sub culture",
-				"Synovial fluid for culture and sensitivity",
-				"Throat swab for culture",
-				"Urethral swab culture and sensitivity",
-				"Urine Culture and Sensitivity"];
+			$AMRTests = Config::get('kblis.amr-test-name-aliases');
 
 			if($from||$to){
 				if(strtotime($from)>strtotime($to)||strtotime($from)>strtotime($date)||strtotime($to)>strtotime($date)){
@@ -427,23 +413,7 @@ class ReportController extends \BaseController {
 						$testContent['specimen_source'] = $test->specimen->specimenType->name;
 						$testContent['lab_id'] = "";
 
-
-						$isolate["obtained"] = [];
-						if (count($test->susceptibility) > 0) {
-							foreach ($test->susceptibility as $suscept) {
-								$sus = [];
-								if (isset($suscept->id)) {
-									$sus['isolate_name'] = $suscept->organism->name;
-									$sus ['drug'] = $suscept->drug->name;
-									$sus['zone'] = $suscept->zone;
-									$sus['interpretation'] = $suscept->interpretation;
-
-									$isolate["obtained"][] = $sus;
-								}
-							}
-						}
-
-						$testContent['isolate'] = $isolate;
+						$testContent['isolate'] = $test->getCultureIsolates();
 
 						$testContent['test_type'] = $test->testType->name;
 

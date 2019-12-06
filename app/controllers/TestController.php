@@ -30,8 +30,12 @@ class TestController extends \BaseController {
 
 		$searchString = isset($input['search'])?$input['search']:'';
 		$testStatusId = isset($input['test_status'])?$input['test_status']:'';
-		$dateFrom = isset($input['date_from'])?$input['date_from']:'';
-		$dateTo = isset($input['date_to'])?$input['date_to']:'';
+
+		date_default_timezone_set('Africa/Nairobi');
+		$tomorrow = (new DateTime())->add(new DateInterval('P1D'));
+		$lastMonth = (new DateTime())->sub(new DateInterval('P30D'));
+		$dateFrom = isset($input['date_from'])?$input['date_from']:$lastMonth->format('Y-m-d');
+		$dateTo = isset($input['date_to'])?$input['date_to']:$tomorrow->format('Y-m-d');
 
 		// Search Conditions
 		if($searchString||$testStatusId||$dateFrom||$dateTo){
@@ -66,6 +70,8 @@ class TestController extends \BaseController {
 					->with('testSet', $tests)
 					->with('testStatus', $statuses)
 					->with('barcode', $barcode)
+					->with('dateFrom', $dateFrom)
+					->with('dateTo', $dateTo)
 					->withInput($input);
 	}
 
@@ -266,7 +272,7 @@ class TestController extends \BaseController {
 		return Redirect::route('test.viewDetails', array($specimen->test->id));
 	}
 
-/**
+    /**
 	 * Starts Test
 	 *
 	 * @param
@@ -420,8 +426,7 @@ class TestController extends \BaseController {
 	 */
 	public function viewDetails($testID)
 	{
-		Log::info(Test::find($testID));
-		return View::make('test.viewDetails')->with('test', Test::find($testID));
+		return View::make('test.viewDetails')->with('test', Test::where('id', $testID)->first());
 	}
 
 	/**
@@ -440,7 +445,6 @@ class TestController extends \BaseController {
 
 		//Fire of entry verified event
 		Event::fire('test.verified', array($testID));
-		$url = Session::get('SOURCE_URL');
 
 		return Redirect::route('test.viewDetails', array($testID))
 			->with('message', trans('messages.success-verifying-results'))
