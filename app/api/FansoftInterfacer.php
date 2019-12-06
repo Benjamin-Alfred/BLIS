@@ -102,8 +102,10 @@ class FansoftInterfacer implements InterfacerInterface{
         }
         $resultString = trim($resultString, ",")."]";
 
-        $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","patient_number":"%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
-            $labNumber, $externalRequest['investigation'], $externalRequest['patient_id'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID);
+        $isolates = json_encode($test->getCultureIsolates()['obtained']);
+
+        $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","patient_number":"%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s", "isolates": "%s"}', 
+            $labNumber, $externalRequest['investigation'], $externalRequest['patient_id'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID, $isolates);
 
         Log::info("Attempting to send results to Fansoft: \n$jsonResponseString");
 
@@ -238,7 +240,6 @@ class FansoftInterfacer implements InterfacerInterface{
 
         $tests = null;
         //Check if parentLabNO is 0 thus its the main test and not a measure
-        //if($labRequest->parentLabNo == '0' || $this->isPanelTest($labRequest))
         if($labRequest->parent_lab_number == '0')
         {
             //Check via the labno, if this is a duplicate request and we already saved the test
