@@ -179,7 +179,6 @@
 						$drugTested = "";
 						$zone = "";
 						$sir = "";
-						$sid = "";
 						if (count($test->susceptibility) > 0) {
 							$isolateObtained .= "<p>Yes</p>";
 							$tempIsolate = "";
@@ -193,7 +192,6 @@
 									$drugTested .= "<p>".$suscept->drug->name."</p>";
 									$zone .= "<p>".$suscept->zone."</p>";
 									$sir .= "<p>".$suscept->interpretation."</p>";
-									$sid .= "<p>".$suscept->id."</p>";
 								}
 					?>
 					<?php
@@ -205,7 +203,7 @@
 					<td>{{ $isolateObtained }}</td>
 					<td>{{ $isolateName }}</td>
 					<td>&nbsp;</td>
-					<td>{{ $sid }}</td>
+					<td>&nbsp;</td>
 					<td>{{ $drugTested }}</td>
 					<td>{{ $zone }}</td>
 					<td>{{ $sir }}</td>
