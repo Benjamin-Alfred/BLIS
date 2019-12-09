@@ -109,7 +109,7 @@ class FansoftInterfacer implements InterfacerInterface{
 
         Log::info("Attempting to send results to Fansoft: \n$jsonResponseString");
 
-        $this->sendRequest($jsonResponseString, $labNumber);
+        $this->sendRequest($jsonResponseString, $testId);
         
     }
 
@@ -117,7 +117,7 @@ class FansoftInterfacer implements InterfacerInterface{
     *   Function to send Json request using Curl
     **/
 
-    private function sendRequest($jsonResponse, $labNumber)
+    private function sendRequest($jsonResponse, $testId)
     {
         //We use curl to send the requests
         $httpCurl = curl_init();
@@ -142,10 +142,10 @@ class FansoftInterfacer implements InterfacerInterface{
         if(stripos($response, "200") !== false)
         {
             //Set status in external lab-request to `sent`
-            $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->where()->first();
+            $updatedExternalRequest = ExternalDump::where('test_id', '=', $testId)->first();
             $updatedExternalRequest->result_returned = 1;
             $updatedExternalRequest->save();
-            Log::info("Success response received from HMIS.");
+            Log::info("Success response received from HMIS: $response");
         }
         else
         {
