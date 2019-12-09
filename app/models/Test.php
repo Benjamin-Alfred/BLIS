@@ -839,18 +839,18 @@ class Test extends Eloquent
 	 */
 	public function getCultureIsolates()
 	{
-		$isolate["obtained"] = [];
+		$isolate = [];
 
 		if (count($this->susceptibility) > 0) {
 			foreach ($this->susceptibility as $suscept) {
 				$sus = [];
-				if (isset($suscept->id)) {
+				if (isset($suscept->id) && $suscept->zone > 0) {
 					$sus['isolate_name'] = $suscept->organism->name;
 					$sus ['drug'] = $suscept->drug->name;
 					$sus['zone'] = $suscept->zone;
 					$sus['interpretation'] = $suscept->interpretation;
 
-					$isolate["obtained"][] = $sus;
+					$isolate[] = $sus;
 				}
 			}
 		}

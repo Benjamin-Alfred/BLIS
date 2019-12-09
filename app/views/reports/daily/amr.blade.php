@@ -183,12 +183,13 @@
 							$isolateObtained .= "<p>Yes</p>";
 							$tempIsolate = "";
 							foreach ($test->susceptibility as $suscept) {
-								if (isset($suscept->id)) {
+								if (isset($suscept->id) && $suscept->zone > 0) {
 									if(strcmp($tempIsolate, $suscept->organism->name) != 0){
 										$tempIsolate = $suscept->organism->name;
 										$isolateName .= "<p>".$suscept->organism->name."</p>";
+									}else{
+										$isolateName .= "<p>&nbsp;</p>";
 									}
-									$isolateName .= "<p>&nbsp;</p>";
 									$drugTested .= "<p>".$suscept->drug->name."</p>";
 									$zone .= "<p>".$suscept->zone."</p>";
 									$sir .= "<p>".$suscept->interpretation."</p>";

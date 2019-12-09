@@ -100,12 +100,39 @@ class FansoftInterfacer implements InterfacerInterface{
             $resultString .= '"upperLimit": "'. $limits['upper'] . '",';
             $resultString .= '"unit": "'. Measure::find($result->measure_id)->unit . '"},';
         }
+
+        $organism = "";
+        $startString = "";
+        $endString = "";
+        $valueString = "";
+        foreach($test->getCultureIsolates() as $isolate){
+            if(strcmp($organism, $isolate['isolate_name']) != 0){
+                if (strcmp($organism, "") != 0) {
+                    $resultString .= $startString.trim($valueString, ",").$endString;
+                    $startString = "";
+                    $endString = "";
+                    $valueString = "";
+                }
+                $startString .= '{"parameter": "'. $isolate['isolate_name'] .'", "value": [';
+
+                $valueString .= '{"drug": "'.$isolate['drug'].'", "zone": "'.$isolate['zone'].'", "interpretation": "'.$isolate['interpretation'].'"},';
+
+                $endString .= '], "lowerLimit": "", "upperLimit": "", "unit": ""},';
+
+            }else{
+
+                $valueString .= '{"drug": "'.$isolate['drug'].'", "zone": "'.$isolate['zone'].'", "interpretation": "'.$isolate['interpretation'].'"},';
+            }
+
+            $organism = $isolate['isolate_name'];
+        }
+
+        $resultString .= $startString.trim($valueString, ",").$endString;
+
         $resultString = trim($resultString, ",")."]";
 
-        $isolates = json_encode($test->getCultureIsolates()['obtained']);
-
-        $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","patient_number":"%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s", "isolates": "%s"}', 
-            $labNumber, $externalRequest['investigation'], $externalRequest['patient_id'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID, $isolates);
+        $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","patient_number":"%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
+            $labNumber, $externalRequest['investigation'], $externalRequest['patient_id'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID);
 
         Log::info("Attempting to send results to Fansoft: \n$jsonResponseString");
 

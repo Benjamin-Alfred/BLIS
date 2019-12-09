@@ -413,7 +413,7 @@ class ReportController extends \BaseController {
 						$testContent['specimen_source'] = $test->specimen->specimenType->name;
 						$testContent['lab_id'] = "";
 
-						$testContent['isolate'] = $test->getCultureIsolates();
+						$testContent['isolates'] = $test->getCultureIsolates();
 
 						$testContent['test_type'] = $test->testType->name;
 
