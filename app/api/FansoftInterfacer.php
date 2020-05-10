@@ -172,7 +172,7 @@ class FansoftInterfacer implements InterfacerInterface{
             $updatedExternalRequest = ExternalDump::where('test_id', '=', $testId)->first();
             $updatedExternalRequest->result_returned = 1;
             $updatedExternalRequest->save();
-            Log::info("Success response received from HMIS: $response");
+            Log::info("Success response received from HMIS: $response for TEST $testId");
         }
         else
         {
@@ -180,7 +180,7 @@ class FansoftInterfacer implements InterfacerInterface{
             $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->first();
             $updatedExternalRequest->result_returned = 2;
             $updatedExternalRequest->save();
-            Log::error("HTTP Error: Did not receive a suitable response from Fansoft: $response");
+            Log::error("HTTP Error: Did not receive a suitable response from Fansoft: $response for TEST $testId");
             Log::error("Error message: " . curl_error($httpCurl));
         }
 
