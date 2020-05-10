@@ -37,9 +37,7 @@ return array(
 	|
 	*/
 
-	'organization' => 'X Hospital Laboratory',
-	
-
+	'organization' => 'Bungoma County Referral Hospital Laboratory',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -47,10 +45,10 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'address-info' => 'X TOWN, HOSPITAL ROAD<br>
-                    P.O. BOX 00,<br>
-                    X TOWN.<br>
-                    Phone: +254 000-0000 Ext 000/001</p>',
+	'address-info' => 'BUNGOMA TOWN, HOSPITAL ROAD<br>
+                    P.O. BOX 14,<br>
+                    BUNGOMA TOWN.<br>
+                    Phone: +254 055-30401 Ext 203/208</p>',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -59,7 +57,7 @@ return array(
 	|
 	*/
 
-	'facility-county' => 'X',
+	'facility-county' => 'Bungoma',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -68,7 +66,7 @@ return array(
 	|
 	*/
 
-	'facility-sub-county' => 'X',
+	'facility-sub-county' => 'Kanduyi',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -77,7 +75,7 @@ return array(
 	|
 	*/
 
-	'facility-code' => '00000',
+	'facility-code' => '15828',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -148,7 +146,7 @@ return array(
 	|
 	*/
 
-	'lab-director-name' => 'Dr. X',
+	'lab-director-name' => 'Dr. David Wanikina',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab Manager's name - displayed in exported reports
@@ -156,7 +154,7 @@ return array(
 	|
 	*/
 
-	'lab-manager-name' => 'Mrs. X',
+	'lab-manager-name' => 'Joan Wasike',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab QA Manager's name - displayed in exported reports
@@ -164,7 +162,7 @@ return array(
 	|
 	*/
 
-	'lab-quality-manager-name' => 'Mr. X',
+	'lab-quality-manager-name' => 'Anthony Salongo',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report number - displayed in exported reports
@@ -172,7 +170,7 @@ return array(
 	|
 	*/
 
-    'patient-report-no' =>  'Form No. XXXX-XX-00000',
+        'patient-report-no' =>  'Form No. BCRHL-QUA-016F3',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report version - displayed in exported reports

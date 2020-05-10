@@ -55,9 +55,9 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'iblis_20190627',
-			'username'  => 'iblis_user',
-			'password'  => 'password',
+			'database'  => 'iblis',
+			'username'  => 'blis_bg_admin',
+			'password'  => 'iqM5W7f9.cFavsH3',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',

@@ -46,7 +46,7 @@
 @endif
 <hr class="non-print">
 
-<div class="container-fluid">
+<div class="container-fluid" style="width:1710px;">
 	<div class="row">
 		<div class="col-xs-8" style="font-size: 1.2em;font-weight: bold;">
 			<div><center>{{ trans('messages.moh') }}</center></div>

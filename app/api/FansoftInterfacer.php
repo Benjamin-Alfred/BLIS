@@ -18,11 +18,13 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //Sending current test
         Log::info("SEND TO HMIS: ".Config::get('kblis.send-to-HMIS'));
-        if(Config::get('kblis.send-to-HMIS') == true){
+        if(Config::get('kblis.send-to-HMIS') == 1){
             $this->createJsonString($testId);
             //Sending all pending requests also
             $pendingRequests = ExternalDump::where('result_returned', 2)->get();
-        }
+	}else{
+	    Log::info("Sending to HMIS is disabled!");
+	}
     }
 
 
@@ -36,7 +38,8 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //if($comments==null or $comments==''){$comments = 'No Comments';
 
-        //If testID is null we cannot handle this test as we cannot know the results
+	    //If testID is null we cannot handle this test as we cannot know the results
+	Log::info("Creating the JSON string");
         if($testId == null){
             return null;
         }
@@ -53,7 +56,8 @@ class FansoftInterfacer implements InterfacerInterface{
         $externRequest = ExternalDump::where('test_id', '=', $testId)->get();
 
         if(!($externRequest->first())){
-            //Not a request we can send back
+		//Not a request we can send back
+	    Log::info("No matching request from the HMIS found for test-request-id: $testId!" );
             return null;
         }else{
             $externalRequest = $externRequest->first();
@@ -298,8 +302,7 @@ class FansoftInterfacer implements InterfacerInterface{
 
                 $this->saveToExternalDump($labRequest, $test->id);
                 echo '{"status": "success", "message": '.$test->id.'}';
-                Log::info("Test received successfully!");
-                return;
+                Log::info("Test received successfully " .$test-id."!");
             }else{
                 echo '{"status": "error", "message": "Duplicate investigation request!"}';
                 Log::info("Duplicate investigation request");
@@ -319,7 +322,8 @@ class FansoftInterfacer implements InterfacerInterface{
     {
         //Dumping all the received requests to stagingTable
         $dumper = ExternalDump::firstOrNew(array('lab_no' => $labRequest->lab_number, 'test_id' => $testId));
-        $dumper->lab_no = $labRequest->lab_number;
+	$dumper->lab_no = $labRequest->lab_number;
+	$dumper->test_id = $testId;
         $dumper->parent_lab_no = $labRequest->parent_lab_number;
         $dumper->requesting_clinician = $labRequest->requesting_clinician;
         $dumper->investigation = $labRequest->investigation;

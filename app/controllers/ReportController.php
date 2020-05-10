@@ -3164,7 +3164,7 @@ class ReportController extends \BaseController {
 		$mohData['1_1_urine_chemistry_total'] = Test::getCount(array("'Urinalysis'", "'Urine chemistry'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['1_2_glucose'] = Test::getCountByResult("Urinalysis", "Glucose", "high", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Glucose", "HIGH", $startDate, $endDate);
 		$mohData['1_3_ketones'] = Test::getCountByResult("Urinalysis", "Ketones", "Positive", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Ketones", "Positive", $startDate, $endDate);
-		$mohData['1_4_proteins'] = Test::getCountByResult("Urinalysis", "Proteins", "HIGH", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Proteins", "HIGH", $startDate, $endDate);
+		$mohData['1_4_proteins'] = Test::getCountByResult("Urinalysis", "Protein", "HIGH", $startDate, $endDate) + Test::getCountByResult("Urine chemistry", "Protein", "HIGH", $startDate, $endDate);
 		$mohData['1_5_urine_microscopy_total'] = Test::getCount(array("'Urinalysis'", "'Urine microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['1_6_puss_cells'] = "N/S";
 		$mohData['1_7_s_haematobium'] = "N/S";
@@ -3191,8 +3191,8 @@ class ReportController extends \BaseController {
 		$mohData['2_5_urea_high'] = Test::getCountByResult("RFTS", "Urea", "HIGH", $startDate, $endDate);
 		$mohData['2_5_sodium_low'] = Test::getCountByResult("RFTS", "sodium", "LOW", $startDate, $endDate);
 		$mohData['2_5_sodium_high'] = Test::getCountByResult("RFTS", "sodium", "HIGH", $startDate, $endDate);
-		$mohData['2_6_potassium_low'] = Test::getCountByResult("RFTS", "potasium", "LOW", $startDate, $endDate);
-		$mohData['2_6_potassium_high'] = Test::getCountByResult("RFTS", "potasium", "HIGH", $startDate, $endDate);
+		$mohData['2_6_potassium_low'] = Test::getCountByResult("RFTS", "potassium", "LOW", $startDate, $endDate);
+		$mohData['2_6_potassium_high'] = Test::getCountByResult("RFTS", "potassium", "HIGH", $startDate, $endDate);
 		$mohData['2_7_chlorides_low'] = Test::getCountByResult("RFTS", "chloride", "LOW", $startDate, $endDate);
 		$mohData['2_7_chlorides_high'] = Test::getCountByResult("RFTS", "chloride", "HIGH", $startDate, $endDate);
 
@@ -3201,10 +3201,10 @@ class ReportController extends \BaseController {
 		$mohData['2_9_direct_bilirubin_high'] = Test::getCountByResult("LFTS", "Direct Bilirubin", "HIGH", $startDate, $endDate);
 		$mohData['2_10_total_bilirubin_low'] = Test::getCountByResult("LFTS", "Total Bilirubin", "LOW", $startDate, $endDate);
 		$mohData['2_10_total_bilirubin_high'] = Test::getCountByResult("LFTS", "Total Bilirubin", "HIGH", $startDate, $endDate);
-		$mohData['2_11_asat_low'] = Test::getCountByResult("LFTS", "SGOT", "LOW", $startDate, $endDate);
-		$mohData['2_11_asat_high'] = Test::getCountByResult("LFTS", "SGOT", "HIGH", $startDate, $endDate);
-		$mohData['2_12_alat_low'] = Test::getCountByResult("LFTS", "ALAT", "LOW", $startDate, $endDate);
-		$mohData['2_12_alat_high'] = Test::getCountByResult("LFTS", "ALAT", "HIGH", $startDate, $endDate);
+		$mohData['2_11_asat_low'] = Test::getCountByResult("LFTS", "AST/GOT", "LOW", $startDate, $endDate);
+		$mohData['2_11_asat_high'] = Test::getCountByResult("LFTS", "AST/GOT", "HIGH", $startDate, $endDate);
+		$mohData['2_12_alat_low'] = Test::getCountByResult("LFTS", "ALAT/GPT", "LOW", $startDate, $endDate);
+		$mohData['2_12_alat_high'] = Test::getCountByResult("LFTS", "ALAT/GPT", "HIGH", $startDate, $endDate);
 		$mohData['2_13_serum_protein_low'] = Test::getCountByResult("LFTS", "Total Proteins", "LOW", $startDate, $endDate);
 		$mohData['2_13_serum_protein_high'] = Test::getCountByResult("LFTS", "Total Proteins", "HIGH", $startDate, $endDate);
 		$mohData['2_14_albumin_low'] = Test::getCountByResult("LFTS", "Albumin", "LOW", $startDate, $endDate);
@@ -3213,12 +3213,12 @@ class ReportController extends \BaseController {
 		$mohData['2_alkaline_phosphatase_high'] = Test::getCountByResult("LFTS", "Alkaline Phosphate", "HIGH", $startDate, $endDate);
 
 		$mohData['2_16_lipid_profile_total'] = Test::getCount(array("'LIPID PROFILE'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['2_17_cholesterol_low'] = "N/S";
-		$mohData['2_17_cholesterol_high'] = "N/S";
-		$mohData['2_18_triglycerides_low'] = "N/S";
-		$mohData['2_18_triglycerides_high'] = "N/S";
-		$mohData['2_19_ldl_low'] = "N/S";
-		$mohData['2_19_ldl_high'] = "N/S";
+                $mohData['2_17_cholesterol_low'] = Test::getCountByResult("LIPID PROFILE", "CHOLESTROL", "LOW", $startDate, $endDate);
+                $mohData['2_17_cholesterol_high'] = Test::getCountByResult("LIPID PROFILE", "CHOLESTROL", "HIGH", $startDate, $endDate);
+                $mohData['2_18_triglycerides_low'] = Test::getCountByResult("LIPID PROFILE", "Triglycerides", "LOW", $startDate, $endDate);
+                $mohData['2_18_triglycerides_high'] = Test::getCountByResult("LIPID PROFILE", "Triglycerides", "HIGH", $startDate, $endDate);
+                $mohData['2_19_ldl_low'] = Test::getCountByResult("LIPID PROFILE", "LDL cholestrol", "LOW", $startDate, $endDate);
+                $mohData['2_19_ldl_high'] = Test::getCountByResult("LIPID PROFILE", "LDL cholestrol", "HIGH", $startDate, $endDate);
 
 		$mohData['2_20_t3_total'] = "N/S";
 		$mohData['2_20_t3_low'] = "N/S";
@@ -3308,10 +3308,10 @@ class ReportController extends \BaseController {
 		$mohData['5_2_pus_swabs_culture_positive'] = "N/S";
 
 		$mohData['5_3_high_vaginal_swabs_total'] = Test::getCount(array("'HVS for culture and sensitivity'", "'HVS for microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['5_3_high_vaginal_swabs_culture_count'] = "N/S";
+		$mohData['5_3_high_vaginal_swabs_culture_count'] = Test::getCount(array("'HVS for culture and sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['5_3_high_vaginal_swabs_culture_positive'] = "N/S";
 
-		$mohData['5_4_throat_swab_total'] = Test::getCount(array("'HVS for microscopy'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_4_throat_swab_total'] = Test::getCount(array("'Throat swab for culture'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['5_4_throat_swab_culture_count'] = "N/S";
 		$mohData['5_4_throat_swab_culture_positive'] = "N/S";
 
@@ -3331,8 +3331,8 @@ class ReportController extends \BaseController {
 		$mohData['5_8_food_culture_count'] = "N/S";
 		$mohData['5_8_food_culture_positive'] = "N/S";
 
-		$mohData['5_9_urethral_swabs_total'] = Test::getCount(array("'Urethral swab microsopy'", "'Urethral swab microscopy , culture and sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
-		$mohData['5_9_urethral_swabs_culture_count'] = "N/S";
+		$mohData['5_9_urethral_swabs_total'] = Test::getCount(array("'Urethral swab microsopy'", "'Urethral swab culture & sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
+		$mohData['5_9_urethral_swabs_culture_count'] = Test::getCount(array("'Urethral swab culture & sensitivity'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['5_9_urethral_swabs_culture_positive'] = "N/S";
 
 		$mohData['5_10_stool_cultures_total'] = Test::getCount(array("'Stool for C/S'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
