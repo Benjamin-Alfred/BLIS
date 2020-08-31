@@ -258,8 +258,8 @@
 											{{$result->result}}	
 										</div>
 										<div class="col-md-5">
-	        								{{ Measure::getRange($test->visit->patient, $result->measure_id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started)) }}
-											{{ Measure::find($result->measure_id)->unit }}
+	        								{{ str_replace("( - )", "", "(" . $result->range_lower . " - " . $result->range_upper . ")") }}
+											{{ $result->unit }}
 										</div>
 									</div>
 								@endforeach

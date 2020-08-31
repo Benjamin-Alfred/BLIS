@@ -360,6 +360,11 @@ class TestController extends \BaseController {
 
 			$testResult->result = Input::get('m_'.$measure->id);
 
+            $limits = Measure::getRangeLimits($test->visit->patient, $measure->id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started));
+            $testResult->range_lower =  $limits['lower'];
+            $testResult->range_upper =  $limits['upper'];
+            $testResult->unit =   Measure::find($measure->id)->unit;
+
 			$inputName = "m_".$measure->id;
 			$rules = array("$inputName" => 'max:255');
 

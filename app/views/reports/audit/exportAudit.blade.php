@@ -126,8 +126,8 @@
 													<tbody>
 														<tr>
 															<td>{{trans('messages.current-result')}}: {{ $result->result }}
-															{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
-															{{ Measure::find($result->measure_id)->unit }}
+															{{ "(". $result->range_lower . " - " . $result->range_upper.")" }}
+															{{ $result->unit }}
 															</td>
 															<td>{{trans('messages.entered-by')}}: {{ $test->testedBy->name}}</td>
 															<td>{{trans('messages.results-entry-date')}}: {{ $test->testResults->last()->time_entered }}</td>
@@ -142,7 +142,8 @@
 												@foreach($result->auditResults as $auditResult)
 													<tr>
 														<td>{{trans('messages.result-name')}} : {{ $auditResult->previous_results }}
-														{{Measure::getRange($test->visit->patient, $result->measure_id) }} {{ Measure::find($result->measure_id)->unit }}</td>
+														{{ "(". $result->range_lower . " - " . $result->range_upper.")" }}
+															{{ $result->unit }}</td>
 														<td>{{trans('messages.entered-by')}} : {{ $auditResult->user->username }}</td>
 														<td>{{trans('messages.created-at')}} : {{ $auditResult->created_at }}</td>
 													</tr>

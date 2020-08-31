@@ -154,8 +154,8 @@
 									@foreach($test->testResults as $result)
 									<p>
 										{{ Measure::find($result->measure_id)->name }}: {{ $result->result }}
-										{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
-										{{ Measure::find($result->measure_id)->unit }}
+										{{ str_replace("( - )", "", "(" . $result->range_lower . " - " . $result->range_upper . ")") }}
+										{{ $result->unit }}
 									</p>
 									@endforeach
 								</div>

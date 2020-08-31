@@ -135,44 +135,44 @@
 						<th>{{trans('messages.previous-results')}}</th>
 					</tr>
 					@if($test)
-							<tr>
-								<td>{{ $test->testType->name }}</td>
-								<td>
-									@foreach($test->testResults as $result)
-										<p class="view">
-											<strong>{{ Measure::find($result->measure_id)->name }}</strong></br> 
-											<u>{{trans('messages.current-result')}}</u>
-												<table class="table">
-													<tbody>
-														<tr>
-															<td>{{trans('messages.current-result')}}: {{ $result->result }} 
-															{{ Measure::getRange($test->visit->patient, $result->measure_id) }}
-															{{ Measure::find($result->measure_id)->unit }}
-															</td>
-															<td>{{trans('messages.entered-by')}}: {{ $test->testedBy->name}}</td>
-															<td>{{trans('messages.results-entry-date')}}: {{ $test->testResults->last()->time_entered }}</td>
-														</tr>
-													</tbody>
-												</table>
-											</br>
-
-											<u>{{trans('messages.previous-results')}}</u> </br>
+						<tr>
+							<td>{{ $test->testType->name }}</td>
+							<td>
+								@foreach($test->testResults as $result)
+									<p class="view">
+										<strong>{{ Measure::find($result->measure_id)->name }}</strong></br> 
+										<u>{{trans('messages.current-result')}}</u>
 											<table class="table">
 												<tbody>
-												@foreach($result->auditResults as $auditResult)
 													<tr>
-														<td>{{trans('messages.result-name')}} : {{ $auditResult->previous_results }}
-														{{Measure::getRange($test->visit->patient, $result->measure_id) }} {{ Measure::find($result->measure_id)->unit }}</td>
-														<td>{{trans('messages.entered-by')}} : {{ $auditResult->user->username }}</td>
-														<td>{{trans('messages.created-at')}} : {{ $auditResult->created_at }}</td>
+														<td>{{trans('messages.current-result')}}: {{ $result->result }} 
+														{{ str_replace("( - )", "", "(" . $result->range_lower . " - " . $result->range_upper . ")") }}
+														{{ $result->unit }}
+														</td>
+														<td>{{trans('messages.entered-by')}}: {{ $test->testedBy->name}}</td>
+														<td>{{trans('messages.results-entry-date')}}: {{ $test->testResults->last()->time_entered }}</td>
 													</tr>
-												@endforeach
 												</tbody>
 											</table>
-										</p>
-									@endforeach
-								</td>
-							</tr>
+										</br>
+
+										<u>{{trans('messages.previous-results')}}</u> </br>
+										<table class="table">
+											<tbody>
+											@foreach($result->auditResults as $auditResult)
+												<tr>
+													<td>{{trans('messages.result-name')}} : {{ $auditResult->previous_results }}
+													{{ str_replace("( - )", "", "(" . $result->range_lower . " - " . $result->range_upper . ")") }} {{ $result->unit }}</td>
+													<td>{{trans('messages.entered-by')}} : {{ $auditResult->user->username }}</td>
+													<td>{{trans('messages.created-at')}} : {{ $auditResult->created_at }}</td>
+												</tr>
+											@endforeach
+											</tbody>
+										</table>
+									</p>
+								@endforeach
+							</td>
+						</tr>
 					@else
 						<tr>
 							<td colspan="8">{{trans("messages.no-records-found")}}</td>

@@ -17,7 +17,7 @@ class FansoftInterfacer implements InterfacerInterface{
     public function send($testId)
     {
         //Sending current test
-        Log::info("SEND TO HMIS: ".Config::get('kblis.send-to-HMIS'));
+        Log::info("[FansoftInterfacer] SEND TO HMIS: ".Config::get('kblis.send-to-HMIS'));
         if(Config::get('kblis.send-to-HMIS') == 1){
             $this->createJsonString($testId);
             //Sending all pending requests also
@@ -99,10 +99,9 @@ class FansoftInterfacer implements InterfacerInterface{
         foreach($testResults as $result){
             $resultString .= '{"parameter": "'. Measure::find($result->measure_id)->name .'",';
             $resultString .= '"value": "'. $result->result . '",';
-            $limits = Measure::getRangeLimits($test->visit->patient, $result->measure_id, datetime::createfromformat('Y-m-d H:i:s', $test->time_started));
-            $resultString .= '"lowerLimit": "'. $limits['lower'] . '",';
-            $resultString .= '"upperLimit": "'. $limits['upper'] . '",';
-            $resultString .= '"unit": "'. Measure::find($result->measure_id)->unit . '"},';
+            $resultString .= '"lowerLimit": "'. $result->range_lower . '",';
+            $resultString .= '"upperLimit": "'. $result->range_upper . '",';
+            $resultString .= '"unit": "'. $result->unit . '"},';
         }
 
         $organism = "";
@@ -138,7 +137,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $jsonResponseString = sprintf('{"lab_number": "%s","test_name": "%s","patient_number":"%s","requesting_clinician": "%s", "result": %s, "tested_by": "%s", "tested_at": "%s", "verified_by": "%s", "verified_at": "%s", "technician_comment": "%s", "specimen_name": "%s", "specimen_id": "%s"}', 
             $labNumber, $externalRequest['investigation'], $externalRequest['patient_id'], $externalRequest['requesting_clinician'], $resultString, $testedBy, $testedAt, $verifiedBy, $verifiedAt, trim($interpretation), $specimenName, $specimenID);
 
-        Log::info("Attempting to send results to Fansoft: \n$jsonResponseString");
+        Log::info("[FansoftInterfacer] Attempting to send results to Fansoft: \n$jsonResponseString");
 
         $this->sendRequest($jsonResponseString, $testId);
         
@@ -176,7 +175,7 @@ class FansoftInterfacer implements InterfacerInterface{
             $updatedExternalRequest = ExternalDump::where('test_id', '=', $testId)->first();
             $updatedExternalRequest->result_returned = 1;
             $updatedExternalRequest->save();
-            Log::info("Success response received from HMIS: $response for TEST $testId");
+            Log::info("[FansoftInterfacer] Success response received from HMIS: $response for TEST $testId");
         }
         else
         {
@@ -184,8 +183,8 @@ class FansoftInterfacer implements InterfacerInterface{
             $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->first();
             $updatedExternalRequest->result_returned = 2;
             $updatedExternalRequest->save();
-            Log::error("HTTP Error: Did not receive a suitable response from Fansoft: $response for TEST $testId");
-            Log::error("Error message: " . curl_error($httpCurl));
+            Log::error("[FansoftInterfacer] HTTP Error: Did not receive a suitable response from Fansoft: $response for TEST $testId");
+            Log::error("[FansoftInterfacer] Error message: " . curl_error($httpCurl));
         }
 
         curl_close($httpCurl);
@@ -193,14 +192,14 @@ class FansoftInterfacer implements InterfacerInterface{
 
      /**
      * Function for processing the requests we receive from the external system
-     * and putting the data into our system.
+     * and putting the data into BLIS.
      *
      * @var array lab_requests
      */
 
     public function process($labRequest)
     {
-        Log::info("Fansoft test request received:\n".json_encode($labRequest));
+        Log::info("[FansoftInterfacer] Fansoft test request received:\n".json_encode($labRequest));
         //First: Check if patient exists, if true dont save again
         $fullName = $labRequest->patient->first_name;
         $middleName = $labRequest->patient->middle_name;
@@ -227,11 +226,11 @@ class FansoftInterfacer implements InterfacerInterface{
             $patient->created_by = User::EXTERNAL_SYSTEM_USER;
             $patient->save();
 
-            Log::info("New patient: $fullName ".$labRequest->patient->id);
+            Log::info("[FansoftInterfacer] New patient: name => $fullName, id => ".$labRequest->patient->id);
         }
         else{
             $patient = $patient->first();
-            Log::info("Existing patient found: ".$labRequest->patient->id);
+            Log::info("[FansoftInterfacer] Existing patient found: id => name => $fullName, ".$labRequest->patient->id);
         }
 
         //We check if the test exists in our system if not we just save the request in stagingTable
@@ -245,7 +244,7 @@ class FansoftInterfacer implements InterfacerInterface{
         }
         if(is_null($testTypeId) && $labRequest->parent_lab_number == '0')
         {
-    	    Log::error("Lab Test NOT FOUND: $labRequest->investigation");
+    	    Log::error("[FansoftInterfacer] Lab Test NOT FOUND: $labRequest->investigation");
             $this->saveToExternalDump($labRequest, ExternalDump::TEST_NOT_FOUND);
             echo '{"status": "error", "message": "Investigation not found!"}';
             return;
@@ -302,10 +301,11 @@ class FansoftInterfacer implements InterfacerInterface{
 
                 $this->saveToExternalDump($labRequest, $test->id);
                 echo '{"status": "success", "message": '.$test->id.'}';
-                Log::info("Test received successfully " .$test-id."!");
+                Log::info("[FansoftInterfacer] Test received successfully!");
+                return;
             }else{
                 echo '{"status": "error", "message": "Duplicate investigation request!"}';
-                Log::info("Duplicate investigation request");
+                Log::info("[FansoftInterfacer] Duplicate investigation request");
             }
         }
         $this->saveToExternalDump($labRequest, null);
@@ -321,13 +321,13 @@ class FansoftInterfacer implements InterfacerInterface{
     public function saveToExternalDump($labRequest, $testId)
     {
         //Dumping all the received requests to stagingTable
-        $dumper = ExternalDump::firstOrNew(array('lab_no' => $labRequest->lab_number, 'test_id' => $testId));
-	$dumper->lab_no = $labRequest->lab_number;
-	$dumper->test_id = $testId;
+        $dumper = new ExternalDump();
+        $dumper->lab_no = $labRequest->lab_number;
+        $dumper->test_id = $testId;
         $dumper->parent_lab_no = $labRequest->parent_lab_number;
         $dumper->requesting_clinician = $labRequest->requesting_clinician;
         $dumper->investigation = $labRequest->investigation;
-        $dumper->provisional_diagnosis = '';
+        $dumper->provisional_diagnosis = $labRequest->provisional_diagnosis;
         $dumper->request_date = $labRequest->request_date;
         $dumper->order_stage = $labRequest->patient_visit_type;
         $dumper->patient_visit_number = $labRequest->patient_visit_number;
@@ -338,7 +338,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $dumper->address = $labRequest->address->address;
         $dumper->postal_code = '';
         $dumper->phone_number = $labRequest->address->phone_number;
-        $dumper->city = $labRequest->address->city;
+        $dumper->city = $labRequest->address->county."|".$labRequest->address->sub_coumty."|".$labRequest->address->ward."|".$labRequest->address->village;
         $dumper->cost = $labRequest->cost;
         $dumper->receipt_number = $labRequest->receipt_number;
         $dumper->receipt_type = $labRequest->receipt_type;
