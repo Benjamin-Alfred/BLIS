@@ -22,9 +22,9 @@ class FansoftInterfacer implements InterfacerInterface{
             $this->createJsonString($testId);
             //Sending all pending requests also
             $pendingRequests = ExternalDump::where('result_returned', 2)->get();
-	}else{
-	    Log::info("Sending to HMIS is disabled!");
-	}
+    	}else{
+    	    Log::info("Sending to HMIS is disabled!");
+    	}
     }
 
 
@@ -261,6 +261,7 @@ class FansoftInterfacer implements InterfacerInterface{
             $visit->patient_id = $patient->id;
             $visit->visit_type = $visitType[$labRequest->patient_visit_type];
             $visit->visit_number = $labRequest->patient_visit_number;
+            $visit->department = $labRequest->department;
 
             // We'll save Visit in a transaction a little bit below
         }
