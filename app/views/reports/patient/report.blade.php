@@ -99,7 +99,9 @@
 					<td><strong>{{ trans('messages.patient-lab-number')}}</strong></td>
 					<td>{{ $patient->external_patient_number }}</td>
 					<td><strong>{{ trans('messages.requesting-facility-department')}}</strong></td>
-					<td>{{ Config::get('kblis.organization') }}</td>
+					<td>
+						{{ count($tests)==1?$tests[0]->visit->department : Config::get('kblis.organization') }}
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -115,7 +117,7 @@
 					<td><strong>{{ Lang::choice('messages.test-category', 2)}}</strong></td>
 					<td><strong>{{ trans('messages.specimen-status')}}</strong></td>
 					<td><strong>{{ trans('messages.collected-by')."/".trans('messages.rejected-by')}}</strong></td>
-					<td><strong>{{ trans('messages.date-checked')}}</strong></td>
+					<td><strong>{{ trans('messages.date-collected')}}</strong></td>
 				</tr>
 				@forelse($tests as $test)
 						<tr>
