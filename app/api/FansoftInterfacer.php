@@ -339,7 +339,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $dumper->address = $labRequest->address->address;
         $dumper->postal_code = '';
         $dumper->phone_number = $labRequest->address->phone_number;
-        $dumper->city = $labRequest->address->county."|".$labRequest->address->sub_coumty."|".$labRequest->address->ward."|".$labRequest->address->village;
+        $dumper->city = $labRequest->address->county."|".$labRequest->address->sub_county."|".$labRequest->address->ward."|".$labRequest->address->village;
         $dumper->cost = $labRequest->cost;
         $dumper->receipt_number = $labRequest->receipt_number;
         $dumper->receipt_type = $labRequest->receipt_type;
