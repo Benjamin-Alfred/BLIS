@@ -131,8 +131,8 @@
 					<th>{{trans('messages.patient-name')}}</th>
 					<th>IP/OP Number</th>
 					<th>{{trans('messages.gender')}}</th>
+					<th>DOB</th>
 					<th>{{trans('messages.age')}}</th>
-					<th>Age Units</th>
 					<th>County of Residence</th>
 					<th>Sub-county of Residence</th>
 					<th>Village of Residence</th>
@@ -159,8 +159,8 @@
 					<td>{{ $test->visit->patient->name }}</td>
 					<td>{{ $test->visit->visit_number }}</td>
 					<td>{{ $test->visit->patient->getGender()}}</td>
-					<td>{{ $test->visit->patient->getAge("Y") }}</td>
-					<td>years</td>
+					<td>{{ $test->visit->patient->getAge("Y") }} years</td>
+					<td>{{ $test->visit->patient->dob }}</td>
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
