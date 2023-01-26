@@ -70,12 +70,12 @@ App::down(function()
 
 
 /*------------------------------------------
-* Binding the Interfacer to the system
+* Binding a HMIS Interfacer to the system e.g. Funsoft/Sanitas
 *
 * -------------------------------------------
 */
 
-App::bind('Interfacer', 'SanitasInterfacer');
+App::bind('Interfacer', 'XXXHMISInterfacer');
 
 
 /*

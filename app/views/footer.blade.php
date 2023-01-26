@@ -30,7 +30,7 @@
 
     <footer class="footer">
         <div class="non-print">
-        		{{ HTML::link('https://github.com/APHL-Global-Health', 'APHL Global')}} &copy; {{date("Y")}}
+        		Powered by {{ HTML::link('https://github.com/Benjamin-Alfred/BLIS', 'Tech Medicals')}} - {{date("Y")}}
         </div>
     </footer>
     <!-- End footer section-->
