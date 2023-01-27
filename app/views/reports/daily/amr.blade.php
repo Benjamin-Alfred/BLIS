@@ -156,7 +156,7 @@
 				</tr>
 				@forelse($tests as $test)
 				<?php
-					$externalDump = ExternalDump::where('lab_no', '=', $test->external_lab_id)->where('test_id', '=', $test->id)->get()->first();
+					$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
 					$location = explode("|", $externalDump->city);
 					$sizeOfLocation = sizeof($location);
 					$remarks = explode("|", $externalDump->system_id);
@@ -175,7 +175,7 @@
 					<td>{{ $test->visit->visit_type }}</td>
 					<td><?php echo $sizeOfLocation == 5?$location[4]:'';?></td>
 					<td>{{ $externalDump->date_of_admission }}</td>
-					<td><?php echo count(remarks) > 1?$remarks[1]:'';?></td>
+					<td><?php echo count($remarks) > 1?$remarks[1]:'';?></td>
 					<td>{{ $test->specimen->specimenType->name }}</td>
 					<td>{{ $test->specimen->specimenType->name }}</td>
 					<td>&nbsp;</td>
