@@ -339,12 +339,12 @@ class FansoftInterfacer implements InterfacerInterface{
         $dumper->address = $labRequest->address->address;
         $dumper->postal_code = '';
         $dumper->phone_number = $labRequest->address->phone_number;
-        $dumper->city = $labRequest->address->county."|".$labRequest->address->sub_county."|".$labRequest->address->ward."|".$labRequest->address->village;
+        $dumper->city = $labRequest->address->county_of_residence."|".$labRequest->address->sub_county."|".$labRequest->address->ward."|".$labRequest->address->village."|".$labRequest->department;
         $dumper->cost = $labRequest->cost;
         $dumper->receipt_number = $labRequest->receipt_number;
         $dumper->receipt_type = $labRequest->receipt_type;
         $dumper->waiver_no = '';
-        $dumper->system_id = "fansoftbg";
+        $dumper->system_id = "fansoftbg|".$labRequest->request_notes;
         $dumper->save();
     }
 }

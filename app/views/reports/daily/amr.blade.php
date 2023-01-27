@@ -133,17 +133,17 @@
 					<th>{{trans('messages.gender')}}</th>
 					<th>DOB</th>
 					<th>{{trans('messages.age')}}</th>
+					<th>Country</th>
 					<th>County</th>
 					<th>Sub-county</th>
-					<th>Village</th>
 					<th>Diagnosis</th>
 					<th>Date of specimen collection</th>
-					<th>Patient Type</th>
-					<th>Name of ward</th>
+					<th>Location</th>
+					<th>Department</th>
 					<th>Date of Admission</th>
-					<th>Currently on Anti-Microbial Therapy</th>
+					<th>Prior Antibiotic Therapy</th>
 					<th>{{trans('messages.specimen-type-title')}}</th>
-					<th>Specimen Source</th>
+					<th>Specimen Site</th>
 					<th>Lab ID</th>
 					<th>Isolates Obtained?</th>
 					<th>Isolate Name</th>
@@ -155,22 +155,27 @@
 					<th>{{ Lang::choice('messages.test', 2) }}</th>
 				</tr>
 				@forelse($tests as $test)
-					$externalDump = ExternalDump::where('test_id', '=', $test->id)->get()->first();
+				<?php
+					$externalDump = ExternalDump::where('lab_no', '=', $test->external_lab_id)->where('test_id', '=', $test->id)->get()->first();
+					$location = explode("|", $externalDump->city);
+					$sizeOfLocation = sizeof($location);
+					$remarks = explode("|", $externalDump->system_id);
+				?>
 				<tr>
 					<td>{{ $test->visit->patient->name }}</td>
 					<td>{{ $test->visit->visit_number }}</td>
 					<td>{{ $test->visit->patient->getGender()}}</td>
 					<td>{{ $test->visit->patient->dob }}</td>
 					<td>{{ $test->visit->patient->getAge("Y") }} years</td>
-					<td>{{ $externalDump->city }}</td>
-					<td>{{ $externalDump->city }}</td>
-					<td>{{ $externalDump->city }}</td>
+					<td>&nbsp;</td>
+					<td><?php echo $sizeOfLocation > 3?$location[0]:'';?></td>
+					<td><?php echo $sizeOfLocation > 3?$location[1]:'';?></td>
 					<td>{{ $externalDump->provisional_diagnosis }}</td>
 					<td>{{ $test->specimen->time_accepted }}</td>
 					<td>{{ $test->visit->visit_type }}</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
+					<td><?php echo $sizeOfLocation == 5?$location[4]:'';?></td>
+					<td>{{ $externalDump->date_of_admission }}</td>
+					<td><?php echo count(remarks) > 1?$remarks[1]:'';?></td>
 					<td>{{ $test->specimen->specimenType->name }}</td>
 					<td>{{ $test->specimen->specimenType->name }}</td>
 					<td>&nbsp;</td>
