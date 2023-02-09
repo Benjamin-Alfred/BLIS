@@ -433,6 +433,23 @@ class TestType extends Eloquent
 			return true;
 	}
 	/**
+	 * Automated constants
+	 */
+	const AUTOMATED = 1;
+	/**
+	 * Check to see if test results can be fetched from an analyzer
+	 *
+	 * @return boolean
+	 */
+	public function isAutomated()
+	{
+		if($this->automated == null || $this->automated != TestType::AUTOMATED){
+			return false;
+		}
+		else 
+			return true;
+	}
+	/**
 	 * Get cd4 counts based on either baseline/follow-up and <500/>500
 	 *
 	 * @return counts

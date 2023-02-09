@@ -136,6 +136,10 @@
 						{{ Form::label('accredited', trans('messages.accredited')) }}
 						{{ Form::checkbox('accredited', "1", $testtype->isAccredited(), array()) }}
 					</div>
+					<div class="form-group">
+						{{ Form::label('automated', trans('messages.automated')) }}
+						{{ Form::checkbox('automated', "1", $testtype->isAutomated(), array()) }}
+					</div>
 				</div>
 				<div class="tab-pane col-md-6" id="reorder">
 					</br>

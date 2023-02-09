@@ -145,6 +145,10 @@
 			{{ Form::label('accredited', trans('messages.accredited')) }}
 			{{ Form::checkbox('accredited', "1", '', array()) }}
 		</div>
+		<div class="form-group">
+			{{ Form::label('automated', trans('messages.automated')) }}
+			{{ Form::checkbox('automated', "1", '', array()) }}
+		</div>
 		</div>
 		<div class="panel-footer">
 			<div class="form-group actions-row">
