@@ -13,7 +13,7 @@
 	            <div class="row less-gutter">
 		            <div class="col-md-11">
 						<span class="glyphicon glyphicon-filter"></span>{{ trans('messages.edit') }}
-                        @if($test->testType->instruments->count() > 0)
+                        @if($test->testType->instruments->count() > 0 || $test->testType->automated == true)
                         <div class="panel-btn">
                             <a class="btn btn-sm btn-info fetch-test-data" href="javascript:void(0)"
                                 title="{{trans('messages.fetch-test-data-title')}}"

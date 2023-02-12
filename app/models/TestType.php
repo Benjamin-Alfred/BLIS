@@ -99,7 +99,7 @@ class TestType extends Eloquent
 		// Add the new mapping
 		DB::table('testtype_specimentypes')->insert($specimenTypesAdded);
 	}
-        public function setPanelTypes($panelTypes){
+    public function setPanelTypes($panelTypes){
    	    $panelTypesAdded = array();
 		$testTypeID = 0;	
 
@@ -123,7 +123,7 @@ class TestType extends Eloquent
 		} catch (Exception $e) {
 			
 		}
-        }
+    }
 	/**
 	 * Set test type measures
 	 *
@@ -474,4 +474,19 @@ class TestType extends Eloquent
 		return count(array_intersect(array_unique($qualifier), array_unique($results)));
 	}
 
+	/**
+	 * Check to see if the test is a culture test
+	 *
+	 * @return boolean
+	 */
+	public function isCultureTest()
+	{
+		$cultureTests = array_map('strtoupper', Config::get('kblis.amr-test-name-aliases'));
+
+		if(in_array(strtoupper($this->alias), $cultureTests)){
+			return true;
+		}
+		else 
+			return false;
+	}
 }

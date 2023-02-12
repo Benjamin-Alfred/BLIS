@@ -14,7 +14,7 @@ class AddAutomatedToTestTypesTable extends Migration {
 	{
 		Schema::table('test_types', function($table)
 		{
-		    $table->boolean('is_automated')->nullable()->after('accredited');
+		    $table->boolean('automated')->nullable()->after('accredited');
 		});
 	}
 
@@ -27,7 +27,7 @@ class AddAutomatedToTestTypesTable extends Migration {
 	{
 		Schema::table('test_types', function(Blueprint $table)
 		{
-			$table->dropColumn('is_automated');
+			$table->dropColumn('automated');
 		});
 	}
 
