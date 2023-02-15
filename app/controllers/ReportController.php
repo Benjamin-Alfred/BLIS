@@ -3280,7 +3280,7 @@ class ReportController extends \BaseController {
 
 		$mohData['4_4_sickling_test_total'] = Test::getCount(array("'Sickling test'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['4_4_sickling_test_positive'] = Test::getCountByResultValue("Sickling test", "Sickling test", " AND tr.result = 'Positive'", $startDate, $endDate);
-		$mohData['4_5_peripheral_blood_films_total'] = "N/S";
+		$mohData['4_5_peripheral_blood_films_total'] = Test::getCount(array("'PBF'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['4_6_bma_total'] = "N/S";
 		$mohData['4_7_coagulaton_profile_total'] = Test::getCount(array("'Coagulation Profile'"), $startDate, $endDate, array(Test::COMPLETED, Test::VERIFIED));
 		$mohData['4_8_reticulocyte_count_total'] = "N/S";

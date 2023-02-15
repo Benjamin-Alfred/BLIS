@@ -69,8 +69,8 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="display-details">
-							<h3 class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
-								{{ !is_null($test->testType->name) ? $test->testType->name : trans('messages.unknown') }}</h3>
+							<h4 class="view"><strong>{{ Lang::choice('messages.test-type',1) }}</strong>
+								{{ !is_null($test->testType->name) ? $test->testType->name : trans('messages.unknown') }}</h4>
 							<p class="view"><strong>{{trans('messages.visit-number')}}</strong>
 								{{ $test->visit_id > 0 ? $test->visit->visit_number : trans('messages.unknown') }}</p>
 							<p class="view"><strong>{{trans('messages.date-ordered')}}</strong>
@@ -82,6 +82,11 @@
 							<p class="view-striped"><strong>{{trans('messages.physician')}}</strong>
 								{{ $test->requested_by or trans('messages.unknown') }}
 							</p>
+							<p class="view-striped"><strong>Pre-diagnosis</strong>
+								{{ $test->isExternal() ? $test->external()->provisional_diagnosis : '' }}
+							</p>
+							<p class="view"><strong>Requesting Department</strong>
+								{{ $test->visit_id > 0 ? $test->visit->department : trans('messages.unknown') }}</p>
 							<p class="view-striped"><strong>{{trans('messages.request-origin')}}</strong>
 								@if($test->specimen && $test->specimen->isReferred() && $test->specimen->referral->status == Referral::REFERRED_IN)
 									{{ trans("messages.in") }}
@@ -125,15 +130,36 @@
 											{{$test->visit->patient->name}}</div></div>
 									<div class="row">
 										<div class="col-md-3">
+											<p><strong>Date of Birth</strong></p></div>
+										<div class="col-md-9">
+											{{ $test->visit->patient->dob }}</div></div>
+									<div class="row">
+										<div class="col-md-3">
 											<p><strong>{{trans("messages.age")}}</strong></p></div>
 										<div class="col-md-9">
-											{{$test->visit->patient->getAge("YMD", datetime::createfromformat('Y-m-d H:i:s', $test->time_started))}}</div></div>
+											{{$test->visit->patient->getAge("YY", datetime::createfromformat('Y-m-d H:i:s', $test->time_started))}}</div></div>
 									<div class="row">
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.gender")}}</strong></p></div>
 										<div class="col-md-9">
 											{{$test->visit->patient->gender==0?trans("messages.male"):trans("messages.female")}}
 										</div></div>
+									<?php
+										$location = [];
+										if($test->external()){
+											$location = explode("|", $test->external()->city);
+										}
+									?>
+									<div class="row">
+										<div class="col-md-3">
+											<p><strong>County</strong></p></div>
+										<div class="col-md-9">
+											{{ count($location)>1?$location[0]:"" }}</div></div>
+									<div class="row">
+										<div class="col-md-3">
+											<p><strong>Sub-county</strong></p></div>
+										<div class="col-md-9">
+											{{ count($location)>2?$location[1]:"" }}</div></div>
 								</div>
 							</div> <!-- ./ panel-body -->
 						</div> <!-- ./ panel -->

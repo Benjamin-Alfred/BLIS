@@ -1,13 +1,13 @@
 @extends("layout")
 @section("content")
-<div class="non-print">
+<div class="hidden-print">
 	<ol class="breadcrumb">
 	  <li><a href="{{{URL::route('user.home')}}}">{{ trans('messages.home') }}</a></li>
 	  <li class="active">{{ Lang::choice('messages.report',2) }}</li>
 	  <li class="active">{{ trans('messages.moh-706') }} {{ Lang::choice('messages.report',1) }}</li>
 	</ol>
 </div>
-{{ Form::open(array('route' => array('reports.aggregate.moh706v201410'), 'class' => 'form-inline non-print', 'role' => 'form')) }}
+{{ Form::open(array('route' => array('reports.aggregate.moh706v201410'), 'class' => 'form-inline hidden-print', 'role' => 'form')) }}
 <!-- <div class='container-fluid'> -->
 	<div class="row">
 		<div class="col-md-4">
@@ -39,12 +39,12 @@
 	</div>
 <!-- </div> -->
 {{ Form::close() }}
-<br class="non-print" />
+<br class="hidden-print" />
 
 @if (Session::has('message'))
 	<div class="alert alert-info">{{ trans(Session::get('message')) }}</div>
 @endif
-<hr class="non-print">
+<hr class="hidden-print">
 
 <div class="container-fluid" style="width:1710px;">
 	<div class="row">

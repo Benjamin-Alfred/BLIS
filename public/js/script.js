@@ -217,6 +217,7 @@ $(function(){
             processData:false,
             success: function(data)
             {
+            	console.log(data);
 				$.each($.parseJSON(data), function (index, obj) {
 					console.log(index + " " + obj);
 					$('#'+index).val(obj);
@@ -224,7 +225,7 @@ $(function(){
             },
             error: function(e) 
             {
-            
+            	console.log(e);
             }          
         });
     }));

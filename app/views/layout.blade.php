@@ -27,7 +27,7 @@
             @include("header")
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-2 sidebar non-print">
+                    <div class="col-md-2 sidebar hidden-print">
                         @include("sidebar")
                     </div>
                     <div class="col-md-10 col-md-offset-2 main" id="the-one-main">

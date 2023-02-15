@@ -179,7 +179,7 @@ class InstrumentController extends \BaseController {
 			$testType = TestType::find($testTypeID);
 			$resultFile = "uploads/".basename($_FILES["file-to-fetch"]["name"]);
 
-			move_uploaded_file($_FILES['file-to-fetch']['tmp_name'], $resultFile);
+			Input::file('file-to-fetch')->move('uploads/', basename($_FILES["file-to-fetch"]["name"]));
 
 			$instrument = $testType->instruments->filter(function($inst){
 					return $inst->active == 1;
