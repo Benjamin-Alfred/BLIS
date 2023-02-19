@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Organism extends Eloquent
 {
+	protected $fillable = array('name', 'description');
 	/**
 	 * Enabling soft deletes for organisms.
 	 *

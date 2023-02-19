@@ -170,7 +170,6 @@ class InstrumentController extends \BaseController {
 	 */
 	public function getTestResult()
 	{
-		$result = [];
 
 		try {
 			
@@ -189,6 +188,7 @@ class InstrumentController extends \BaseController {
 			$result = $instrument->fetchResult($testType, $resultFile);
 		} catch (Exception $e) {
 			\Log::error($e);
+			$result = "";
 		}
 
 		return $result;

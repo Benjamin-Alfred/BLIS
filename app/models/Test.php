@@ -493,8 +493,6 @@ class Test extends Eloquent
 
 		$tests = $tests->orderBy('time_created', 'DESC');
 
-		Log::info($tests->toSql());
-
 		return $tests;
 	}
 
@@ -844,7 +842,8 @@ class Test extends Eloquent
 		if (count($this->susceptibility) > 0) {
 			foreach ($this->susceptibility as $suscept) {
 				$sus = [];
-				if (isset($suscept->id) && $suscept->zone > 0) {
+				// if (isset($suscept->id) && $suscept->zone > 0) {
+				if (isset($suscept->id)) {
 					$sus['isolate_name'] = $suscept->organism->name;
 					$sus ['drug'] = $suscept->drug->name;
 					$sus['zone'] = $suscept->zone;

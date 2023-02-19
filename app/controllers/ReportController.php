@@ -232,6 +232,7 @@ class ReportController extends \BaseController {
 								->withInput(Input::all());
 			}
 		}
+
 		//Begin specimen rejections
 		if($records=='rejections')
 		{
@@ -289,6 +290,7 @@ class ReportController extends \BaseController {
 							->withInput(Input::all());
 			}
 		}
+
 		//Begin test records
 		if($records=='tests')
 		{
@@ -362,6 +364,7 @@ class ReportController extends \BaseController {
 							->withInput(Input::all());
 			}
 		}
+
 		//Begin amr-test records
 		if($records=='amr-tests')
 		{
@@ -384,53 +387,74 @@ class ReportController extends \BaseController {
 			}
 			
 			/*Get collection of tests*/
-			if(Input::has('word')){
+			$content = [];
+			if(count($tests) > 0){
+				foreach ($tests as $test) {
+					$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
+					$location = explode("|", $externalDump->city);
+					$sizeOfLocation = sizeof($location);
+					$remarks = explode("|", $externalDump->system_id);
+
+					$testContent = [];
+					$testContent['patient_name'] = $test->visit->patient->name;
+					$testContent['patient_number'] = $test->visit->visit_number;
+					$testContent['gender'] = $test->visit->patient->getGender();
+					$testContent['dob'] = $test->visit->patient->dob;
+					$testContent['age'] = $test->visit->patient->getAge("Y");
+					$testContent['country'] = "";
+					$testContent['county'] = $sizeOfLocation > 3?$location[0]:'';;
+					$testContent['sub_county'] = $sizeOfLocation > 3?$location[1]:'';;
+					$testContent['prediagnosis'] = $externalDump->provisional_diagnosis;
+					$testContent['specimen_collection_date'] = $test->specimen->time_accepted;
+					$testContent['patient_type'] = $test->visit->visit_type;
+					$testContent['ward'] = $sizeOfLocation == 5?$location[4]:'';
+					$testContent['admission_date'] = $externalDump->date_of_admission;
+					$testContent['currently_on_therapy'] = count($remarks) > 1?$remarks[1]:'';
+					$testContent['specimen_type'] = $test->specimen->specimenType->name;
+					$testContent['specimen_source'] = $test->specimen->specimenType->name;
+					$testContent['lab_id'] = "";
+
+					$testContent['isolates'] = $test->getCultureIsolates();
+
+					$testContent['test_type'] = $test->testType->name;
+
+					$content[] = $testContent;
+				}
+			}else{
+				$content["message"] = ""; 
+			}
+
+			if(Input::has('json')){
 				$date = date("Ymdhi");
 				$fileName = "daily_test_records_".$date.".json";
 				$headers = array(
 				    "Content-type"=>"text/json",
 				    "Content-Disposition"=>"attachment;Filename=".$fileName
 				);
-				$content = [];
-				if(count($tests) > 0){
-					foreach ($tests as $test) {
-						$testContent = [];
-						$testContent['patient_name'] = $test->visit->patient->name;
-						$testContent['patient_number'] = $test->visit->visit_number;
-						$testContent['gender'] = $test->visit->patient->getGender();
-						$testContent['age'] = $test->visit->patient->getAge("Y");
-						$testContent['age_unit'] = "years";
-						$testContent['county'] = "";
-						$testContent['sub_county'] = "";
-						$testContent['village'] = "";
-						$testContent['prediagnosis'] = "";
-						$testContent['specimen_collection_date'] = $test->specimen->time_accepted;
-						$testContent['patient_type'] = $test->visit->visit_type;
-						$testContent['ward'] = "";
-						$testContent['admission_date'] = "";
-						$testContent['currently_on_therapy'] = "";
-						$testContent['specimen_type'] = $test->specimen->specimenType->name;
-						$testContent['specimen_source'] = $test->specimen->specimenType->name;
-						$testContent['lab_id'] = "";
+	    		return Response::make(json_encode($content),200, $headers);
+			}else if(Input::has('word')){
+				$date = date("Ymdhi");
+				$fileName = "amr_whonet_report".$date.".xls";
+				$headers = array(
+				    "Content-type"=>"application/vnd.ms-excel",
+				    "Content-Disposition"=>"attachment;Filename=".$fileName
+				);
+				$amrView = View::make('reports.daily.exportAMR')
+						->with('tests', $tests)
+						->with('testContent', $content)
+						->with('accredited', [])
+						->with('error', $error)
+						->withInput(Input::all());
 
-						$testContent['isolates'] = $test->getCultureIsolates();
+	    		return Response::make($amrView, 200, $headers);
+			}else{
 
-						$testContent['test_type'] = $test->testType->name;
-
-						$content[] = $testContent;
-					}
-				}else{
-					$content["message"] = ""; 
-				}
-		    	return Response::make(json_encode($content),200, $headers);
-			}
-			else
-			{
 				return View::make('reports.daily.amr')
-							->with('tests', $tests)
-							->with('accredited', $accredited)
-							->with('error', $error)
-							->withInput(Input::all());
+						->with('tests', $tests)
+						->with('testContent', $content)
+						->with('accredited', $accredited)
+						->with('error', $error)
+						->withInput(Input::all());
 			}
 		}
 	}

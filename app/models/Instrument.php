@@ -177,6 +177,7 @@ class Instrument extends Eloquent
 	 */
 	public function fetchResult($testType, $resultFile = null){
 
+		$resultString = "";
  		// Invoke the Instrument Class to get the results
  		$instrument = new $this->driver_name($this->ip);
 
@@ -189,20 +190,26 @@ class Instrument extends Eloquent
 		// Change measure names to measure_ids in the returned array
 		$resultWithIDs = array();
 
-		foreach ($result as $measureName => $value) {
-			$measureFound = $testType->measures->filter(
-				function($measure) use ($measureName){
-					if($measure->name == $measureName) return $measure;
-			});
+		if($testType->isCultureTest()){
+			$resultString = $result;
+		}else{
+			foreach ($result as $measureName => $value) {
+				$measureFound = $testType->measures->filter(
+					function($measure) use ($measureName){
+						if($measure->name == $measureName) return $measure;
+				});
 
-			if(empty($measureFound->toArray())){
-				$resultWithIDs[$measureName] = $value;
-			}else{
-				$resultWithIDs['m_'.$measureFound->first()->id] = $value;
+				if(empty($measureFound->toArray())){
+					$resultWithIDs[$measureName] = $value;
+				}else{
+					$resultWithIDs['m_'.$measureFound->first()->id] = $value;
+				}
 			}
+			$resultString = json_encode($resultWithIDs);
 		}
+
 		// Send back a json result
-		return json_encode($resultWithIDs);
+		return $resultString;
 	}
 
 	/**

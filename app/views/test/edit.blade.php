@@ -16,13 +16,15 @@
                         @if($test->testType->instruments->count() > 0 || $test->testType->automated == true)
                         <div class="panel-btn">
                             <a class="btn btn-sm btn-info fetch-test-data" href="javascript:void(0)"
-                                title="{{trans('messages.fetch-test-data-title')}}"
-                                data-test-type-id="{{$test->testType->id}}"
-                                data-url="{{URL::route('instrument.getResult')}}"
-                                data-instrument-count="{{$test->testType->instruments->count()}}">
+                                title="{{trans('messages.fetch-test-data-title')}}">
                                 <span class="glyphicon glyphicon-plus-sign"></span>
                                 {{trans('messages.fetch-test-data')}}
                             </a>
+                            <form id="fetch-form" enctype="multipart/form-data" action="{{URL::route('instrument.getResult')}}" method="POST" style="display: none;">
+                                <input type="file" id="file-to-fetch" name="file-to-fetch">
+                                <input type="hidden" name="test_type_id" value="{{$test->testType->id}}">
+                                <input type="hidden" name="instrument_count" value="{{$test->testType->instruments->count()}}">
+                            </form>
                         </div>
                         @endif
                         @if($test->isCompleted() && $test->specimen->isAccepted())
@@ -106,8 +108,10 @@
 		                            {{ Form::label($fieldName, $measure->name) }}
 		                            <?php
 										$sense = '';
-										if($measure->name=="Sensitivity"||$measure->name=="sensitivity")
-											$sense = ' sense'.$test->id;
+                                        if(strtolower($measure->name)=="culture")
+                                            $sense .= ' text-culture';
+                                        if(strtolower($measure->name)=="sensitivity")
+                                            $sense .= ' text-sensitivity sense'.$test->id;
 									?>
 		                            {{Form::text($fieldName, $ans, array('class' => 'form-control'.$sense))}}
 								@endif
@@ -123,8 +127,57 @@
 								array('class' => 'btn btn-default', 'onclick' => 'submit()')) }}
 						</div>
 					{{ Form::close() }}
-	                @if(count($test->testType->organisms)>0)
-                    <div class="panel panel-success">  <!-- Patient Details -->
+					@if($test->testType->isCultureTest())
+                        @if($test->testType->automated == true)
+
+                            {{ Form::open(array('','id' => 'drugSusceptibilityForm_0', 'name' => 'ast_form', 'style'=>'')) }}
+                                {{ Form::hidden('action', 'V2-ast', array('id' => 'action', 'name' => 'action')) }}
+                                {{ Form::hidden('test_id', $test->id, array('id' => 'test_id', 'name' => 'test_id')) }}
+                                {{ Form::hidden('ast-organism', '', array('id' => 'ast-organism', 'name' => 'ast-organism')) }}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="50%">Antimicrobial</th>
+                                        <th>MIC</th>
+                                        <th>{{ trans('messages.interp')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ast_table">
+								<?php 
+									$isolates = $test->getCultureIsolates(); 
+									Log::info("Isolate count: ".count($isolates)." Test ID: ". $test->id);
+								?>
+				                @if(count($isolates)>0)
+                                	@foreach($isolates as $isolate)
+                                	<tr>
+                                		<td>
+                                			<label>
+                                				<input class="ast-checkboxes" type="checkbox" name="astcheck[]" value="{{$isolate['drug'].'|'.$isolate['zone'].'|'.$isolate['interpretation']}}" checked>
+                                				{{$isolate['drug']}}
+                                			</label>
+                                		</td>
+                                		<td>{{$isolate['zone']}}</td>
+                                		<td>{{$isolate['interpretation']}}</td>
+                                	</tr>
+                                	@endforeach
+                                @endif
+                                </tbody>
+                                </tfooter>
+                                    <tr>
+                                        <td colspan="3" align="right">
+                                            <div class="col-sm-offset-2 col-sm-10">
+                                                <a class="btn btn-default" href="javascript:void(0)" onclick="updateDrugSusceptibility({{$test->id}},0)">
+                                                {{ trans('messages.save') }}</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfooter>
+                            </table>
+                            {{ Form::close() }}
+                        @endif
+
+<!--
+                    <div class="panel panel-success">
                         <div class="panel-heading">
                             <h3 class="panel-title">{{trans("messages.culture-worksheet")}}</h3>
                         </div>
@@ -253,10 +306,11 @@
 							</table>
 							{{ Form::close() }}
 							@endforeach
-                          </div>
-                        </div> <!-- ./ panel-body -->
-                    @endif
+                        </div>
                     </div>
+-->                    
+					@endif
+	                </div>
 	                <div class="col-md-6">
 	                    <div class="panel panel-info">  <!-- Patient Details -->
 	                        <div class="panel-heading">
@@ -298,7 +352,7 @@
 	                                        	{{$test->specimen->reject_explained_to or trans('messages.pending') }}</p>
 	                            		@endif
 			                            @if($test->specimen->isReferred())
-	    	                        	<br>
+		    	                        	<br>
 	                                        <p class="view"><strong>{{trans("messages.specimen-referred-label")}}</strong>
 	                                        @if($test->specimen->referral->status == Referral::REFERRED_IN)
 	                                            {{ trans("messages.in") }}</p>

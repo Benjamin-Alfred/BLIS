@@ -4,6 +4,8 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Susceptibility extends Eloquent
 {
+	protected $fillable = array('user_id', 'test_id', 'organism_id', 'drug_id');
+
 	/**
 	 * Enabling soft deletes for drug susceptibility.
 	 *

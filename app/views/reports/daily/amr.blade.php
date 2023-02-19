@@ -36,7 +36,7 @@
 	    	<div class="row">
 				<div class="col-sm-3">
 				  	{{ Form::button("<span class='glyphicon glyphicon-filter'></span> ".trans('messages.view'), 
-		                array('class' => 'btn btn-info', 'id' => 'filter', 'type' => 'submit')) }}
+		                array('class' => 'btn btn-info', 'id' => 'filter', 'onclick' => 'document.getElementById("word").value=""', 'type' => 'submit')) }}
 		        </div>
 		        <div class="col-sm-1">
 		        	<input type="hidden" name="word" id="word">
@@ -150,34 +150,28 @@
 					<th>Test Method</th>
 					<th>Gram Pos/Neg</th>
 					<th>Drugs Tested</th>
-					<th>Zone (mm)</th>
+					<th>MIC</th>
 					<th>Interpretation (SIR)</th>
 					<th>{{ Lang::choice('messages.test', 2) }}</th>
 				</tr>
-				@forelse($tests as $test)
-				<?php
-					$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
-					$location = explode("|", $externalDump->city);
-					$sizeOfLocation = sizeof($location);
-					$remarks = explode("|", $externalDump->system_id);
-				?>
+				@forelse($testContent as $tc)
 				<tr>
-					<td>{{ $test->visit->patient->name }}</td>
-					<td>{{ $test->visit->visit_number }}</td>
-					<td>{{ $test->visit->patient->getGender()}}</td>
-					<td>{{ $test->visit->patient->dob }}</td>
-					<td>{{ $test->visit->patient->getAge("Y") }} years</td>
+					<td>{{ $tc['patient_name'] }}</td>
+					<td>{{ $tc['patient_number'] }}</td>
+					<td>{{ $tc['gender']}}</td>
+					<td>{{ $tc['dob'] }}</td>
+					<td>{{ $tc['age'] }} years</td>
 					<td>&nbsp;</td>
-					<td><?php echo $sizeOfLocation > 3?$location[0]:'';?></td>
-					<td><?php echo $sizeOfLocation > 3?$location[1]:'';?></td>
-					<td>{{ $externalDump->provisional_diagnosis }}</td>
-					<td>{{ $test->specimen->time_accepted }}</td>
-					<td>{{ $test->visit->visit_type }}</td>
-					<td><?php echo $sizeOfLocation == 5?$location[4]:'';?></td>
-					<td>{{ $externalDump->date_of_admission }}</td>
-					<td><?php echo count($remarks) > 1?$remarks[1]:'';?></td>
-					<td>{{ $test->specimen->specimenType->name }}</td>
-					<td>{{ $test->specimen->specimenType->name }}</td>
+					<td>{{ $tc["county"] }}</td>
+					<td>{{ $tc["sub_county"] }}</td>
+					<td>{{ $tc["prediagnosis"] }}</td>
+					<td>{{ substr($tc['specimen_collection_date'],0,10) }}</td>
+					<td>{{ $tc['patient_type'] }}</td>
+					<td>{{ $tc['ward'] }}</td>
+					<td>{{ $tc['admission_date'] }}</td>
+					<td>{{ $tc['currently_on_therapy'] }}</td>
+					<td>{{ $tc['specimen_type'] }}</td>
+					<td>{{ $tc['specimen_source'] }}</td>
 					<td>&nbsp;</td>
 					<?php
 						$isolateObtained = "";
@@ -185,23 +179,19 @@
 						$drugTested = "";
 						$zone = "";
 						$sir = "";
-						if (count($test->susceptibility) > 0) {
+						if (count($tc["isolates"]) > 0) {
 							$isolateObtained .= "<p>Yes</p>";
 							$tempIsolate = "";
-							foreach ($test->susceptibility as $suscept) {
-								if (isset($suscept->id) && $suscept->zone > 0) {
-									if(strcmp($tempIsolate, $suscept->organism->name) != 0){
-										$tempIsolate = $suscept->organism->name;
-										$isolateName .= "<p>".$suscept->organism->name."</p>";
-									}else{
-										$isolateName .= "<p>&nbsp;</p>";
-									}
-									$drugTested .= "<p>".$suscept->drug->name."</p>";
-									$zone .= "<p>".$suscept->zone."</p>";
-									$sir .= "<p>".$suscept->interpretation."</p>";
+							foreach ($tc["isolates"] as $suscept) {
+								if(strcmp($tempIsolate, $suscept["isolate_name"]) != 0){
+									$tempIsolate = $suscept["isolate_name"];
+									$isolateName .= "<p>".$suscept["isolate_name"]."</p>";
+								}else{
+									$isolateName .= "<p>&nbsp;</p>";
 								}
-					?>
-					<?php
+								$drugTested .= "<p>".$suscept["drug"]."</p>";
+								$zone .= "<p>".$suscept["zone"]."</p>";
+								$sir .= "<p>".$suscept["interpretation"]."</p>";
 							}
 						}else{
 							$isolateObtained .= "<p>No</p>";
@@ -214,7 +204,7 @@
 					<td>{{ $drugTested }}</td>
 					<td>{{ $zone }}</td>
 					<td>{{ $sir }}</td>
-					<td>{{ $test->testType->name }}</td>
+					<td>{{ $tc['test_type'] }}</td>
 				</tr>
 				@empty
 				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>

@@ -33,41 +33,68 @@ class SusceptibilityController extends \BaseController {
 	{
 		$action = Input::get('action');
 		$user_id = Auth::user()->id;
-		$test = Input::get('test');
-		$organism = Input::get('organism');
-		$drug = Input::get('drug');
-		$zone = Input::get('zone');
-		$interpretation = Input::get('interpretation');
 
-		for($i=0; $i<count($test); $i++){
-			$sensitivity = Susceptibility::getDrugSusceptibility($test[$i], $organism[$i], $drug[$i]);
-			if($zone[$i]!=NULL || $interpretation[$i]!=NULL)
-			{
-				if(count($sensitivity)>0){
-					$drugSusceptibility = Susceptibility::find($sensitivity->id);
-					$drugSusceptibility->user_id = $user_id;
-					$drugSusceptibility->test_id = $test[$i];
-					$drugSusceptibility->organism_id = $organism[$i];
-					$drugSusceptibility->drug_id = $drug[$i];
-					$drugSusceptibility->zone = $zone[$i];
-					$drugSusceptibility->interpretation = $interpretation[$i];
-					$drugSusceptibility->save();
-				}
-				else
-				{
-					
-					$drugSusceptibility = new Susceptibility;
-					$drugSusceptibility->user_id = $user_id;
-					$drugSusceptibility->test_id = $test[$i];
-					$drugSusceptibility->organism_id = $organism[$i];
-					$drugSusceptibility->drug_id = $drug[$i];
-					$drugSusceptibility->zone = $zone[$i];
-					$drugSusceptibility->interpretation = $interpretation[$i];
-					$drugSusceptibility->save();
-				}
+		if($action == "V2-ast"){
+			$testID = Input::get('test_id');
+			$organismName = Input::get('ast-organism');
+			$ast = Input::get('astcheck');
+			$organism = Organism::firstOrCreate(array('name' => $organismName));
+			Log::info("Organism: ".$organism->name);
+			Log::info("Test ID: ".$testID);
+			foreach ($ast as $key => $value) {
+				$astArray = explode("|", $value);
+				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[0]));
+				Log::info("Antibiotic: ".$antibiotic->name);
+				$susceptibility = Susceptibility::firstOrCreate(array(
+					'user_id' => $user_id, 
+					'test_id' => $testID, 
+					'organism_id' => $organism->id,
+					'drug_id' => $antibiotic->id));
+
+				$susceptibility->zone = $astArray[1];
+				$susceptibility->interpretation = $astArray[2];
+				$susceptibility->save();
 			}
-			
+
+			return json_encode(array('test_id' => $testID, 'organism_id' => $organism->id));
+		}else{
+			$test = Input::get('test');
+			$organism = Input::get('organism');
+			$drug = Input::get('drug');
+			$zone = Input::get('zone');
+			$interpretation = Input::get('interpretation');
+
+			for($i=0; $i<count($test); $i++){
+				$sensitivity = Susceptibility::getDrugSusceptibility($test[$i], $organism[$i], $drug[$i]);
+				if($zone[$i]!=NULL || $interpretation[$i]!=NULL)
+				{
+					if(count($sensitivity)>0){
+						$drugSusceptibility = Susceptibility::find($sensitivity->id);
+						$drugSusceptibility->user_id = $user_id;
+						$drugSusceptibility->test_id = $test[$i];
+						$drugSusceptibility->organism_id = $organism[$i];
+						$drugSusceptibility->drug_id = $drug[$i];
+						$drugSusceptibility->zone = $zone[$i];
+						$drugSusceptibility->interpretation = $interpretation[$i];
+						$drugSusceptibility->save();
+					}
+					else
+					{
+						
+						$drugSusceptibility = new Susceptibility;
+						$drugSusceptibility->user_id = $user_id;
+						$drugSusceptibility->test_id = $test[$i];
+						$drugSusceptibility->organism_id = $organism[$i];
+						$drugSusceptibility->drug_id = $drug[$i];
+						$drugSusceptibility->zone = $zone[$i];
+						$drugSusceptibility->interpretation = $interpretation[$i];
+						$drugSusceptibility->save();
+					}
+				}
+				
+			}
 		}
+
 		if ($action == "results"){
 			$test_id = Input::get('testId');
 			$organism_id = Input::get('organismId');
@@ -127,6 +154,34 @@ class SusceptibilityController extends \BaseController {
 	public function update($id)
 	{
 		//
+		$action = Input::get('action');
+		$user_id = Auth::user()->id;
+
+		if($action == "V2-ast"){
+			$testID = Input::get('test_id');
+
+			Susceptibility::where('test_id', '=', $testID)->delete();
+
+			$organismName = Input::get('ast-organism');
+			$ast = Input::get('astcheck');
+			$organism = Organism::firstOrCreate(array('name' => $organismName));
+
+			foreach ($ast as $key => $value) {
+				$astArray = explode("|", $value);
+				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[0]));
+				$susceptibility = Susceptibility::firstOrCreate(array(
+					'user_id' => $user_id, 
+					'test_id' => $testID, 
+					'organism_id' => $organism->id,
+					'drug_id' => $antibiotic->id));
+
+				$susceptibility->zone = $astArray[1];
+				$susceptibility->interpretation = $astArray[2];
+				$susceptibility->save();
+			}
+
+			return json_encode(array('test_id' => $testID, 'organism_id' => $organism->id));
+		}
 	}
 
 

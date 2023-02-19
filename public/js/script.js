@@ -217,10 +217,18 @@ $(function(){
             processData:false,
             success: function(data)
             {
-            	console.log(data);
+				$('.text-culture').val($.parseJSON(data).identification);
+				$('#ast-organism').val($.parseJSON(data).identification);
+
 				$.each($.parseJSON(data), function (index, obj) {
-					console.log(index + " " + obj);
+					// console.log(index + " " + obj);
 					$('#'+index).val(obj);
+					if (index == "ast") {
+						for (var i = obj.length - 1; i >= 0; i--) {
+							// console.log(obj[i].name);
+							$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'>"+obj[i].name+"</label></td><td>"+obj[i].mic+"</td><td>"+obj[i].category+"</td></tr>");
+						}
+					}
 				});
             },
             error: function(e) 
@@ -230,6 +238,17 @@ $(function(){
         });
     }));
 
+
+	$('body').on('click', '.ast-checkboxes', function(){
+		let astArray = $(this).val().split("|");
+		let astVal = astArray[0] + "-" + astArray[2];
+		let ast = $('.text-sensitivity').val().replace(astVal, "").trim();
+
+		if($(this).prop('checked')){
+	    	ast += " " + astVal;
+	    }
+    	$('.text-sensitivity').val(ast.trim().toUpperCase());
+	});
 
 	/** 
 	 * Fetch Test results
@@ -800,12 +819,32 @@ $(function(){
 			type: 'POST',
 			url:  '/susceptibility/saveSusceptibility',
 			data: dataString,
-			success: function(){
+			success: function(data){
+				let mydata = $.parseJSON(data);
+				if(mydata.test_id)tid = mydata.test_id;
+				if(mydata.organism_id)oid = mydata.organism_id;
 				drawSusceptibility(tid, oid);
 			}
 		});
 	}
 	/*End save drug susceptibility*/
+	/*Begin update drug susceptibility*/	
+	function updateDrugSusceptibility(tid, oid){
+		console.log(oid);
+		var dataString = $("#drugSusceptibilityForm_"+oid).serialize();
+		$.ajax({
+			type: 'POST',
+			url:  '/susceptibility/'+tid+'/update',
+			data: dataString,
+			success: function(data){
+				let mydata = $.parseJSON(data);
+				if(mydata.test_id)tid = mydata.test_id;
+				if(mydata.organism_id)oid = mydata.organism_id;
+				drawSusceptibility(tid, oid);
+			}
+		});
+	}
+	/*End update drug susceptibility*/
 	/*Function to render drug susceptibility table after successfully saving the results*/
 	function drawSusceptibility(tid, oid){
 		$.getJSON('/susceptibility/saveSusceptibility', { testId: tid, organismId: oid, action: "results"}, 
@@ -823,7 +862,7 @@ $(function(){
 				});
 
 				//$(".sense"+tid).val($(".sense"+tid).val()+elem.drugName+" - "+elem.sensitivity+", ");
-				$(".sense"+tid).val(suscept);
+				// $(".sense"+tid).val(suscept);
 				//tableBody +="<tbody>"+tableRow+"</tbody>";
 				$( "#enteredResults_"+oid).html(tableRow);
 				$("#submit_drug_susceptibility_"+oid).hide();

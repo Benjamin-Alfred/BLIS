@@ -297,6 +297,30 @@
 											{{$test->interpretation}}
 										</div>
 									</div>
+
+                	@if(count($test->susceptibility)>0)
+	                    <div class="row">
+                    		<?php
+                    			$isolateName = "";
+                    		?>
+                    		@foreach($test->getCultureIsolates() as $isolate)
+                    			@if(strcmp($isolateName, $isolate["isolate_name"]) != 0)
+                					<?php $isolateName = $isolate["isolate_name"]; ?>
+ 	                    	<div class="col-md-12"><strong>Susceptibility Detail</strong></div>
+ 	                    	<div class="col-md-12"><strong>Isolate: </strong>{{ $isolateName }}</div>
+ 	                    	<div class="col-md-6"><strong>Antibiotic</strong></div>
+ 	                    	<div class="col-md-3"><strong>MIC</strong></div>
+ 	                    	<div class="col-md-3"><strong>Interpretation</strong></div>
+ 	                    	@endif
+ 	                    	<div class="col-md-6">{{ $isolate["drug"] }}</div>
+ 	                    	<div class="col-md-3">{{ $isolate["zone"] }}</div>
+ 	                    	<div class="col-md-3">{{ $isolate["interpretation"] }}</div>
+ 	                    	@endforeach
+ 	                    </div>
+			        @endif
+
+
+
 								</div>
 							</div> <!-- ./ panel-body -->
 						</div>  <!-- ./ panel -->
@@ -316,8 +340,9 @@
 					</div>
 				</div>
 			</div> <!-- ./ container-fluid -->
+			<!--
 			@if(count($test->testType->organisms)>0)
-            <div class="panel panel-success">  <!-- Patient Details -->
+            <div class="panel panel-success">  
                 <div class="panel-heading">
                     <h3 class="panel-title">{{trans("messages.culture-worksheet")}}</h3>
                 </div>
@@ -349,10 +374,11 @@
                         </tbody>
                     </table>
                     <p><strong>{{trans("messages.susceptibility-test-results")}}</strong></p>
+
                     <div class="row">
                     	@if(count($test->susceptibility)>0)
 	                    	@foreach($test->testType->organisms as $organism)
-	                    	<div class="col-md-6">
+ 	                    	<div class="col-md-6">
 	                    		<table class="table table-bordered">
 			                        <tbody>
 			                        	<tr>
@@ -377,12 +403,13 @@
 			                        </tbody>
 			                    </table>
 	                    	</div>
-	                    	@endforeach
+ 							@endforeach
                     	@endif
                     </div>
                   </div>
-                </div> <!-- ./ panel-body -->
+                </div> 
             @endif
+            -->
 		</div> <!-- ./ panel-body -->
 	</div> <!-- ./ panel -->
 @stop

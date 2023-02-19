@@ -17,4 +17,8 @@ class Drug extends Eloquent
 	 * @var string
 	 */
 	protected $table = 'drugs';
+
+
+	protected $fillable = array('name', 'abbreviation', 'description');
+
 }

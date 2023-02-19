@@ -260,6 +260,11 @@ Route::group(array("before" => "auth"), function()
         "as"   => "drug.susceptibility",
         "uses" => "SusceptibilityController@store"
     ));
+    Route::post("/susceptibility/{test}/update", array(
+        "before" => "checkPerms:edit_test_results",
+        "as"   => "susceptibility.update",
+        "uses" => "SusceptibilityController@update"
+    ));
     Route::group(array("before" => "admin"), function()
     {
         Route::resource("permission", "PermissionController");
