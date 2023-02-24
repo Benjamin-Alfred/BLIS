@@ -155,6 +155,7 @@
 					<th>{{ Lang::choice('messages.test', 2) }}</th>
 				</tr>
 				@forelse($testContent as $tc)
+				@if(count($tc) > 1)
 				<tr>
 					<td>{{ $tc['patient_name'] }}</td>
 					<td>{{ $tc['patient_number'] }}</td>
@@ -206,6 +207,9 @@
 					<td>{{ $sir }}</td>
 					<td>{{ $tc['test_type'] }}</td>
 				</tr>
+				@else
+				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>
+				@endif
 				@empty
 				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>
 				@endforelse
