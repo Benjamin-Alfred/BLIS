@@ -78,18 +78,23 @@ class Vitek2Machine extends \KBLIS\Instrumentation\AbstractInstrumentor
 			$JSONString .= '"identification":"'.$results['identification'].'","ast":[';
 
 			$antibiotics = array();
-			foreach ($xml->requestResult->testOrder->test->result->value->ast->children() as $antibiotic) {
-				array_push($antibiotics, array(
-					"name" => $antibiotic->name,
-					"mic_sign" => $antibiotic->highMic->micSign,
-					"mic_value" => $antibiotic->highMic->micValue,
-					"category" => $antibiotic->category
-				));
 
-				$JSONString .= '{"name":"'.$antibiotic->name.'",';
-				$JSONString .= '"mic":"'.$antibiotic->highMic->micSign.$antibiotic->highMic->micValue.'",';
-				$JSONString .= '"category":"'.$antibiotic->category.'"},';
+			try {		
+				foreach ($xml->requestResult->testOrder->test->result->value->ast->children() as $antibiotic) {
+					array_push($antibiotics, array(
+						"name" => $antibiotic->name,
+						"mic_sign" => $antibiotic->highMic->micSign,
+						"mic_value" => $antibiotic->highMic->micValue,
+						"category" => $antibiotic->category
+					));
 
+					$JSONString .= '{"name":"'.$antibiotic->name.'",';
+					$JSONString .= '"mic":"'.$antibiotic->highMic->micSign.$antibiotic->highMic->micValue.'",';
+					$JSONString .= '"category":"'.$antibiotic->category.'"},';
+
+				}
+			} catch (Exception $e) {
+				Log::error($e);
 			}
 			$results['ast'] = $antibiotics;
 
