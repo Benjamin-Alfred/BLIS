@@ -219,6 +219,8 @@ $(function(){
             {
 				$('.text-culture').val($.parseJSON(data).identification);
 				$('#ast-organism').val($.parseJSON(data).identification);
+				$('#patient-id-analyzer').append(" ("+$.parseJSON(data).patient_id_vitek+")");
+				$('#patient-name-analyzer').append(" ("+$.parseJSON(data).patient_name_vitek+")");
 
 				$.each($.parseJSON(data), function (index, obj) {
 					// console.log(index + " " + obj);

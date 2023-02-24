@@ -176,9 +176,9 @@ class InstrumentController extends \BaseController {
 			//Get Instrument Interface Class file
 			$testTypeID = Input::get("test_type_id");
 			$testType = TestType::find($testTypeID);
-			$resultFile = "uploads/".basename($_FILES["file-to-fetch"]["name"]);
+			$resultFile = storage_path()."/uploads/".basename($_FILES["file-to-fetch"]["name"]);
 
-			Input::file('file-to-fetch')->move('uploads/', basename($_FILES["file-to-fetch"]["name"]));
+			Input::file('file-to-fetch')->move(storage_path().'/uploads/', basename($_FILES["file-to-fetch"]["name"]));
 
 			$instrument = $testType->instruments->filter(function($inst){
 					return $inst->active == 1;

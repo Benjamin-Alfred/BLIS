@@ -320,9 +320,13 @@
 	                            <div class="container-fluid">
 	                            	<div class="display-details">
                                         <p class="view"><strong>{{trans("messages.patient-number")}}</strong>
-	                                        {{$test->visit->patient->patient_number}}</p>
+	                                        {{$test->visit->patient->patient_number}}
+                                            <span id="patient-id-analyzer"></span>
+	                                    </p>
 	                                    <p class="view"><strong>{{ Lang::choice('messages.name',1) }}</strong>
-                                	        {{$test->visit->patient->name}}</p>
+                                	        {{$test->visit->patient->name}}
+                                            <span id="patient-name-analyzer"></span>
+                                	    </p>
                                         <p class="view"><strong>{{trans("messages.age")}}</strong>
 	                                        {{$test->visit->patient->getAge()}}</p>
                                         <p class="view"><strong>{{trans("messages.gender")}}</strong>
