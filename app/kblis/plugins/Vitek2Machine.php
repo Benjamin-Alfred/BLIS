@@ -93,8 +93,8 @@ class Vitek2Machine extends \KBLIS\Instrumentation\AbstractInstrumentor
 					$JSONString .= '"category":"'.$antibiotic->category.'"},';
 
 				}
-			} catch (Exception $e) {
-				Log::error($e);
+			} catch (\Exception $e) {
+				\Log::error($e);
 			}
 			$results['ast'] = $antibiotics;
 
