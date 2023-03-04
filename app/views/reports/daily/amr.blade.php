@@ -40,8 +40,10 @@
 		        </div>
 		        <div class="col-sm-1">
 		        	<input type="hidden" name="word" id="word">
-					{{Form::button("<span class='glyphicon glyphicon-export'></span> ".trans('messages.export'), 
-			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="word"', 'type'=>'submit'))}}
+					{{Form::button("<span class='glyphicon glyphicon-export'></span> XLS ", 
+			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="xls"', 'type'=>'submit'))}}
+					{{Form::button("<span class='glyphicon glyphicon-export'></span> JSON ", 
+			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="json"', 'type'=>'submit'))}}
 				</div>
 			</div>
 		</div>

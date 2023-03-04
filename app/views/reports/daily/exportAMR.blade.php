@@ -4,8 +4,8 @@
 	{{ HTML::style('css/bootstrap-theme.min.css') }}
 	</head>
 	<body>
-		@include("reportHeader")
-		<div id="content">
+		<!-- @include("reportHeader") -->
+		<div id="content" class="hidden-print">
 			<strong>
 				<p>
 					<?php $from = isset($input['start'])?$input['start']:date('Y-m-d'); ?>

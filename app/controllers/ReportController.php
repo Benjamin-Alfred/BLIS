@@ -176,6 +176,11 @@ class ReportController extends \BaseController {
 		$pendingOrAll = Input::get('pending_or_all');
 		$error = '';
 		$accredited = array();
+		$exportFormat = "";
+
+		if(Input::has('word'))
+			$exportFormat = Input::get('word');
+
 		//	Check radiobutton for pending/all tests is checked and assign the 'true' value
 		if (Input::get('tests') === '1') {
 		    $pending='true';
@@ -424,17 +429,17 @@ class ReportController extends \BaseController {
 				$content["message"] = ""; 
 			}
 
-			if(Input::has('json')){
+			if(strcmp(strtolower(trim($exportFormat)),'json') == 0){
 				$date = date("Ymdhi");
-				$fileName = "daily_test_records_".$date.".json";
+				$fileName = "amr_whonet_report_".$date.".json";
 				$headers = array(
 				    "Content-type"=>"text/json",
 				    "Content-Disposition"=>"attachment;Filename=".$fileName
 				);
 	    		return Response::make(json_encode($content),200, $headers);
-			}else if(Input::has('word')){
+			}else if(strcmp(strtolower(trim($exportFormat)),'xls') == 0){
 				$date = date("Ymdhi");
-				$fileName = "amr_whonet_report".$date.".xls";
+				$fileName = "amr_whonet_report_".$date.".xls";
 				$headers = array(
 				    "Content-type"=>"application/vnd.ms-excel",
 				    "Content-Disposition"=>"attachment;Filename=".$fileName
