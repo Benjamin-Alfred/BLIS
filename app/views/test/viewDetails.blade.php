@@ -137,7 +137,7 @@
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.age")}}</strong></p></div>
 										<div class="col-md-9">
-											{{$test->visit->patient->getAge("YY", datetime::createfromformat('Y-m-d H:i:s', $test->time_started))}}</div></div>
+											{{$test->visit->patient->getAge("YMD", datetime::createfromformat('Y-m-d H:i:s', $test->time_started))}}</div></div>
 									<div class="row">
 										<div class="col-md-3">
 											<p><strong>{{trans("messages.gender")}}</strong></p></div>
