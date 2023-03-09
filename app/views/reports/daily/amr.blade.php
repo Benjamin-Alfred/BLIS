@@ -175,7 +175,7 @@
 					<td>{{ $tc['currently_on_therapy'] }}</td>
 					<td>{{ $tc['specimen_type'] }}</td>
 					<td>{{ $tc['specimen_source'] }}</td>
-					<td>&nbsp;</td>
+					<td>{{ $tc['lab_id'] }}</td>
 					<?php
 						$isolateObtained = "";
 						$isolateName = "";

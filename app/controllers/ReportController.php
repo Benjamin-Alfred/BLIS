@@ -417,7 +417,7 @@ class ReportController extends \BaseController {
 					$testContent['currently_on_therapy'] = count($remarks) > 1?$remarks[1]:'';
 					$testContent['specimen_type'] = $test->specimen->specimenType->name;
 					$testContent['specimen_source'] = $test->specimen->specimenType->name;
-					$testContent['lab_id'] = "";
+					$testContent['lab_id'] = $test->specimen->id;
 
 					$testContent['isolates'] = $test->getCultureIsolates();
 
