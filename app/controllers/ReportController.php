@@ -413,7 +413,7 @@ class ReportController extends \BaseController {
 					$testContent['specimen_collection_date'] = $test->specimen->time_accepted;
 					$testContent['patient_type'] = $test->visit->visit_type;
 					$testContent['ward'] = $sizeOfLocation == 5?$location[4]:'';
-					$testContent['admission_date'] = $externalDump->date_of_admission;
+					$testContent['admission_date'] = $externalDump->waiver_no;//TODO: Find a better way to accomodate new field requests
 					$testContent['currently_on_therapy'] = count($remarks) > 1?$remarks[1]:'';
 					$testContent['specimen_type'] = $test->specimen->specimenType->name;
 					$testContent['specimen_source'] = $test->specimen->specimenType->name;

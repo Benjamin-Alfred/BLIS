@@ -343,7 +343,7 @@ class FansoftInterfacer implements InterfacerInterface{
         $dumper->cost = $labRequest->cost;
         $dumper->receipt_number = $labRequest->receipt_number;
         $dumper->receipt_type = $labRequest->receipt_type;
-        $dumper->waiver_no = '';
+        $dumper->waiver_no = $labRequest->date_of_admission;
         $dumper->system_id = "fansoftbg|".$labRequest->request_notes;
         $dumper->save();
     }
