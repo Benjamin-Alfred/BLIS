@@ -395,10 +395,21 @@ class ReportController extends \BaseController {
 			$content = [];
 			if(count($tests) > 0){
 				foreach ($tests as $test) {
-					$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
-					$location = explode("|", $externalDump->city);
-					$sizeOfLocation = sizeof($location);
-					$remarks = explode("|", $externalDump->system_id);
+					try {
+						//TODO: Find a better way to accomodate new field requests
+						$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
+						$location = explode("|", $externalDump->city);
+
+						$remarks = explode("|", $externalDump->system_id);
+						$preDiagnosis = $externalDump->provisional_diagnosis;
+						$admissionDate = $externalDump->waiver_no;
+					} catch (Exception $e) {
+						Log::error($e);
+						$location = [];
+						$remarks = [];
+						$preDiagnosis = "";
+						$admissionDate = "";
+					}
 
 					$testContent = [];
 					$testContent['patient_name'] = $test->visit->patient->name;
@@ -407,13 +418,13 @@ class ReportController extends \BaseController {
 					$testContent['dob'] = $test->visit->patient->dob;
 					$testContent['age'] = $test->visit->patient->getAge("Y");
 					$testContent['country'] = "";
-					$testContent['county'] = $sizeOfLocation > 3?$location[0]:'';;
-					$testContent['sub_county'] = $sizeOfLocation > 3?$location[1]:'';;
-					$testContent['prediagnosis'] = $externalDump->provisional_diagnosis;
+					$testContent['county'] = count($location) > 3?$location[0]:'';
+					$testContent['sub_county'] = count($location) > 3?$location[1]:'';
+					$testContent['prediagnosis'] = $preDiagnosis;
 					$testContent['specimen_collection_date'] = $test->specimen->time_accepted;
 					$testContent['patient_type'] = $test->visit->visit_type;
-					$testContent['ward'] = $sizeOfLocation == 5?$location[4]:'';
-					$testContent['admission_date'] = $externalDump->waiver_no;//TODO: Find a better way to accomodate new field requests
+					$testContent['ward'] = count($location) == 5?$location[4]:'';
+					$testContent['admission_date'] = $admissionDate;
 					$testContent['currently_on_therapy'] = count($remarks) > 1?$remarks[1]:'';
 					$testContent['specimen_type'] = $test->specimen->specimenType->name;
 					$testContent['specimen_source'] = $test->specimen->specimenType->name;
