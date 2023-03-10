@@ -39,7 +39,7 @@ class FansoftInterfacer implements InterfacerInterface{
         //if($comments==null or $comments==''){$comments = 'No Comments';
 
 	    //If testID is null we cannot handle this test as we cannot know the results
-	Log::info("Creating the JSON string");
+	   Log::info("Creating the JSON string");
         if($testId == null){
             return null;
         }
@@ -180,7 +180,7 @@ class FansoftInterfacer implements InterfacerInterface{
         else
         {
             //Set status in external lab-request to `sent`
-            $updatedExternalRequest = ExternalDump::where('lab_no', '=', $labNumber)->first();
+            $updatedExternalRequest = ExternalDump::where('test_id', '=', $testId)->first();
             $updatedExternalRequest->result_returned = 2;
             $updatedExternalRequest->save();
             Log::error("[FansoftInterfacer] HTTP Error: Did not receive a suitable response from Fansoft: $response for TEST $testId");
