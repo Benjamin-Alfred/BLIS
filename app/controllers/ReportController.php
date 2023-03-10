@@ -383,12 +383,12 @@ class ReportController extends \BaseController {
 				}
 				else
 				{
-					$tests = Test::getTests($AMRTests, $from, $toPlusOne->format("Y-m-d H:i:s"), [Test::VERIFIED]);
+					$tests = Test::getTests($AMRTests, $from, $toPlusOne->format("Y-m-d H:i:s"), [Test::VERIFIED], Test::TIME_COMPLETED);
 				}
 			}
 			else
 			{
-				$tests = Test::getTests($AMRTests, $from, $from, [Test::VERIFIED]);
+				$tests = Test::getTests($AMRTests, $from, $from, [Test::VERIFIED], Test::TIME_COMPLETED);
 			}
 			
 			/*Get collection of tests*/
