@@ -70,7 +70,7 @@ class Test extends Eloquent
 	 */
 	public function createdBy()
 	{
-		return $this->belongsTo('User', 'created_by', 'id');
+		return $this->belongsTo('User', 'created_by', 'id')->withTrashed();
 	}
 
 	/**
@@ -78,7 +78,7 @@ class Test extends Eloquent
 	 */
 	public function testedBy()
 	{
-		return $this->belongsTo('User', 'tested_by', 'id');
+		return $this->belongsTo('User', 'tested_by', 'id')->withTrashed();
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Test extends Eloquent
 	 */
 	public function verifiedBy()
 	{
-		return $this->belongsTo('User', 'verified_by', 'id');
+		return $this->belongsTo('User', 'verified_by', 'id')->withTrashed();
 	}
 
 	/**
