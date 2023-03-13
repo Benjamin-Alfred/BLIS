@@ -77,7 +77,7 @@ class Specimen extends Eloquent
 	 */
 	public function acceptedBy()
 	{
-		return $this->belongsTo('User', 'accepted_by', 'id');
+		return $this->belongsTo('User', 'accepted_by', 'id')->withTrashed();
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Specimen extends Eloquent
 	 */
 	public function rejectedBy()
 	{
-		return $this->belongsTo('User', 'rejected_by', 'id');
+		return $this->belongsTo('User', 'rejected_by', 'id')->withTrashed();
 	}
 
     /**
