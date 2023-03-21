@@ -226,9 +226,10 @@ $(function(){
 					// console.log(index + " " + obj);
 					$('#'+index).val(obj);
 					if (index == "ast") {
+						$('#ast_table').empty();
 						for (var i = obj.length - 1; i >= 0; i--) {
 							// console.log(obj[i].name);
-							$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'>"+obj[i].name+"</label></td><td>"+obj[i].mic+"</td><td>"+obj[i].category+"</td></tr>");
+							$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'><input type='hidden' name='astarray[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'>"+obj[i].name+"</label></td><td>"+obj[i].mic+"</td><td>"+obj[i].category+"</td></tr>");
 						}
 					}
 				});
@@ -826,6 +827,7 @@ $(function(){
 				if(mydata.test_id)tid = mydata.test_id;
 				if(mydata.organism_id)oid = mydata.organism_id;
 				drawSusceptibility(tid, oid);
+				$("#ast-save-msg").html("AST results successfully saved!");
 			}
 		});
 	}
@@ -843,6 +845,7 @@ $(function(){
 				if(mydata.test_id)tid = mydata.test_id;
 				if(mydata.organism_id)oid = mydata.organism_id;
 				drawSusceptibility(tid, oid);
+				$("#ast-save-msg").html("AST results successfully saved!");
 			}
 		});
 	}

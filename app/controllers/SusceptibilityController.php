@@ -37,7 +37,7 @@ class SusceptibilityController extends \BaseController {
 		if($action == "V2-ast"){
 			$testID = Input::get('test_id');
 			$organismName = Input::get('ast-organism');
-			$ast = Input::get('astcheck');
+			$ast = Input::get('astarray');
 			$organism = Organism::firstOrCreate(array('name' => $organismName));
 			Log::info("Organism: ".$organism->name);
 			Log::info("Test ID: ".$testID);
@@ -163,7 +163,7 @@ class SusceptibilityController extends \BaseController {
 			Susceptibility::where('test_id', '=', $testID)->delete();
 
 			$organismName = Input::get('ast-organism');
-			$ast = Input::get('astcheck');
+			$ast = Input::get('astarray');
 			$organism = Organism::firstOrCreate(array('name' => $organismName));
 
 			foreach ($ast as $key => $value) {

@@ -14,7 +14,7 @@ Event::listen('test.saved', function($testId)
 Event::listen('test.verified', function($testId)
 {
 	Interfacer::send($testId);
-	ScheduledMessage::scheduleTestResponse($testId);
+	// ScheduledMessage::scheduleTestResponse($testId);
 });
 //TO DO: move events to app/events.php or somewhere else
 Event::listen('api.receivedLabRequest', function($labRequest)

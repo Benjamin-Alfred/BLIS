@@ -137,7 +137,7 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th width="50%">Antimicrobial</th>
+                                        <th width="50%">Antibiotic</th>
                                         <th>MIC</th>
                                         <th>{{ trans('messages.interp')}}</th>
                                     </tr>
@@ -165,7 +165,9 @@
                                 </tfooter>
                                     <tr>
                                         <td colspan="3" align="right">
-                                            <div class="col-sm-offset-2 col-sm-10">
+                                            <div class="col-sm-6" id="ast-save-msg">
+                                            </div>
+                                            <div class="col-sm-6">
                                                 <a class="btn btn-default" href="javascript:void(0)" onclick="updateDrugSusceptibility({{$test->id}},0)">
                                                 {{ trans('messages.save') }}</a>
                                             </div>
