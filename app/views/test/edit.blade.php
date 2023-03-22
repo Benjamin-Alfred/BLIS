@@ -162,14 +162,14 @@
                                 	@endforeach
                                 @endif
                                 </tbody>
-                                </tfooter>
+                                <tfooter>
                                     <tr>
                                         <td colspan="3" align="right">
                                             <div class="col-sm-6" id="ast-save-msg">
                                             </div>
                                             <div class="col-sm-6">
                                                 <a class="btn btn-default" href="javascript:void(0)" onclick="updateDrugSusceptibility({{$test->id}},0)">
-                                                {{ trans('messages.save') }}</a>
+                                                {{ trans('messages.save') }} for WHONET</a>
                                             </div>
                                         </td>
                                     </tr>

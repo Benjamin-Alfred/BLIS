@@ -98,7 +98,11 @@ class Vitek2Machine extends \KBLIS\Instrumentation\AbstractInstrumentor
 			}
 			$results['ast'] = $antibiotics;
 
-			$JSONString = substr($JSONString, 0, -1)."]}";
+			if (count($antibiotics) > 0) {
+				$JSONString = substr($JSONString, 0, -1)."]}";
+			}else{
+				$JSONString .= "]}";
+			}
 		}else{
 			\Log::error("Not XML File?");
 		}

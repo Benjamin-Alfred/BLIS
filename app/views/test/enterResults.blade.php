@@ -139,7 +139,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <a class="btn btn-default" href="javascript:void(0)" onclick="saveDrugSusceptibility({{$test->id}},0)">
-                                                {{ trans('messages.save') }}</a>
+                                                {{ trans('messages.save') }} for WHONET</a>
                                             </div>
                                         </td>
                                     </tr>

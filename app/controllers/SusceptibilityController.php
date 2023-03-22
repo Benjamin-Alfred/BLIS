@@ -163,7 +163,7 @@ class SusceptibilityController extends \BaseController {
 			Susceptibility::where('test_id', '=', $testID)->delete();
 
 			$organismName = Input::get('ast-organism');
-			$ast = Input::get('astarray');
+			$ast = Input::get('astcheck');
 			$organism = Organism::firstOrCreate(array('name' => $organismName));
 
 			foreach ($ast as $key => $value) {
