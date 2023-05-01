@@ -5,8 +5,8 @@
 	</head>
 	<body>
 		<!-- @include("reportHeader") -->
-		<div id="content" class="hidden-print">
-			<strong>
+		<div id="content">
+<!-- 			<strong class="hidden-print">
 				<p>
 					<?php $from = isset($input['start'])?$input['start']:date('Y-m-d'); ?>
 					<?php $to = isset($input['end'])?$input['end']:date('Y-m-d'); ?>
@@ -18,91 +18,118 @@
 						@endif
 				</p>
 			</strong>
-			<br>
+			<br> -->
 			<table class="table table-bordered" width="100%">
-			<tbody>
-				<tr>
-					<th>{{trans('messages.patient-name')}}</th>
-					<th>IP/OP Number</th>
-					<th>{{trans('messages.gender')}}</th>
-					<th>DOB</th>
-					<th>{{trans('messages.age')}}</th>
-					<th>Country</th>
-					<th>County</th>
-					<th>Sub-county</th>
-					<th>Pre-diagnosis</th>
-					<th>Specimen collection date</th>
-					<th>Location</th>
-					<th>Department</th>
-					<th>Admission Date</th>
-					<th>Prior Antibiotic Therapy</th>
-					<th>{{trans('messages.specimen-type-title')}}</th>
-					<th>Specimen Site</th>
-					<th>Lab ID</th>
-					<th>Isolates Obtained?</th>
-					<th>Isolate Name</th>
-					<th>Test Method</th>
-					<th>Gram Pos/Neg</th>
-					<th>Drugs Tested</th>
-					<th>MIC</th>
-					<th>Interpretation (SIR)</th>
-					<th>{{ Lang::choice('messages.test', 2) }}</th>
-				</tr>
-				@forelse($testContent as $tc)
-				<tr>
-					<td>{{ $tc['patient_name'] }}</td>
-					<td>{{ $tc['patient_number'] }}</td>
-					<td>{{ $tc['gender']}}</td>
-					<td>{{ $tc['dob'] }}</td>
-					<td>{{ $tc['age'] }} years</td>
-					<td>&nbsp;</td>
-					<td>{{ $tc["county"] }}</td>
-					<td>{{ $tc["sub_county"] }}</td>
-					<td>{{ $tc["prediagnosis"] }}</td>
-					<td>{{ substr($tc['specimen_collection_date'],0,10) }}</td>
-					<td>{{ $tc['patient_type'] }}</td>
-					<td>{{ $tc['ward'] }}</td>
-					<td>{{ $tc['admission_date'] }}</td>
-					<td>{{ $tc['currently_on_therapy'] }}</td>
-					<td>{{ $tc['specimen_type'] }}</td>
-					<td>{{ $tc['specimen_source'] }}</td>
-					<td>&nbsp;</td>
-					<?php
-						$isolateObtained = "";
-						$isolateName = "";
-						$drugTested = "";
-						$zone = "";
-						$sir = "";
-						if (count($tc["isolates"]) > 0) {
-							$isolateObtained .= "<p>Yes</p>";
-							$tempIsolate = "";
-							foreach ($tc["isolates"] as $suscept) {
-								if(strcmp($tempIsolate, $suscept["isolate_name"]) != 0){
-									$tempIsolate = $suscept["isolate_name"];
-									$isolateName .= "<p>".$suscept["isolate_name"]."</p>";
-								}else{
-									$isolateName .= "<p>&nbsp;</p>";
+				<?php
+					$theader = "<tr>";
+					$theader .= "<th>Patient Name</th>";
+					$theader .= "<th>IP/OP Number</th>";
+					$theader .= "<th>Gender</th>";
+					$theader .= "<th>DOB</th>";
+					$theader .= "<th>Age</th>";
+					$theader .= "<th>Country</th>";
+					$theader .= "<th>County</th>";
+					$theader .= "<th>Sub-county</th>";
+					$theader .= "<th>Pre-diagnosis</th>";
+					$theader .= "<th>Specimen collection date</th>";
+					$theader .= "<th>Location</th>";
+					$theader .= "<th>Department</th>";
+					$theader .= "<th>Admission Date</th>";
+					$theader .= "<th>Prior Antibiotic Therapy</th>";
+					$theader .= "<th>Specimen-type-title</th>";
+					$theader .= "<th>Specimen Site</th>";
+					$theader .= "<th>Lab ID</th>";
+					$theader .= "<th>Isolates Obtained?</th>";
+					$theader .= "<th>Isolate Name</th>";
+					$theader .= "<th>Test Method</th>";
+					$theader .= "<th>Gram Pos/Neg</th>";
+					$theader .= "[ANTIBIOTIC_NAMES]";
+					$theader .= "<th>Test Name</th>";
+					$theader .= "</tr>";
+
+					$antibiotics = array();
+					$abValues = array();
+					$rowSet = array();
+
+					if (count($testContent) > 0) {
+						foreach ($testContent as $tc) {
+						if (count($tc) > 10) {//Wonder why it has 1 element when empty?
+							$trow = "<tr>";
+							$trow .= "<td>".$tc['patient_name'] ."</td>";
+							$trow .= "<td>".$tc['patient_number'] ."</td>";
+							$trow .= "<td>".$tc['gender']."</td>";
+							$trow .= "<td>".$tc['dob'] ."</td>";
+							$trow .= "<td>".$tc['age'] ." years</td>";
+							$trow .= "<td>&nbsp;</td>";
+							$trow .= "<td>".$tc["county"] ."</td>";
+							$trow .= "<td>".$tc["sub_county"] ."</td>";
+							$trow .= "<td>".$tc["prediagnosis"] ."</td>";
+							$trow .= "<td>".substr($tc['specimen_collection_date'],0,10) ."</td>";
+							$trow .= "<td>".$tc['patient_type'] ."</td>";
+							$trow .= "<td>".$tc['ward'] ."</td>";
+							$trow .= "<td>".$tc['admission_date'] ."</td>";
+							$trow .= "<td>".$tc['currently_on_therapy'] ."</td>";
+							$trow .= "<td>".$tc['specimen_type'] ."</td>";
+							$trow .= "<td>".$tc['specimen_source'] ."</td>";
+							$trow .= "<td>".$tc['lab_id'] ."</td>";
+
+							$isolateObtained = "";
+							$isolateName = "";
+							if (count($tc["isolates"]) > 0) {
+								$isolateObtained .= "<p>Yes</p>";
+								$isolateName = "";
+								foreach ($tc["isolates"] as $suscept) {
+									if(strcmp($isolateName, $suscept["isolate_name"]) != 0){
+										$isolateName .= $suscept["isolate_name"];
+									}
+									$antibiotics[] = strtoupper($suscept["drug"]);
+									$abValues[$tc['patient_number']][strtoupper($suscept["drug"])] = $suscept["zone"];
 								}
-								$drugTested .= "<p>".$suscept["drug"]."</p>";
-								$zone .= "<p>".$suscept["zone"]."</p>";
-								$sir .= "<p>".$suscept["interpretation"]."</p>";
+							}else{
+								$isolateObtained .= "<p>No</p>";
 							}
-						}else{
-							$isolateObtained .= "<p>No</p>";
+							$trow .= "<td>".$isolateObtained."</td>";
+							$trow .= "<td>".$isolateName."</td>";
+							$trow .= "<td>&nbsp;</td>";
+							$trow .= "<td>&nbsp;</td>";
+							$trow .= "[ANTIBOITIC_VALUES]";
+							$trow .= "<td>".$tc['test_type']."</td>";
+							$trow .= "</tr>";
+
+							$rowSet[$tc['patient_number']] = $trow;
 						}
-					?>
-					<td>{{ $isolateObtained }}</td>
-					<td>{{ $isolateName }}</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>{{ $drugTested }}</td>
-					<td>{{ $zone }}</td>
-					<td>{{ $sir }}</td>
-					<td>{{ $tc['test_type'] }}</td>
-				</tr>
-				@empty
-				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>
-				@endforelse
+						}
+					}else{
+						$rowSet[] = "<tr><td colspan='22'>No records found!</td></tr>";
+					}
+				?>
+
+			<thead>
+				<?php
+				$abHeader = "";
+				$antibiotics = array_unique($antibiotics);
+				asort($antibiotics);
+				foreach($antibiotics as $ab){
+					$abHeader .= "<th>$ab</th>";
+				}
+				$theader = str_replace("[ANTIBIOTIC_NAMES]", $abHeader, $theader);
+				echo $theader;
+				?>
+			</thead>
+			<tbody>
+				<?php
+				foreach ($rowSet as $key => $row) {
+					$abv = "";
+					foreach($antibiotics as $ab){
+						try{
+							$abv .= "<td>".$abValues[$key][$ab]."</td>";
+						}catch(Exception $e){
+							$abv .= "<td>&nbsp;</td>";
+						}
+					}
+					echo str_replace("[ANTIBOITIC_VALUES]", $abv, $row);
+				}
+				?>
 			</tbody>
 		</table>
 	</body>

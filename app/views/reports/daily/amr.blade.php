@@ -210,10 +210,10 @@
 					<td>{{ $tc['test_type'] }}</td>
 				</tr>
 				@else
-				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>
+				<tr><td colspan="25">{{trans('messages.no-records-found')}}</td></tr>
 				@endif
 				@empty
-				<tr><td colspan="13">{{trans('messages.no-records-found')}}</td></tr>
+				<tr><td colspan="25">{{trans('messages.no-records-found')}}</td></tr>
 				@endforelse
 			</tbody>
 		</table>
