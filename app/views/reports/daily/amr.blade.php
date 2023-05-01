@@ -42,8 +42,8 @@
 		        	<input type="hidden" name="word" id="word">
 					{{Form::button("<span class='glyphicon glyphicon-export'></span> XLS ", 
 			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="xls"', 'type'=>'submit'))}}
-					{{Form::button("<span class='glyphicon glyphicon-export'></span> JSON ", 
-			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="json"', 'type'=>'submit'))}}
+<!-- 					{{Form::button("<span class='glyphicon glyphicon-export'></span> JSON ", 
+			    		array('class' => 'btn btn-success', 'onclick' => 'document.getElementById("word").value="json"', 'type'=>'submit'))}} -->
 				</div>
 			</div>
 		</div>
