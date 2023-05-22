@@ -94,7 +94,7 @@ class Vitek2Machine extends \KBLIS\Instrumentation\AbstractInstrumentor
 
 				}
 			} catch (\Exception $e) {
-				\Log::error($e);
+				\Log::error($e->getFile().":".$e->getLine()." ".$e->getMessage());
 			}
 			$results['ast'] = $antibiotics;
 

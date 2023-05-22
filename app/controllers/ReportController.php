@@ -398,13 +398,13 @@ class ReportController extends \BaseController {
 					try {
 						//TODO: Find a better way to accomodate new field requests
 						$externalDump = ExternalDump::where('lab_no', '=', $test->external_id)->where('test_id', '=', $test->id)->get()->first();
+						$preDiagnosis = $externalDump->provisional_diagnosis;
+						$admissionDate = $externalDump->waiver_no;
 						$location = explode("|", $externalDump->city);
 
 						$remarks = explode("|", $externalDump->system_id);
-						$preDiagnosis = $externalDump->provisional_diagnosis;
-						$admissionDate = $externalDump->waiver_no;
 					} catch (Exception $e) {
-						Log::error($e);
+						Log::error($e->getFile().":".$e->getLine()." ".$e->getMessage());
 						$location = [];
 						$remarks = [];
 						$preDiagnosis = "";
@@ -413,7 +413,7 @@ class ReportController extends \BaseController {
 
 					$testContent = [];
 					$testContent['patient_name'] = $test->visit->patient->name;
-					$testContent['patient_number'] = $test->visit->visit_number;
+					$testContent['patient_number'] = isset($test->visit->visit_number)?$test->visit->visit_number:$test->visit->patient_id;
 					$testContent['gender'] = $test->visit->patient->getGender();
 					$testContent['dob'] = $test->visit->patient->dob;
 					$testContent['age'] = $test->visit->patient->getAge("Y");

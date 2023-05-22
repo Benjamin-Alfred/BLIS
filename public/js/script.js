@@ -875,6 +875,16 @@ $(function(){
 		);
 	}
 	/*End drug susceptibility table rendering script*/
+
+	// Function to Append to drug susceptibility table
+	function appendToASTTable() {
+		let anti = $("#antibiotic option:selected").text();
+		let mics = $('#sensitivity_mics').val();
+		let SIR = $("#sensitivity_interpetation option:selected").text();
+		$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+anti+"|"+mics+"|"+SIR+"'><input type='hidden' name='astarray[]' value='"+anti+"|"+mics+"|"+SIR+"'>"+anti+"</label></td><td>"+mics+"</td><td>"+SIR+"</td></tr>");
+	}
+	// End function to Append to drug susceptibility table
+
 	/*Function to toggle possible isolates*/
 	function toggle(className, obj){
 		var $input = $(obj);

@@ -297,7 +297,13 @@ class TestController extends \BaseController {
 	public function enterResults($testID)
 	{
 		$test = Test::find($testID);
-		return View::make('test.enterResults')->with('test', $test);
+		$antibiotics = [];
+		if($test->testType->isCultureTest()){
+			$antibiotics = Drug::all()->lists('name');
+			asort($antibiotics);
+		}
+		return View::make('test.enterResults')->with('test', $test)
+									->with('antibiotics', $antibiotics);
 	}
 
 	/**
@@ -419,8 +425,13 @@ class TestController extends \BaseController {
 	public function edit($testID)
 	{
 		$test = Test::find($testID);
+		$antibiotics = [];
+		if($test->testType->isCultureTest()){
+			$antibiotics = Drug::all()->lists('name');
+			asort($antibiotics);
+		}
 
-		return View::make('test.edit')->with('test', $test);
+		return View::make('test.edit')->with('test', $test)->with('antibiotics', $antibiotics);
 	}
 
 	/**

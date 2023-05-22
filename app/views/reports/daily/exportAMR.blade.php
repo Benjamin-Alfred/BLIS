@@ -53,51 +53,51 @@
 
 					if (count($testContent) > 0) {
 						foreach ($testContent as $tc) {
-						if (count($tc) > 10) {//Wonder why it has 1 element when empty?
-							$trow = "<tr>";
-							$trow .= "<td>".$tc['patient_name'] ."</td>";
-							$trow .= "<td>".$tc['patient_number'] ."</td>";
-							$trow .= "<td>".$tc['gender']."</td>";
-							$trow .= "<td>".$tc['dob'] ."</td>";
-							$trow .= "<td>".$tc['age'] ." years</td>";
-							$trow .= "<td>&nbsp;</td>";
-							$trow .= "<td>".$tc["county"] ."</td>";
-							$trow .= "<td>".$tc["sub_county"] ."</td>";
-							$trow .= "<td>".$tc["prediagnosis"] ."</td>";
-							$trow .= "<td>".substr($tc['specimen_collection_date'],0,10) ."</td>";
-							$trow .= "<td>".$tc['patient_type'] ."</td>";
-							$trow .= "<td>".$tc['ward'] ."</td>";
-							$trow .= "<td>".$tc['admission_date'] ."</td>";
-							$trow .= "<td>".$tc['currently_on_therapy'] ."</td>";
-							$trow .= "<td>".$tc['specimen_type'] ."</td>";
-							$trow .= "<td>".$tc['specimen_source'] ."</td>";
-							$trow .= "<td>".$tc['lab_id'] ."</td>";
+							if (count($tc) > 1) {//Wonder why it has 1 element when empty?
+								$trow = "<tr>";
+								$trow .= "<td>".$tc['patient_name'] ."</td>";
+								$trow .= "<td>".$tc['patient_number'] ."</td>";
+								$trow .= "<td>".$tc['gender']."</td>";
+								$trow .= "<td>".$tc['dob'] ."</td>";
+								$trow .= "<td>".$tc['age'] ." years</td>";
+								$trow .= "<td>&nbsp;</td>";
+								$trow .= "<td>".$tc["county"] ."</td>";
+								$trow .= "<td>".$tc["sub_county"] ."</td>";
+								$trow .= "<td>".$tc["prediagnosis"] ."</td>";
+								$trow .= "<td>".substr($tc['specimen_collection_date'],0,10) ."</td>";
+								$trow .= "<td>".$tc['patient_type'] ."</td>";
+								$trow .= "<td>".$tc['ward'] ."</td>";
+								$trow .= "<td>".$tc['admission_date'] ."</td>";
+								$trow .= "<td>".$tc['currently_on_therapy'] ."</td>";
+								$trow .= "<td>".$tc['specimen_type'] ."</td>";
+								$trow .= "<td>".$tc['specimen_source'] ."</td>";
+								$trow .= "<td>".$tc['lab_id'] ."</td>";
 
-							$isolateObtained = "";
-							$isolateName = "";
-							if (count($tc["isolates"]) > 0) {
-								$isolateObtained .= "<p>Yes</p>";
+								$isolateObtained = "";
 								$isolateName = "";
-								foreach ($tc["isolates"] as $suscept) {
-									if(strcmp($isolateName, $suscept["isolate_name"]) != 0){
-										$isolateName .= $suscept["isolate_name"];
+								if (count($tc["isolates"]) > 0) {
+									$isolateObtained .= "<p>Yes</p>";
+									$isolateName = "";
+									foreach ($tc["isolates"] as $suscept) {
+										if(strcmp($isolateName, $suscept["isolate_name"]) != 0){
+											$isolateName .= $suscept["isolate_name"];
+										}
+										$antibiotics[] = strtoupper($suscept["drug"]);
+										$abValues[$tc['patient_number']][strtoupper($suscept["drug"])] = $suscept["zone"];
 									}
-									$antibiotics[] = strtoupper($suscept["drug"]);
-									$abValues[$tc['patient_number']][strtoupper($suscept["drug"])] = $suscept["zone"];
+								}else{
+									$isolateObtained .= "<p>No</p>";
 								}
-							}else{
-								$isolateObtained .= "<p>No</p>";
-							}
-							$trow .= "<td>".$isolateObtained."</td>";
-							$trow .= "<td>".$isolateName."</td>";
-							$trow .= "<td>&nbsp;</td>";
-							$trow .= "<td>&nbsp;</td>";
-							$trow .= "[ANTIBOITIC_VALUES]";
-							$trow .= "<td>".$tc['test_type']."</td>";
-							$trow .= "</tr>";
+								$trow .= "<td>".$isolateObtained."</td>";
+								$trow .= "<td>".$isolateName."</td>";
+								$trow .= "<td>&nbsp;</td>";
+								$trow .= "<td>&nbsp;</td>";
+								$trow .= "[ANTIBOITIC_VALUES]";
+								$trow .= "<td>".$tc['test_type']."</td>";
+								$trow .= "</tr>";
 
-							$rowSet[$tc['patient_number']] = $trow;
-						}
+								$rowSet[$tc['patient_number']] = $trow;
+							}
 						}
 					}else{
 						$rowSet[] = "<tr><td colspan='22'>No records found!</td></tr>";

@@ -108,12 +108,15 @@
 		                            {{ Form::label($fieldName, $measure->name) }}
 		                            <?php
 										$sense = '';
+										$readonly = '';
                                         if(strtolower($measure->name)=="culture")
                                             $sense .= ' text-culture';
-                                        if(strtolower($measure->name)=="sensitivity")
+                                        if(strtolower($measure->name)=="sensitivity"){
                                             $sense .= ' text-sensitivity sense'.$test->id;
+                                            $readonly = 'readonly';
+                                        }
 									?>
-		                            {{Form::text($fieldName, $ans, array('class' => 'form-control'.$sense))}}
+		                            {{Form::text($fieldName, $ans, array('class' => 'form-control'.$sense, $readonly))}}
 								@endif
 		                    </div>
 		                @endforeach
@@ -162,14 +165,27 @@
                                 	@endforeach
                                 @endif
                                 </tbody>
-                                <tfooter>
+                                <tfooter id="ast_footer">
+                                    <tr>
+                                        <td width="50%">
+                                        {{ Form::select('antibiotic', $antibiotics, '',
+                                            array('class' => 'form-control', 'id' => 'antibiotic')) }}
+                                        </td>
+                                        <td>{{Form::text('sensitivity_mics', '', array('class' => 'form-control', 'id' => 'sensitivity_mics'))}}</td>
+                                        <td><div class="row">
+                                        	<div class="col-sm-6">{{ Form::select('sensitivity_interpetation', ['S','I','R'], '',
+                                            array('class' => 'form-control', 'id' => 'sensitivity_interpetation')) }}</div>
+                                            <div class="col-sm-6"><a class="btn btn-default" href="javascript:void(0)" onclick="appendToASTTable()">
+                                                {{ trans('messages.add') }}</a></div></div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td colspan="3" align="right">
                                             <div class="col-sm-6" id="ast-save-msg">
                                             </div>
                                             <div class="col-sm-6">
                                                 <a class="btn btn-default" href="javascript:void(0)" onclick="updateDrugSusceptibility({{$test->id}},0)">
-                                                {{ trans('messages.save') }} for WHONET</a>
+                                                {{ trans('messages.save') }} Sensitivity Results</a>
                                             </div>
                                         </td>
                                     </tr>
@@ -178,7 +194,7 @@
                             {{ Form::close() }}
                         @endif
 
-<!--
+				<!--
                     <div class="panel panel-success">
                         <div class="panel-heading">
                             <h3 class="panel-title">{{trans("messages.culture-worksheet")}}</h3>
@@ -310,7 +326,7 @@
 							@endforeach
                         </div>
                     </div>
--->                    
+					-->                    
 					@endif
 	                </div>
 	                <div class="col-md-6">
