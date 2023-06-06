@@ -96,7 +96,7 @@
 								$trow .= "<td>".$tc['test_type']."</td>";
 								$trow .= "</tr>";
 
-								$rowSet[$tc['patient_number']] = $trow;
+								$rowSet[$tc['lab_id']] = $trow;
 							}
 						}
 					}else{
