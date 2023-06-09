@@ -36,23 +36,21 @@ class SusceptibilityController extends \BaseController {
 
 		if($action == "V2-ast"){
 			$testID = Input::get('test_id');
-			$organismName = Input::get('ast-organism');
 			$ast = Input::get('astarray');
-			$organism = Organism::firstOrCreate(array('name' => $organismName));
-			Log::info("Organism: ".$organism->name);
-			Log::info("Test ID: ".$testID);
 			foreach ($ast as $key => $value) {
 				$astArray = explode("|", $value);
-				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[0]));
+				$organism = Organism::firstOrCreate(array('name' => $astArray[0]));
+				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[1]));
 				Log::info("Antibiotic: ".$antibiotic->name);
+				Log::info("Organism: ".$organism->name);
 				$susceptibility = Susceptibility::firstOrCreate(array(
 					'user_id' => $user_id, 
 					'test_id' => $testID, 
 					'organism_id' => $organism->id,
 					'drug_id' => $antibiotic->id));
 
-				$susceptibility->zone = $astArray[1];
-				$susceptibility->interpretation = $astArray[2];
+				$susceptibility->zone = $astArray[2];
+				$susceptibility->interpretation = $astArray[3];
 				$susceptibility->save();
 			}
 
@@ -97,11 +95,10 @@ class SusceptibilityController extends \BaseController {
 
 		if ($action == "results"){
 			$test_id = Input::get('testId');
-			$organism_id = Input::get('organismId');
 			$susceptibility = Susceptibility::where('test_id', $test_id)
-											->where('organism_id', $organism_id)
 											->where('zone', '!=', 0)
 											->get();
+
 			foreach ($susceptibility as $drugSusceptibility) {
 				$drugSusceptibility->drugName = Drug::find($drugSusceptibility->drug_id)->name;
 				$drugSusceptibility->abbreviation = Drug::find($drugSusceptibility->drug_id)->abbreviation;
@@ -162,21 +159,20 @@ class SusceptibilityController extends \BaseController {
 
 			Susceptibility::where('test_id', '=', $testID)->delete();
 
-			$organismName = Input::get('ast-organism');
 			$ast = Input::get('astcheck');
-			$organism = Organism::firstOrCreate(array('name' => $organismName));
 
 			foreach ($ast as $key => $value) {
 				$astArray = explode("|", $value);
-				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[0]));
+				$organism = Organism::firstOrCreate(array('name' => $astArray[0]));
+				$antibiotic = Drug::firstOrCreate(array('name' => $astArray[1]));
 				$susceptibility = Susceptibility::firstOrCreate(array(
 					'user_id' => $user_id, 
 					'test_id' => $testID, 
 					'organism_id' => $organism->id,
 					'drug_id' => $antibiotic->id));
 
-				$susceptibility->zone = $astArray[1];
-				$susceptibility->interpretation = $astArray[2];
+				$susceptibility->zone = $astArray[2];
+				$susceptibility->interpretation = $astArray[3];
 				$susceptibility->save();
 			}
 

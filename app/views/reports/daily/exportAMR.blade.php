@@ -83,7 +83,7 @@
 											$isolateName .= $suscept["isolate_name"];
 										}
 										$antibiotics[] = strtoupper($suscept["drug"]);
-										$abValues[$tc['patient_number']][strtoupper($suscept["drug"])] = $suscept["zone"];
+										$abValues[$tc['lab_id']][strtoupper($suscept["drug"])] = $suscept["zone"];
 									}
 								}else{
 									$isolateObtained .= "<p>No</p>";

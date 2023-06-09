@@ -140,7 +140,9 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th width="50%">Antibiotic</th>
+                                        <th>&nbsp;</th>
+                                        <th>Isolate</th>
+                                        <th>Antibiotic</th>
                                         <th>MIC</th>
                                         <th>{{ trans('messages.interp')}}</th>
                                     </tr>
@@ -153,12 +155,11 @@
 				                @if(count($isolates)>0)
                                 	@foreach($isolates as $isolate)
                                 	<tr>
-                                		<td>
-                                			<label>
-                                				<input class="ast-checkboxes" type="checkbox" name="astcheck[]" value="{{$isolate['drug'].'|'.$isolate['zone'].'|'.$isolate['interpretation']}}" checked>
-                                				{{$isolate['drug']}}
-                                			</label>
-                                		</td>
+                                        <td>
+                                        	<input class="ast-checkboxes" type="checkbox" name="astcheck[]" value="{{$isolate['isolate_name'].'|'.$isolate['drug'].'|'.$isolate['zone'].'|'.$isolate['interpretation']}}" checked>
+                                        </td>
+                                		<td>{{$isolate['isolate_name']}}</td>
+                                		<td>{{$isolate['drug']}}</td>
                                 		<td>{{$isolate['zone']}}</td>
                                 		<td>{{$isolate['interpretation']}}</td>
                                 	</tr>
@@ -167,7 +168,12 @@
                                 </tbody>
                                 <tfooter id="ast_footer">
                                     <tr>
-                                        <td width="50%">
+                                        <td>&nbsp;</td>
+                                        <td>
+                                        {{ Form::select('organism', $organisms, '',
+                                            array('class' => 'form-control', 'id' => 'organism')) }}
+                                        </td>
+                                        <td>
                                         {{ Form::select('antibiotic', $antibiotics, '',
                                             array('class' => 'form-control', 'id' => 'antibiotic')) }}
                                         </td>
@@ -180,7 +186,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" align="right">
+                                        <td colspan="5" align="right">
                                             <div class="col-sm-6" id="ast-save-msg">
                                             </div>
                                             <div class="col-sm-6">

@@ -217,19 +217,31 @@ $(function(){
             processData:false,
             success: function(data)
             {
+            	let isolate = $.parseJSON(data).identification;
 				$('.text-culture').val($.parseJSON(data).identification);
-				$('#ast-organism').val($.parseJSON(data).identification);
-				$('#patient-id-analyzer').append(" ("+$.parseJSON(data).patient_id_vitek+")");
-				$('#patient-name-analyzer').append(" ("+$.parseJSON(data).patient_name_vitek+")");
+				$('#ast-organism').val(isolate);
+				// $('#patient-id-analyzer').append(" ("+$.parseJSON(data).patient_id_vitek+")");
+				// $('#patient-name-analyzer').append(" ("+$.parseJSON(data).patient_name_vitek+")");
 
 				$.each($.parseJSON(data), function (index, obj) {
 					// console.log(index + " " + obj);
 					$('#'+index).val(obj);
 					if (index == "ast") {
 						$('#ast_table').empty();
-						for (var i = obj.length - 1; i >= 0; i--) {
+						for (let i = obj.length - 1; i >= 0; i--) {
 							// console.log(obj[i].name);
-							$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'><input type='hidden' name='astarray[]' value='"+obj[i].name.toUpperCase()+"|"+obj[i].mic+"|"+obj[i].category+"'>"+obj[i].name+"</label></td><td>"+obj[i].mic+"</td><td>"+obj[i].category+"</td></tr>");
+							$('#ast_table').append(
+								"<tr><td><input class='ast-checkboxes' type='checkbox'" +
+									" name='astcheck[]' value='" + isolate + 
+									"|" + obj[i].name.toUpperCase() + 
+									"|" + obj[i].mic + "|" + obj[i].category + "'>" + 
+									"<input type='hidden' name='astarray[]' value='" + isolate +
+									"|" + obj[i].name.toUpperCase() + "|" + obj[i].mic + "|" +
+									obj[i].category + "'></td>" +
+									"<td>" + isolate + "</td>" +
+									"<td>" + obj[i].name + "</td>" +
+									"<td>" + obj[i].mic + "</td>" +
+									"<td>" + obj[i].category + "</td></tr>");
 						}
 					}
 				});
@@ -244,7 +256,7 @@ $(function(){
 
 	$('body').on('click', '.ast-checkboxes', function(){
 		let astArray = $(this).val().split("|");
-		let astVal = astArray[0] + "-" + astArray[2];
+		let astVal = astArray[1] + "-" + astArray[3];
 		let ast = $('.text-sensitivity').val().replace(astVal, "").trim();
 
 		if($(this).prop('checked')){
@@ -826,7 +838,7 @@ $(function(){
 				let mydata = $.parseJSON(data);
 				if(mydata.test_id)tid = mydata.test_id;
 				if(mydata.organism_id)oid = mydata.organism_id;
-				drawSusceptibility(tid, oid);
+				// drawSusceptibility(tid, oid);
 				$("#ast-save-msg").html("AST results successfully saved!");
 			}
 		});
@@ -844,7 +856,7 @@ $(function(){
 				let mydata = $.parseJSON(data);
 				if(mydata.test_id)tid = mydata.test_id;
 				if(mydata.organism_id)oid = mydata.organism_id;
-				drawSusceptibility(tid, oid);
+				// drawSusceptibility(tid, oid);
 				$("#ast-save-msg").html("AST results successfully saved!");
 			}
 		});
@@ -852,7 +864,7 @@ $(function(){
 	/*End update drug susceptibility*/
 	/*Function to render drug susceptibility table after successfully saving the results*/
 	function drawSusceptibility(tid, oid){
-		$.getJSON('/susceptibility/saveSusceptibility', { testId: tid, organismId: oid, action: "results"}, 
+		$.getJSON('/susceptibility/saveSusceptibility', { testId: tid, action: "results"}, 
 			function(data){
 				var tableRow ="";
 				var tableBody ="";
@@ -878,10 +890,16 @@ $(function(){
 
 	// Function to Append to drug susceptibility table
 	function appendToASTTable() {
+		let organism = $("#organism option:selected").text();
 		let anti = $("#antibiotic option:selected").text();
 		let mics = $('#sensitivity_mics').val();
 		let SIR = $("#sensitivity_interpetation option:selected").text();
-		$('#ast_table').append("<tr><td><label><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='"+anti+"|"+mics+"|"+SIR+"'><input type='hidden' name='astarray[]' value='"+anti+"|"+mics+"|"+SIR+"'>"+anti+"</label></td><td>"+mics+"</td><td>"+SIR+"</td></tr>");
+		$('#ast_table').append(
+			"<tr><td><input class='ast-checkboxes' type='checkbox' name='astcheck[]' value='" +
+				organism + "|" + anti + "|" + mics + "|" + SIR + "'><input type='hidden' " + 
+				"name='astarray[]' value='" + organism + "|" + anti + "|" + mics + "|" + SIR +
+				"'></td><td>" + organism + "</td><td>" + anti + "</td><td>" + mics + 
+				"</td><td>" + SIR + "</td></tr>");
 	}
 	// End function to Append to drug susceptibility table
 

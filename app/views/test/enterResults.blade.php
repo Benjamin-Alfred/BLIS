@@ -48,7 +48,7 @@
             @endif
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                     {{ Form::open(array('route' => array('test.saveResults',$test->id), 'method' => 'POST',
                         'id' => 'form-enter-results')) }}
                         @foreach($test->testType->measures as $measure)
@@ -128,7 +128,9 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th width="50%">Antibiotic</th>
+                                        <th>&nbsp;</th>
+                                        <th>Isolate</th>
+                                        <th>Antibiotic</th>
                                         <th>MIC</th>
                                         <th>{{ trans('messages.interp')}}</th>
                                     </tr>
@@ -137,7 +139,12 @@
                                 </tbody>
                                 </tfooter>
                                     <tr>
-                                        <td width="50%">
+                                        <td>&nbsp;</td>
+                                        <td>
+                                        {{ Form::select('organism', $organisms, '',
+                                            array('class' => 'form-control', 'id' => 'organism')) }}
+                                        </td>
+                                        <td>
                                         {{ Form::select('antibiotic', $antibiotics, '',
                                             array('class' => 'form-control', 'id' => 'antibiotic')) }}
                                         </td>
@@ -150,7 +157,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" align="right">
+                                        <td colspan="5" align="right">
                                             <div class="col-sm-6" id="ast-save-msg">
                                             </div>
                                             <div class="col-sm-6">
@@ -290,7 +297,7 @@
                         @endif
                     @endif
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <div class="panel panel-info">  <!-- Patient Details -->
                             <div class="panel-heading">
                                 <h3 class="panel-title">{{trans("messages.patient-details")}}</h3>
