@@ -57,6 +57,7 @@ return array(
     'new'   =>  'New',
     'edit'  =>  'Edit',
     'reorder' => 'Reorder',
+    'automated' => 'Automated',
 
     /** 
      *   Generic phrases

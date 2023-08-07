@@ -393,6 +393,7 @@ class ReportController extends \BaseController {
 			
 			/*Get collection of tests*/
 			$content = [];
+
 			if(count($tests) > 0){
 				foreach ($tests as $test) {
 					try {
@@ -440,29 +441,22 @@ class ReportController extends \BaseController {
 				$content["message"] = ""; 
 			}
 
+			$date = date("Ymdhi");
+			$fileName = "amr_whonet_report_".$date.".json";
+			$fileNameXLS = public_path()."/uploads/amr_whonet_report_".$date.".xls";
 			if(strcmp(strtolower(trim($exportFormat)),'json') == 0){
-				$date = date("Ymdhi");
-				$fileName = "amr_whonet_report_".$date.".json";
 				$headers = array(
 				    "Content-type"=>"text/json",
 				    "Content-Disposition"=>"attachment;Filename=".$fileName
 				);
+
 	    		return Response::make(json_encode($content),200, $headers);
 			}else if(strcmp(strtolower(trim($exportFormat)),'xls') == 0){
-				$date = date("Ymdhi");
-				$fileName = "amr_whonet_report_".$date.".xls";
-				$headers = array(
-				    "Content-type"=>"application/vnd.ms-excel",
-				    "Content-Disposition"=>"attachment;Filename=".$fileName
-				);
-				$amrView = View::make('reports.daily.exportAMR')
-						->with('tests', $tests)
-						->with('testContent', $content)
-						->with('accredited', [])
-						->with('error', $error)
-						->withInput(Input::all());
 
-	    		return Response::make($amrView, 200, $headers);
+				$this->createAMRExportFile($fileNameXLS, $tests, $content);
+
+				return Response::download($fileNameXLS);
+
 			}else{
 
 				return View::make('reports.daily.amr')
@@ -474,6 +468,131 @@ class ReportController extends \BaseController {
 			}
 		}
 	}
+
+	public function createAMRExportFile($fileName, $tests, $content){
+
+		try{
+			$amrfile = fopen($fileName, "a");
+			fwrite($amrfile, "<html><body><table><thead>\n");
+
+			$theader = "<tr>";
+			$theader .= "<th>IP/OP Number</th>";
+			$theader .= "<th>Gender</th>";
+			$theader .= "<th>DOB</th>";
+			$theader .= "<th>Age</th>";
+			$theader .= "<th>Country</th>";
+			$theader .= "<th>County</th>";
+			$theader .= "<th>Sub-county</th>";
+			$theader .= "<th>Pre-diagnosis</th>";
+			$theader .= "<th>Specimen collection date</th>";
+			$theader .= "<th>Location</th>";
+			$theader .= "<th>Department</th>";
+			$theader .= "<th>Admission Date</th>";
+			$theader .= "<th>Prior Antibiotic Therapy</th>";
+			$theader .= "<th>Specimen-type-title</th>";
+			$theader .= "<th>Specimen Site</th>";
+			$theader .= "<th>Lab ID</th>";
+			$theader .= "<th>Isolates Obtained?</th>";
+			$theader .= "<th>Isolate Name</th>";
+			$theader .= "<th>Test Method</th>";
+			$theader .= "<th>Gram Pos/Neg</th>";
+			$theader .= "[ANTIBIOTIC_NAMES]";
+			$theader .= "<th>Test Name</th>";
+			$theader .= "</tr>";
+
+			$antibiotics = Drug::all()->lists('name');
+			$abValues = array();
+			$rowSet = array();
+
+			if (count($content) > 0) {
+				foreach ($content as $tc) {
+					if (count($tc) > 1) {//Wonder why it has 1 element when empty?
+						$trow = "<tr>";
+						$trow .= "<td>" . e($tc['patient_number']) ."</td>";
+						$trow .= "<td>" . e($tc['gender']) ."</td>";
+						$trow .= "<td>" . e($tc['dob']) ."</td>";
+						$trow .= "<td>" . e($tc['age']) ." years</td>";
+						$trow .= "<td>&nbsp;</td>";
+						$trow .= "<td>" . e($tc["county"]) ."</td>";
+						$trow .= "<td>" . e($tc["sub_county"]) ."</td>";
+						$trow .= "<td>" . e($tc["prediagnosis"]) ."</td>";
+						$trow .= "<td>".substr($tc['specimen_collection_date'],0,10) ."</td>";
+						$trow .= "<td>" . e($tc['patient_type']) ."</td>";
+						$trow .= "<td>" . e($tc['ward']) ."</td>";
+						$trow .= "<td>" . e($tc['admission_date']) ."</td>";
+						$trow .= "<td>" . e($tc['currently_on_therapy']) ."</td>";
+						$trow .= "<td>" . e($tc['specimen_type']) ."</td>";
+						$trow .= "<td>" . e($tc['specimen_source']) ."</td>";
+						$trow .= "<td>" . e($tc['lab_id']) ."</td>";
+
+						$isolateObtained = "";
+						$isolateName = "";
+						if (count($tc["isolates"]) > 0) {
+							$isolateObtained .= "<p>Yes</p>";
+							$isolateName = "";
+							foreach ($tc["isolates"] as $suscept) {
+								if(strcmp($isolateName, $suscept["isolate_name"]) != 0){
+									$isolateName .= $suscept["isolate_name"];
+								}
+								$abValues[$tc['lab_id']][strtoupper($suscept["drug"])] = $suscept["zone"];
+							}
+						}else{
+							$isolateObtained .= "<p>No</p>";
+						}
+						$trow .= "<td>".$isolateObtained."</td>";
+						$trow .= "<td>" . e($isolateName)."</td>";
+						$trow .= "<td>&nbsp;</td>";
+						$trow .= "<td>&nbsp;</td>";
+						$trow .= "[ANTIBOITIC_VALUES]";
+						$trow .= "<td>" . e($tc['test_type'])."</td>";
+						$trow .= "</tr>";
+
+						$rowSet[$tc['lab_id']] = $trow;
+					}
+				}
+			}else{
+				$rowSet[] = "<tr><td colspan='22'>No records found!</td></tr>";
+			}
+
+			$abHeader = "";
+			$antibiotics = array_unique($antibiotics);
+			asort($antibiotics);
+
+			foreach($antibiotics as $ab){
+				$abHeader .= "<th>$ab</th>";
+			}
+			$theader = str_replace("[ANTIBIOTIC_NAMES]", $abHeader, $theader);
+
+			fwrite($amrfile, $theader);
+
+			fwrite($amrfile, "</thead><tbody>");
+
+			foreach ($rowSet as $key => $row) {
+				$abv = "";
+
+				foreach($antibiotics as $ab){
+					try{
+						$abv .= "<td>" . e($abValues[$key][$ab])."</td>";
+					}catch(Exception $e){
+						$abv .= "<td>&nbsp;</td>";
+					}
+				}
+
+				$HTMLString = str_replace("[ANTIBOITIC_VALUES]", $abv, $row);
+
+				fwrite($amrfile, $HTMLString."\n");
+
+			}
+
+			fwrite($amrfile, "</tbody></table></body></html>");
+
+			fclose($amrfile);
+
+		}catch(Exception $e){
+			Log::error($e);
+		}
+	}
+
 	//	End Daily Log-Patient report functions
 
 	/*	Begin Aggregate reports functions	*/

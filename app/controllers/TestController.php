@@ -301,10 +301,12 @@ class TestController extends \BaseController {
 		$organisms = [];
 		if($test->testType->isCultureTest()){
 			$antibiotics = Drug::all()->lists('name');
+			array_push($antibiotics, '');
 			asort($antibiotics);
 			$organisms = Organism::all()->lists('name');
 			asort($organisms);
 		}
+
 		return View::make('test.enterResults')->with('test', $test)
 									->with('antibiotics', $antibiotics)
 									->with('organisms', $organisms);
