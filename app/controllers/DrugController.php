@@ -151,18 +151,10 @@ class DrugController extends \BaseController {
 	{
 		//Soft delete the drug
 		$drug = Drug::find($id);
+		$drug->name = $drug->name . "_" . $id;
+		$drug->save();
+		$drug->delete();
 
-		/*$testCategoryInUse = TestType::where('test_category_id', '=', $id)->first();
-		if (empty($testCategoryInUse)) {
-		    // The test category is not in use
-			$testcategory->delete();
-		} else {
-		    // The test category is in use
-		    $url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-		    	->with('message', trans('messages.failure-test-category-in-use'));
-		}*/
 		// redirect
 			$url = Session::get('SOURCE_URL');
             
