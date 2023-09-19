@@ -513,6 +513,7 @@ return array(
     'compatible-test-types' => 'Can perform:',
     'failure-creating-instrument' => 'The equipment could not be added!',
     'failure-updating-instrument' => 'The equipment could not be updated!',
+    'failure-updating-instrument-testtypes' => 'No equipment test-types were specified!',
     'host' => 'Hostname',
     'host-name' => 'Hostname',
     'import-instrument-driver-title' => 'Add New Equipment Drivers',
@@ -530,6 +531,7 @@ return array(
     'success-deleting-instrument' => 'The equipment was successfully deleted!',
     'success-importing-driver' => 'The equipment driver was successfully imported!',
     'success-updating-instrument' => 'The equipment details were successfully updated!',
+    'success-updating-instrument-testtypes' => 'The equipment test-types were successfully updated!',
     'supported-test-types' => 'Supported Tests',
     'unwriteable-destination-folder' => 'Unable to write to the plugins folder',
 

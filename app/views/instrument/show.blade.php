@@ -27,8 +27,50 @@
 					{{ $instrument->ip }}</p>
 				<p class="view-striped"><strong>{{trans('messages.host-name')}}</strong>
 					{{ $instrument->hostname }}</p>
-				<p class="view-striped"><strong>{{trans('messages.compatible-test-types')}}</strong>
-					{{ implode(", ", $instrument->testTypes->lists('name')) }}</p>
+				<p class="view-striped">
+					<strong>{{trans('messages.compatible-test-types')}}</strong>
+					<a class="btn btn-sm btn-info" href="{{ URL::route('instrument.addtests', array($instrument->id)) }}">
+						<span class="glyphicon glyphicon-add"></span>
+						{{trans('messages.add')}} {{Lang::choice('messages.test',2)}}
+					</a>
+					<br>
+					<?php
+						$testTypes = $instrument->testTypes->all();
+					?>
+					<div>
+						<table class="table table-striped table-hover table-condensed search-table">
+							<thead>
+								<tr>
+									<th>{{Lang::choice('messages.test',1)}}</th>
+									<th>{{trans('messages.actions')}}</th>
+								</tr>
+							</thead>
+							<tbody>
+							@foreach($instrument->testTypes->all() as $testType)
+								<tr>
+									<td>{{ $testType->name }}</td>
+
+									<td>
+										<!-- edit this instrument  -->
+										<a class="btn btn-sm btn-info" href="{{ URL::route('instrument.mapping', array($instrument->id, $testType->id)) }}" >
+											<span class="glyphicon glyphicon-cog"></span>
+											Configure Mapping
+										</a>
+										<!-- delete this instrument -->
+										<button class="btn btn-sm btn-danger delete-item-link"
+											data-toggle="modal" data-target=".confirm-delete-modal"	
+											data-id="{{ URL::route('instrument.deletetesttype', array($instrument->id, $testType->id)) }}">
+											<span class="glyphicon glyphicon-trash"></span>
+											{{trans('messages.delete')}}
+										</button>
+
+									</td>
+								</tr>
+							@endforeach
+							</tbody>
+						</table>
+					</div>
+				</p>
 				<p class="view-striped"><strong>{{trans('messages.date-created')}}</strong>
 					{{ $instrument->created_at }}</p>
 			</div>
