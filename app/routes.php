@@ -150,6 +150,26 @@ Route::group(array("before" => "auth"), function()
             "as"   => "instrument.importDriver",
             "uses" => "InstrumentController@importDriver"
         ));
+        Route::get("/instrument/{id}/testtypes/{test}", array(
+            "as"   => "instrument.mapping",
+            "uses" => "InstrumentController@viewMapping"
+        ));
+        Route::post("/instrument/mapping", array(
+            "as"   => "instrument.savemapping",
+            "uses" => "InstrumentController@saveMapping"
+        ));
+        Route::get("/instrument/{id}/testtype/{test}", array(
+            "as"   => "instrument.deletetesttype",
+            "uses" => "InstrumentController@deleteTestType"
+        ));
+        Route::get("/instrument/{id}/testtypes", array(
+            "as"   => "instrument.addtests",
+            "uses" => "InstrumentController@addTestTypes"
+        ));
+        Route::post("/instrument/{id}/testtypes", array(
+            "as"   => "instrument.testtypes",
+            "uses" => "InstrumentController@updateTestTypes"
+        ));
         Route::get("/requireverification", array(
             "as"   => "requireverification.edit",
             "uses" => "RequireVerificationController@edit"

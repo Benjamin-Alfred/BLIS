@@ -235,4 +235,141 @@ class InstrumentController extends \BaseController {
 
 		return Redirect::route($route)->with('message', $message);
 	}
+
+	/**
+	 * Show the form for editing the specified instrument testype measure mappings.
+	 *
+	 * @param  int  $instrument_id
+	 * @param  int  $testtype_id
+	 * @return Response
+	 */
+	public function viewMapping($instrumentID, $testtypeID)
+	{
+		//Get the instrument
+		$instrument = Instrument::find($instrumentID);
+		$testType = TestType::find($testtypeID);
+		$mappings = DB::table('instrument_testtype_measure_mappings')
+						->select('instrument_id', 'testtype_id', 'measure_id', 'mapping')
+						->where('instrument_id',$instrumentID)
+						->where('testtype_id', $testtypeID)->get();
+
+		//Open the Edit View and pass to it the $instrument
+		return View::make('instrument.mapping')
+						->with('instrument', $instrument)
+						->with('testType', $testType)
+						->with('mappings', $mappings);
+	}
+
+	/**
+	 * Save instrument-testtype-measure mapping.
+	 *
+	 * @return Response
+	 */
+	public function saveMapping()
+	{
+		$instrumentID = Input::get('instrument_id');
+		$testTypeID = Input::get('testtype_id');
+		$allInputFields = Input::all();
+		$measureMappings = array();
+
+		if(is_array($allInputFields)){
+			foreach ($allInputFields as $key => $value) {
+				if (strcmp(substr($key, 0, 2), "m_") == 0) {
+					// code...
+					$measureMappings[] = array(
+						'instrument_id' => (int)$instrumentID,
+						'testtype_id' => (int)$testTypeID,
+						'measure_id' => (int)str_replace("m_", "", $key),
+						'mapping' => trim($value),
+						);
+				}
+			}
+		}
+
+		if (!empty($measureMappings)) {
+			// Delete existing instrument test_type mappings
+			DB::table('instrument_testtype_measure_mappings')
+					->where('instrument_id', '=', $instrumentID)
+					->where('testtype_id', '=', $testTypeID)->delete();
+			// Add the new mapping
+			DB::table('instrument_testtype_measure_mappings')->insert($measureMappings);
+			$message = trans('messages.success-updating-instrument-testtypes');
+		}else{
+
+			$message = trans('messages.failure-updating-instrument-testtypes');
+		}
+
+		return Redirect::action('InstrumentController@show', array($instrumentID))->with('message', $message);
+	}
+
+	/**
+	 * Show the form for editing the specified instrument.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function addTestTypes($id)
+	{
+		//Get the instrument
+		$instrument = Instrument::find($id);
+		$testTypes = TestType::all()->sortBy('name');
+
+		//Open the testtypes View and pass to it the $instrument
+		return View::make('instrument.testtypes')->with('instrument', $instrument)->with('testtypes', $testTypes);
+	}
+
+	/**
+	 * Update the specified instrument testtypes.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function updateTestTypes($id)
+	{
+	
+		$testTypesAdded = array();
+		$testTypes = Input::get('testtypes');
+
+		if(is_array($testTypes)){
+			foreach ($testTypes as $key => $value) {
+				$testTypesAdded[] = array(
+					'instrument_id' => (int)$id,
+					'test_type_id' => (int)$value,
+					);
+			}
+
+		}
+
+		if (!empty($testTypes)) {
+			// Delete existing instrument test_type mappings
+			DB::table('instrument_testtypes')->where('instrument_id', '=', $id)->delete();
+			// Add the new mapping
+			DB::table('instrument_testtypes')->insert($testTypesAdded);
+			$message = trans('messages.success-updating-instrument-testtypes');
+		}else{
+
+			$message = trans('messages.failure-updating-instrument-testtypes');
+		}
+
+
+		return Redirect::action('InstrumentController@show', array($id))->with('message', $message);
+	}
+
+	/**
+	 * Remove the specified instrument testtype.
+	 *
+	 * @param  int  $instrumentID
+	 * @param  int  $testTypeID
+	 * @return Response
+	 */
+	public function deleteTestType($instrumentID, $testTypeID)
+	{
+		//Delete the instrument
+		$instrument = Instrument::find($instrumentID);
+ 
+		$instrument->testTypes()->detach($testTypeID);
+
+		// redirect
+		return Redirect::action('InstrumentController@show', array($instrumentID))->with('message', trans('messages.success-deleting-test-type'));
+	}
 }
