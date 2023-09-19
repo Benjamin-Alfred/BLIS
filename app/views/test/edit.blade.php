@@ -23,6 +23,7 @@
                             <form id="fetch-form" enctype="multipart/form-data" action="{{URL::route('instrument.getResult')}}" method="POST" style="display: none;">
                                 <input type="file" id="file-to-fetch" name="file-to-fetch">
                                 <input type="hidden" name="test_type_id" value="{{$test->testType->id}}">
+                                <input type="hidden" name="specimen_id" value="{{$test->specimen_id}}">
                                 <input type="hidden" name="instrument_count" value="{{$test->testType->instruments->count()}}">
                             </form>
                         </div>

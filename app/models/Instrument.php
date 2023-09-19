@@ -175,7 +175,7 @@ class Instrument extends Eloquent
 	 * @param $testType
 	 * @return Response json
 	 */
-	public function fetchResult($testType, $resultFile = null){
+	public function fetchResult($testType, $specimenID, $resultFile = null){
 
 		$resultString = "";
  		// Invoke the Instrument Class to get the results
@@ -186,25 +186,37 @@ class Instrument extends Eloquent
  		}
 		$result = $instrument->getResult();
 
-
 		// Change measure names to measure_ids in the returned array
 		$resultWithIDs = array();
 
 		if($testType->isCultureTest()){
 			$resultString = $result;
+		}else if($testType->isChemistryTest()){
+			$result = json_decode(json_decode($result, true), true);
+			foreach ($result as $key => $value) {
+				if(strcmp($value['sample_id'], $specimenID) == 0){
+					$measure = DB::table('instrument_testtype_measure_mappings')->select('measure_id')
+							->where('instrument_id', $this->id)
+							->where('testtype_id', $testType->id)
+							->where('mapping', $value['measure'])->first();
+
+					$resultWithIDs['m_'.$measure->measure_id] = $value['result'];
+				}
+			}
+			$resultString = json_encode($resultWithIDs);
 		}else{
 			foreach ($result as $measureName => $value) {
 				$measureFound = $testType->measures->filter(
-					function($measure) use ($measureName){
-						if($measure->name == $measureName) return $measure;
-				});
+                    function($measure) use ($measureName){
+			            if($measure->name == $measureName) return $measure;
+			        });
 
-				if(empty($measureFound->toArray())){
-					$resultWithIDs[$measureName] = $value;
-				}else{
-					$resultWithIDs['m_'.$measureFound->first()->id] = $value;
-				}
-			}
+		        if(empty($measureFound->toArray())){
+		            $resultWithIDs[$measureName] = $value;
+		        }else{
+		            $resultWithIDs['m_'.$measureFound->first()->id] = $value;
+		        }
+		    }
 			$resultString = json_encode($resultWithIDs);
 		}
 

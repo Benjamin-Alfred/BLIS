@@ -37,7 +37,7 @@ return array(
 	|
 	*/
 
-	'organization' => 'Bungoma County Referral Hospital Laboratory',
+	'organization' => 'BLIS TOWN Hospital Laboratory',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -45,10 +45,10 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'address-info' => 'BUNGOMA TOWN, HOSPITAL ROAD<br>
+	'address-info' => 'BLIS TOWN, HOSPITAL ROAD<br>
                     P.O. BOX 14,<br>
-                    BUNGOMA TOWN.<br>
-                    Phone: +254 055-30401 Ext 203/208</p>',
+                    BLIS TOWN.<br>
+                    Phone: +254 055-00000 Ext 203/208</p>',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ return array(
 	|
 	*/
 
-	'facility-county' => 'Bungoma',
+	'facility-county' => 'BLIS County',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -66,7 +66,7 @@ return array(
 	|
 	*/
 
-	'facility-sub-county' => 'Kanduyi',
+	'facility-sub-county' => 'BLIS SubCounty',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -75,7 +75,7 @@ return array(
 	|
 	*/
 
-	'facility-code' => '15828',
+	'facility-code' => '00000',
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -146,7 +146,7 @@ return array(
 	|
 	*/
 
-	'lab-director-name' => 'Dr. David Wanikina',
+	'lab-director-name' => 'Dr. Lab Director',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab Manager's name - displayed in exported reports
@@ -154,7 +154,7 @@ return array(
 	|
 	*/
 
-	'lab-manager-name' => 'Joan Wasike',
+	'lab-manager-name' => 'Mrs. Lab Manager',
 	/*
 	|--------------------------------------------------------------------------
 	|	Lab QA Manager's name - displayed in exported reports
@@ -162,7 +162,7 @@ return array(
 	|
 	*/
 
-	'lab-quality-manager-name' => 'Anthony Salongo',
+	'lab-quality-manager-name' => 'Mr. Quality Manager',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report number - displayed in exported reports
@@ -170,7 +170,7 @@ return array(
 	|
 	*/
 
-        'patient-report-no' =>  'Form No. BCRHL-QUA-016F3',
+        'patient-report-no' =>  'Form No. BLIS-QUA-0000',
 	/*
 	|--------------------------------------------------------------------------
 	|	Patient report version - displayed in exported reports
@@ -202,4 +202,27 @@ return array(
 		'Urethral swab culture and sensitivity',
 		'Urine Culture and Sensitivity',
 	),
+
+/*
+	|--------------------------------------------------------------------------
+	|	Chemistry Test Name aliases
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'chemistry-test-name-aliases'    =>  array(
+
+		'ALAT',
+		'LFTS',
+		'RFTS',
+	),
+
+/*
+	|--------------------------------------------------------------------------
+	|	Chemistry Tests
+	|--------------------------------------------------------------------------
+	|
+	*/
+
+	'chemistry-tests'    =>  'BIOCHEMISTRY',
 );

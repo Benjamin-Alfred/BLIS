@@ -489,4 +489,20 @@ class TestType extends Eloquent
 		else 
 			return false;
 	}
+
+	/**
+	 * Check to see if the test is a chemistry test
+	 *
+	 * @return boolean
+	 */
+	public function isChemistryTest()
+	{
+		$chemistryTests = strtoupper(Config::get('kblis.chemistry-tests'));
+
+		if(strcmp(strtoupper($this->testCategory->name), $chemistryTests) == 0){
+			return true;
+		}
+		else 
+			return false;
+	}
 }

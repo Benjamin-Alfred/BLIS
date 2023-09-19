@@ -175,6 +175,7 @@ class InstrumentController extends \BaseController {
 			
 			//Get Instrument Interface Class file
 			$testTypeID = Input::get("test_type_id");
+			$specimenID = Input::get("specimen_id");
 			$testType = TestType::find($testTypeID);
 			$resultFile = storage_path()."/uploads/".basename($_FILES["file-to-fetch"]["name"]);
 
@@ -185,7 +186,7 @@ class InstrumentController extends \BaseController {
 				})->first();
 
 	 		// Fetch the results
-			$result = $instrument->fetchResult($testType, $resultFile);
+			$result = $instrument->fetchResult($testType, $specimenID, $resultFile);
 		} catch (Exception $e) {
 			\Log::error($e);
 			$result = "";
