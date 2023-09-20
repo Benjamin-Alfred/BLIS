@@ -199,8 +199,11 @@ class Instrument extends Eloquent
 							->where('instrument_id', $this->id)
 							->where('testtype_id', $testType->id)
 							->where('mapping', $value['measure'])->first();
-
-					$resultWithIDs['m_'.$measure->measure_id] = $value['result'];
+                    try {
+    					$resultWithIDs['m_'.$measure->measure_id] = $value['result'];
+                    } catch (Exception $e) {
+                        
+                    }
 				}
 			}
 			$resultString = json_encode($resultWithIDs);

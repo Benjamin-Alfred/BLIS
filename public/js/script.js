@@ -203,7 +203,7 @@ $(function(){
 	$('.fetch-test-data').click(function(){
 		$("#file-to-fetch").trigger("click");
 	});
-    $("#file-to-fetch").change(function(){
+    $("#file-to-fetch").click(function(){
         $("#fetch-form").submit();
     });
     $("#fetch-form").on('submit',(function(e) {

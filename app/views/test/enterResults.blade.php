@@ -15,13 +15,16 @@
                         <span class="glyphicon glyphicon-user"></span> {{ trans('messages.test-results') }}
                         @if($test->testType->instruments->count() > 0 || $test->testType->automated == true)
                         <div class="panel-btn">
-                            <a class="btn btn-sm btn-info fetch-test-data" href="javascript:void(0)"
-                                title="{{trans('messages.fetch-test-data-title')}}">
-                                <span class="glyphicon glyphicon-plus-sign"></span>
-                                {{trans('messages.fetch-test-data')}}
-                            </a>
-                            <form id="fetch-form" enctype="multipart/form-data" action="{{URL::route('instrument.getResult')}}" method="POST" style="display: none;">
-                                <input type="file" id="file-to-fetch" name="file-to-fetch">
+                            <form id="fetch-form" class="form-inline" enctype="multipart/form-data" action="{{URL::route('instrument.getResult')}}" method="POST">
+                                @if($test->testType->isChemistryTest())
+                                    <input class="form-control" type="text" name="sample_id" value="{{$test->visit->patient->patient_number}}">
+                                @endif
+                                <a class="btn btn-sm btn-info fetch-test-data" href="javascript:void(0)"
+                                    title="{{trans('messages.fetch-test-data-title')}}">
+                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                    {{trans('messages.fetch-test-data')}}
+                                </a>
+                                <input type="file" id="file-to-fetch" name="file-to-fetch" style="display: none;">
                                 <input type="hidden" name="specimen_id" value="{{$test->specimen_id}}">
                                 <input type="hidden" name="test_type_id" value="{{$test->testType->id}}">
                                 <input type="hidden" name="instrument_count" value="{{$test->testType->instruments->count()}}">
